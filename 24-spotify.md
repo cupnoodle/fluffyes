@@ -40,7 +40,19 @@ Since there are distances from the album art to the screen edge (left and right)
 
 # Playback buttons and stack view
 
-The play button is located in the center (use the align horizontal center constraint), and there's other buttons beside it.
+The play button is located in the center (using the align horizontal center constraint), and there's other buttons beside it. At first glance, using fixed leading / trailing constraint between each button seems to do the job : 
+
+![Spacing between buttons](https://iosimage.s3.amazonaws.com/2018/24-spotify/spacing.png)
+
+
+
+These constraints looks fine on an iPhone SE screen size, but when viewed on iPhone 8 plus, the left and right edge of the screen feels empty as it have too much blank space.
+
+![Extra spacing](https://iosimage.s3.amazonaws.com/2018/24-spotify/extraSpacing.png)
+
+
+
+To reduce the blank space, we will have to distribute the button evenly, meaning they occupy a certain proportion of the width of the screen size.
 
 
 

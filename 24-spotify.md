@@ -1,6 +1,8 @@
-# Replicating Spotify's Now Playing UI using Auto Layout
+# Replicating Spotify's Now Playing UI using Auto Layout - Part 1 / 2
 
-In this post, we will breakdown and analyze the Now Playing screen of Spotify app, and try to replicate it  using Auto Layout. This post assume you have some experience working with [Auto Layout](https://fluffy.es/making-sense-of-auto-layout/). The playback button icons used in this post are from [Font Awesome](https://fontawesome.com).
+In this post, we will breakdown and analyze the Now Playing screen of Spotify app, and try to replicate it  using Auto Layout. This post assume you have some experience working with [Auto Layout](https://fluffy.es/making-sense-of-auto-layout/). 
+
+The playback button icons used in this post are from [Font Awesome](https://fontawesome.com), you can use [fa2png.io](http://fa2png.io) to generate .png images from the font awesome icons.
 
 
 
@@ -16,6 +18,9 @@ The scrollable album arts is a collection view, song name and artist name are la
 
 ![Spotify UI Analyze](https://iosimage.s3.amazonaws.com/2018/24-spotify/spotifyAnalyze.png)
 
+
+
+The vertical distance of each UI elements are shown using the blue arrow. Feel free to tweak the value of the vertical constraint until it feels right for you.
 
 
 ## Album art Collection View
@@ -38,6 +43,49 @@ Since there are distances from the album art to the screen edge (left and right)
 
 
 
+# Play button
+
+Say you are using the play button from Font Awesome like this :  
+
+![Play button](https://iosimage.s3.amazonaws.com/2018/24-spotify/playButton.png)
+
+
+
+To make it simple, we set a fixed width (74pt) and height (74pt) for the Play button and center it horizontally to the parent view.
+
+
+
+To add a surrounding circle to the play button, we can use the cornerRadius and borderWidth property of the button's layer.
+
+```swift
+// the circle around the play button
+playButton.layer.cornerRadius = playButton.frame.size.height / 2.0
+playButton.layer.borderWidth = 2.0
+playButton.layer.borderColor = UIColor.white.cgColor
+```
+
+
+
+Hmmm, now the play button image seems too big and too close to the surrounding circle :
+![too big](https://iosimage.s3.amazonaws.com/2018/24-spotify/tooBig.png)
+
+
+
+We can adjust the **Image Insets** of the button in Size inspector tab to add padding to the image : 
+![Image insets](https://iosimage.s3.amazonaws.com/2018/24-spotify/imageInsets.png)
+
+
+
+The image insets means the spacing from the image to the button edge. With the above values, we will set 20 pt padding on top, left, bottom and right for the image inside button.
+
+
+
+After adding insets, the play button looks better now with padding :
+
+![circled play button](https://iosimage.s3.amazonaws.com/2018/24-spotify/circledPlayButton.png)
+
+
+
 # Playback buttons and stack view
 
 The play button is located in the center (using the align horizontal center constraint), and there's other buttons beside it. At first glance, using fixed leading / trailing constraint between each button seems to do the job : 
@@ -53,10 +101,6 @@ These constraints looks fine on an iPhone SE screen size, but when viewed on iPh
 
 
 To reduce the blank space, we will have to distribute the button evenly, meaning they occupy a certain proportion of the width of the screen size. As the screen width increase, they should occupy more width so that there wouldn't be a chunk of blank space.
-
-
-
-To make it simple, we set a fixed width (74pt) and height (74pt) for the Play button and center it horizontally to the parent view.
 
 
 
@@ -77,6 +121,8 @@ forwardButton.imageView?.contentMode = .scaleAspectFit
 repeatButton.imageView?.contentMode = .scaleAspectFit
 ```
 
+<br>
+
 
 
 This is how the playback buttons looks like in iPhone SE and iPhone 8 plus using stack view:  
@@ -86,6 +132,50 @@ This is how the playback buttons looks like in iPhone SE and iPhone 8 plus using
 
 
 ## Progress Slider
+
+A default slider looks like this: 
+![default slider](https://iosimage.s3.amazonaws.com/2018/24-spotify/defaultSlider.png)
+
+
+
+You can customize the left bar color and right bar color with the Min Track and Max track color property.
+
+![minMax Color](https://iosimage.s3.amazonaws.com/2018/24-spotify/minMaxColor.png)
+
+
+
+As the default circle size is too large for the song progress slider, we can replace it with a smaller circle (the circle is called as "Thumb"). You will need to prepare an image containing a smaller circle for this.
+
+```swift
+// set image for the button of the slider, when not selected, its small
+progressSlider.setThumbImage(UIImage(named: "sliderThumb"), for: .normal)
+```
+
+<br>
+
+
+
+If you have noticed, when you are selecting the slider in Spotify, the thumb become larger and has another layer of half-transparent circle around it. 
+
+![selectedStateSlider](https://iosimage.s3.amazonaws.com/2018/24-spotify/selectedState.png)
+
+
+The easiest way to replicate this is to prepare an [image](https://iosimage.s3.amazonaws.com/2018/24-spotify/sliderThumbSelected.png) for it. And set a different thumb image for the selected state.
+
+```swift
+// when selected, use a larger image
+progressSlider.setThumbImage(UIImage(named: "sliderThumbSelected"), for: .highlighted)
+```
+
+<br>
+
+
+
+## Current result
+
+![Part 1 Result](https://iosimage.s3.amazonaws.com/2018/24-spotify/part1result.png)
+
+It kinda looks good now! Just that the collection view cell doesn't have spacing and doesn't have the zooming / fade out effect when scrolled. We will add these effect into the collection view in part 2.
 
 
 

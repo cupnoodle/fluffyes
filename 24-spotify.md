@@ -52,7 +52,11 @@ These constraints looks fine on an iPhone SE screen size, but when viewed on iPh
 
 
 
-To reduce the blank space, we will have to distribute the button evenly, meaning they occupy a certain proportion of the width of the screen size.
+To reduce the blank space, we will have to distribute the button evenly, meaning they occupy a certain proportion of the width of the screen size. As the screen width increase, they should occupy more width.
+
+
+
+
 
 
 

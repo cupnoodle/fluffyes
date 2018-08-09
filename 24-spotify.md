@@ -144,7 +144,7 @@ You can customize the left bar color and right bar color with the Min Track and 
 
 
 
-As the default circle size is too large for the song progress slider, we can replace it with a smaller circle (the circle is called as "Thumb"). You will need to prepare an image containing a smaller circle for this.
+As the default circle size is too large for the song progress slider, we can replace it with a [smaller circle](https://iosimage.s3.amazonaws.com/2018/24-spotify/sliderThumb.png) (the circle is called as "Thumb"). You will need to prepare an image containing a smaller circle for this.
 
 ```swift
 // set image for the button of the slider, when not selected, its small

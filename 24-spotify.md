@@ -200,26 +200,3 @@ progressSlider.setThumbImage(UIImage(named: "sliderThumbSelected"), for: .highli
 ![Part 1 Result](https://iosimage.s3.amazonaws.com/2018/24-spotify/part1result.png)
 
 It kinda looks good now! Just that the collection view cell doesn't have spacing and doesn't have the zooming / fade out effect when scrolled. We will add these effect into the collection view in part 2.
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

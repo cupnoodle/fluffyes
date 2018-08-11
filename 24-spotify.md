@@ -23,23 +23,47 @@ The scrollable album arts is a collection view, song name and artist name are la
 The vertical distance of each UI elements are shown using the blue arrow. Feel free to tweak the value of the vertical constraint until it feels right for you.
 
 
-## Album art Collection View
+## Album Art Collection View
 
-The collection view has a top constraint to the top edge, leading constraint with value 0, trailing constraint with value 0. The leading and trailing constraint means that the collection view's width is equal to the screen width.
+Let's say each album art is a collection view cell itself, each cell is a square , meaning its width is equal to height, this means a ratio of 1:1 .
+
+![Collection Cell](https://iosimage.s3.amazonaws.com/2018/24-spotify/collectionCell.png)
 
 
 
-The tricky one is the aspect ratio constraint, the 1:1 ratio means that the width is equal to the height and vice versa. 1:1 ratio + 68 means that 
+To make it simple, assume the collection view containing the cell has the same height as the cell itself, with same width but with added spacing on the left (34 pt) and right (34 pt). This means the collection view has an aspect ratio of 1:1 + 34 +34 = 1:1 + 68.
+
+![Collection View](https://iosimage.s3.amazonaws.com/2018/24-spotify/collectionView.png)
+
+
 
 ```
-1 * width + 68 = 1 * height
-width + 68 = height
+1 * width = 1 * height + 34 +34
+width = height + 68
 height = width - 68
 ```
+
+<br>
+
+The collection view has a top constraint to the top edge of safe area, leading constraint with value 0, trailing constraint with value 0. The leading and trailing constraint means that the collection view's width is equal to the screen width.
 
 
 
 Since there are distances from the album art to the screen edge (left and right), and the album art is a square, the height of the collection view will be 68 pt lesser than its width.
+
+
+
+We can set a ratio constraint on the collection view like this :  
+
+![Aspect ratio constraint](https://iosimage.s3.amazonaws.com/2018/24-spotify/aspectRatio1.png)
+
+
+
+![Aspect Ratio 2](https://iosimage.s3.amazonaws.com/2018/24-spotify/aspectRatio2.png)
+
+
+
+
 
 
 
@@ -64,7 +88,7 @@ playButton.layer.borderWidth = 2.0
 playButton.layer.borderColor = UIColor.white.cgColor
 ```
 
-
+<br>
 
 Hmmm, now the play button image seems too big and too close to the surrounding circle :
 ![too big](https://iosimage.s3.amazonaws.com/2018/24-spotify/tooBig.png)

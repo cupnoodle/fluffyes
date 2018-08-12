@@ -71,6 +71,12 @@ After creating the collection view, drag a collection view cell into the collect
 
 
 
+Set the collection view cell's background color to "Clear color" so it will be transparent. This is needed when we do the fading effect of the album art image in the next part.  We will also set a reuse identifier for the cell so we can reuse it in code in the next part.
+
+![Cell Attributes](https://iosimage.s3.amazonaws.com/2018/24-spotify/cellAttributes.png)
+
+
+
 After that, drag an image view into the cell and add constraints to make the image has the same size as the cell. Create a top, leading, trailing and bottom constraints with value 0 for the image view.
 
 ![Cell Image Constraint](https://iosimage.s3.amazonaws.com/2018/24-spotify/cellImageConstraint.png)

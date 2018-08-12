@@ -63,6 +63,11 @@ We can set a ratio constraint on the collection view like this :
 
 
 
+In the attribute inspector, set the scrolling direction of the collection view to horizontal.
+![Horizontal direction](https://iosimage.s3.amazonaws.com/2018/24-spotify/collectionHorizontal.png)
+
+
+
 ## Album Art Collection View Cell
 
 After creating the collection view, drag a collection view cell into the collection view if there isn't one already : 

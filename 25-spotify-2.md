@@ -23,39 +23,37 @@ Link the collection view into the view controller, and set data source and deleg
 
 ```swift
 class ViewController: UIViewController {
-	@IBOutlet weak var coverCollectionView: UICollectionView!
+    @IBOutlet weak var coverCollectionView: UICollectionView!
     // in IB, click on the attribute inspector of the collection view cell, and find the 'Reuse Identifier'
-	let cellReuseIdentifier = "cell"
+    let cellReuseIdentifier = "cell"
     
     override func viewDidLoad() {
         coverCollectionView.dataSource = self
-		coverCollectionView.delegate = self
+        coverCollectionView.delegate = self
         
         // hide the scroll indicator
-		coverCollectionView.showsHorizontalScrollIndicator = false
+        coverCollectionView.showsHorizontalScrollIndicator = false
     }
 }
 
 extension ViewController : UICollectionViewDataSource {
     // hardcode to show 10 cells, you can use array for this if you want
-	func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-		return 10
+    func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
+        return 10
     }
-	
-	func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-		let cell = collectionView.dequeueReusableCell(withReuseIdentifier: cellReuseIdentifier, for: indexPath) as! CoverCollectionViewCell
-		
-		return cell
+    
+    func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
+        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: cellReuseIdentifier, for: indexPath) as! CoverCollectionViewCell
+        return cell
 	}
 }
 
 // Cell height is equal to the collection view's height
 // Cell width = cell height = collection view's height
 extension ViewController : UICollectionViewDelegateFlowLayout {
-	func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
-		
-		return CGSize(width: collectionView.frame.size.height, height: collectionView.frame.size.height)
-	}
+    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
+        return CGSize(width: collectionView.frame.size.height, height: collectionView.frame.size.height)
+    }
 }
 ```
 <br>

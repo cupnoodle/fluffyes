@@ -384,3 +384,4 @@ After adding the snap-to nearest effect, it will look like this when user releas
 
 
 Congratulation if you have made it this far, you have successfully replicated Spotify's Now Playing UI screen!
+

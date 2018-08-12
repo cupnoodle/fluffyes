@@ -2,7 +2,7 @@
 
 In this post, we will breakdown and analyze the Now Playing screen of Spotify app, and try to replicate it  using Auto Layout. This post assume you have some experience working with [Auto Layout](https://fluffy.es/making-sense-of-auto-layout/). 
 
-The playback button icons used in this post are from [Font Awesome](https://fontawesome.com), you can use [fa2png.io](http://fa2png.io) to generate .png images from the font awesome icons.
+The playback button icons used in this post are from [Font Awesome](https://fontawesome.com), you can use [fa2png.io](http://fa2png.io) to generate png images from the font awesome icons.
 
 
 
@@ -12,7 +12,7 @@ Here's the Now Playing screen of Spotify viewed in iPhone 8 screen size:
 
 
 
-The scrollable album arts is a collection view, song name and artist name are labels, there's five button (shuffle, previous, play/pause, next, repeat), the song progress bar is a slider. The left two and right two buttons are grouped in stack views, this will be explained more later. 
+The scrollable album art is a collection view, song name and artist name are labels, there's five button (shuffle, previous, play/pause, next, repeat), the song progress bar is a slider. The left two and right two buttons are grouped in stack views, this will be explained more later. 
 
 
 

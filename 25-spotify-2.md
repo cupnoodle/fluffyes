@@ -187,3 +187,84 @@ It looks better now:
 
 
 If you pay attention to the Spotify album art collection view, the album art doesn't immediately get shrinked  when it is moving away from the center. There is a minimum scroll distance required before the album art get shrinked.
+
+
+
+Notice that within a certain scrolling distance, the size of the album art doesn't change :
+![scroll fixed](https://iosimage.s3.amazonaws.com/2018/25-spotify-2/scaleFixed.gif)
+
+
+
+We can implement the minimum scroll distance by adding a tolerance value and a if-check like this: 
+
+```
+// abs means absolute value, eg: abs(-5) = 5, abs(5) = 5
+distance = abs(cell center X - collection view center X)
+
+// 1.0 is the max scale, which is the value when the cell is in the exact center
+tolerance = 0.02
+scale = 1.0 + tolerance - ((distance / collection view center X) * 0.105)
+
+if(scale > 1.0){
+  scale = 1.0
+}
+
+// maximum cell size is the value returned from sizeForItemAt: method
+cell size = maximum cell size * scale
+```
+
+
+
+What this do is that it add 0.02 to the scale value, for example, let say on a certain scrolling distance, the scale is supposed to be 0.98, then a 0.02 is added to it, making the scale 1.0, thus on that distance, the album art still haven't shrink. When the album art is on the exact middle, the scale value would be 1.02, we then update it to 1.0 by using the if check so that it doesn't grow larger than 1.0. 
+
+
+
+Now it looks good, we can apply the calculation into code like this :
+
+```swift
+extension ViewController : UIScrollViewDelegate {
+    // perform scaling whenever the collection view is being scrolled
+    func scrollViewDidScroll(_ scrollView: UIScrollView) {
+        
+        // center X of collection View
+        let centerX = self.coverCollectionView.center.x
+	
+        // only perform the scaling on cells that are visible on screen
+        for cell in self.coverCollectionView.visibleCells {
+			
+            // coordinate of the cell in the viewcontroller's root view coordinate space
+            let basePosition = cell.convert(CGPoint.zero, to: self.view)
+            let cellCenterX = basePosition.x + self.coverCollectionView.frame.size.height / 2.0
+            
+            let distance = fabs(cellCenterX - centerX)
+			
+            let tolerance : CGFloat = 0.02
+            var scale = 1.00 + tolerance - (( distance / centerX ) * 0.105)
+            if(scale > 1.0){
+                scale = 1.0
+            }
+			
+            // set minimum scale so the previous and next album art will have the same size
+            // I got this value from trial and error
+            // I have no idea why the previous and next album art will not be same size when this is not set 😅
+            if(scale < 0.860091){
+                scale = 0.860091
+            }
+			
+			// Transform the cell size based on the scale
+            cell.transform = CGAffineTransform(scaleX: scale, y: scale)
+		}
+	}
+}
+```
+
+<br>
+
+Since collection view is a subclass of scrollview, when you set `collectionView.delegate = self` in the viewDidLoad, you can use the scroll view delegate method on the collection view in the view controller.
+
+
+
+## Add Fade effect to the Collection View Cell when scrolled
+
+
+

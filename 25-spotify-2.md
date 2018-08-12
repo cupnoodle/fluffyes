@@ -170,6 +170,7 @@ Let's multiply it with 0.105 (you can use any other number smaller than 1 if you
 distance = abs(cell center X - collection view center X)
 
 // 1.0 is the max scale, which is the value when the cell is in the exact center
+// multiply the (distance / collection view center X) with 0.105 to make it smaller
 scale = 1.0 - ((distance / collection view center X) * 0.105)
 
 // maximum cell size is the value returned from sizeForItemAt: method
@@ -180,3 +181,9 @@ cell size = maximum cell size * scale
 
 
 
+It looks better now: 
+![scale Good](https://iosimage.s3.amazonaws.com/2018/25-spotify-2/scaleGood.gif)
+
+
+
+If you pay attention to the Spotify album art collection view, the album art doesn't immediately get shrinked  when it is moving away from the center. There is a minimum scroll distance required before the album art get shrinked.

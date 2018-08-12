@@ -63,11 +63,25 @@ We can set a ratio constraint on the collection view like this :
 
 
 
+## Album Art Collection View Cell
+
+After creating the collection view, drag a collection view cell into the collection view if there isn't one already : 
+
+![Collection View Cell](https://iosimage.s3.amazonaws.com/2018/24-spotify/addCell.png)
 
 
 
+After that, drag an image view into the cell and add constraints to make the image has the same size as the cell. Create a top, leading, trailing and bottom constraints with value 0 for the image view.
 
-# Play button
+![Cell Image Constraint](https://iosimage.s3.amazonaws.com/2018/24-spotify/cellImageConstraint.png)
+
+
+
+Next, set the imageview's image to your favorite album art picture! 😆
+
+
+
+## Play button
 
 Say you are using the play button from Font Awesome like this :  
 
@@ -110,7 +124,7 @@ After adding insets, the play button looks better now with padding :
 
 
 
-# Playback buttons and stack view
+## Playback buttons and stack view
 
 The play button is located in the center (using the align horizontal center constraint), and there's other buttons beside it. At first glance, using fixed leading / trailing constraint between each button seems to do the job : 
 

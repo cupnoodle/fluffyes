@@ -132,4 +132,51 @@ The fun part! When scrolling the collection view, as the middle cell is being sc
 
 
 
-One way to think about this is that the size of the cell become smaller when it become further from the center of the collection view.
+One way to think about this is that the size of the cell become smaller when it become further from the center of the collection view. When the cell is in the center, it has its original size, meaning the scale is 1x. When the cell move to left / right, we make it smaller by multiplying its size with a smaller scale (eg: 0.9x). The value of scale is determined by the distance from the center of the cell to the center of the collection view.
+
+
+
+![distance visualization](https://iosimage.s3.amazonaws.com/2018/25-spotify-2/distance.png)
+
+
+
+```
+// abs means absolute value, eg: abs(-5) = 5, abs(5) = 5
+distance = abs(cell center X - collection view center X)
+
+// 1.0 is the max scale, which is the value when the cell is in the exact center
+scale = 1.0 - (distance / collection view center X)
+
+// maximum cell size is the value returned from sizeForItemAt: method
+cell size = maximum cell size * scale
+```
+
+
+
+If we used the above formula, we will get the scaling effect but the scale can become zero or less than zero when the distance from cell center to collection view center is larger than the collection view center X position value!
+
+![scale Smol](https://iosimage.s3.amazonaws.com/2018/25-spotify-2/scaleSmol.gif)
+
+
+
+To solve this problem, we will multiply value of `(distance / collection view center x)` with a number smaller than 1 so that it doesn't get too big, making `scale` too small. 
+
+
+
+Let's multiply it with 0.105 (you can use any other number smaller than 1 if you like), we will modify the above calculation to this : 
+
+```
+// abs means absolute value, eg: abs(-5) = 5, abs(5) = 5
+distance = abs(cell center X - collection view center X)
+
+// 1.0 is the max scale, which is the value when the cell is in the exact center
+scale = 1.0 - ((distance / collection view center X) * 0.105)
+
+// maximum cell size is the value returned from sizeForItemAt: method
+cell size = maximum cell size * scale
+```
+
+<br>
+
+
+

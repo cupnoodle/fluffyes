@@ -4,7 +4,7 @@
 
 
 
-Ever stuck in '**Launching Simulator**' or '**Running Playground**' when you fire up Playground to write some code? Despite restarting Xcode or even Mac multiple times, the problem still persists? I have seen many beginner give up on learning Swift because of this issue and this really sadden me, Apple should do better on this. Apple recommends beginner to use Playground and yet Playground is full of issues like this 🤦‍♂️.
+Ever stuck in '**Launching Simulator**' or '**Running Playground**' when you fire up Playground to write some code? Despite restarting Xcode or even Mac multiple times, the problem still persists? I have seen many beginners give up on learning Swift because of this issue and this really sadden me, Apple should do better on this. Apple recommends beginner to use Playground and yet Playground is full of issues like this 🤦‍♂️.
 
 ![Launching](https://iosimage.s3.amazonaws.com/2018/26-fix-playground/launching.png)
 
@@ -26,7 +26,7 @@ I tried restarting Xcode, Mac to no avail and almost attempt to reinstall Xcode.
 
 
 
-When you create a Playground in Xcode, it will use iOS platform to run the code by default. To run it on iOS platform, the Playground will spin up iOS Simulator in the background.
+When you create a Playground in Xcode, it will use iOS platform to run the code by default. To run it on iOS platform, the Playground will spin up an iOS Simulator in the background.
 
 ![Platform iOS](https://iosimage.s3.amazonaws.com/2018/26-fix-playground/platformiOS.png)
 
@@ -63,11 +63,11 @@ I also suggest [switching to manually run](https://fluffy.es/xcode-playground-ti
 
 
 
-Now you should able to run the Playground successfully, cheers! 🍻
+Now you should be able to run the Playground successfully, cheers! 🍻
 
 
 
-The caveat of this solution is that you have to remove `import UIKit` and all UIKit related functions as macOS doesn't have UIKit library.
+The caveat of this solution is that you have to remove `import UIKit` and all UIKit related functions as macOS doesn't support UIKit.
 
 
 

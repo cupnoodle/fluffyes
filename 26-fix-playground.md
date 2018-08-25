@@ -1,5 +1,7 @@
 # Fix (Workaround) for Xcode playground stuck in Launching Simulator or Running Playground
 
+[Jump to the solution if TL;DR](#workaround-solution)
+
 
 
 Ever stuck in '**Launching Simulator**' or '**Running Playground**' when you fire up Playground to write some code? Despite restarting Xcode or even Mac multiple times, the problem still persists? I have seen many beginner give up on learning Swift because of this issue and this really sadden me, Apple should do better on this. Apple recommends beginner to use Playground and yet Playground is full of issues like this 🤦‍♂️.

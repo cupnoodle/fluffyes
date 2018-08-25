@@ -22,7 +22,7 @@ After the error appeared, no big deal, I changed the code and run it again, then
 
 
 
-I tried restarting Xcode, Mac to no avail and almost try to reinstall Xcode. Then I noticed it stuck on "Launching Simulator" and thought it might have something to do with the iOS Simulator since restarting Xcode doesn't help 🤔.
+I tried restarting Xcode, Mac to no avail and almost attempt to reinstall Xcode. Then I noticed it stuck on "Launching Simulator" and thought it might have something to do with the iOS Simulator since restarting Xcode doesn't help 🤔.
 
 
 
@@ -51,7 +51,7 @@ The solution for this is to **switch to macOS platform** in the Playground, let 
 
 
 First, ensure your Playground doesn't use any UIKit function (eg: UIView etc), and remove the top `import UIKit` line if it is there.
- 
+
 
 Then in the right pane of the Playground window, select '**macOS**' in **Playground Settings** -> **Platform** .
 

@@ -43,7 +43,7 @@ task.resume()
 
 ```
 
-
+<br>
 What does the keyword **try** means? Why do you need to use **try** for certain method?
 
 
@@ -72,9 +72,89 @@ You can see the JSONDecoder().decode function declaration and its comment :
 open func decode<T>(_ type: T.Type, from data: Data) throws -> T where T : Decodable
 ```
 
+<br>
 
 
-Pay attention to the `throws -> T` in the function and also the comment **throws: `DecodingError.dataCorrupted` if values requested from the payload are corrupted, or if the given data is not valid JSON.**  
+
+`throws` indicate that the decode function might throw an error. `-> T` means it will return a type **T** which you have passed in, eg: it will return the type of **[Car]** which we have passed into **.decode([Car].self)** .
+
+
+
+The function body might look like this (not the actual code, just my guess as the implementation is not open source):
+
+```swift
+func decode<T>(_ type: T.Type, from data: Data) throws -> T {
+  // if data is not a valid JSON
+  if(!data.isValidJSON){
+    // throw error and stop execution of this function
+    throw DecodingError
+  } 
+  
+  // parse JSON data here
+  let parsedData = parseData(data)
+  return parsedData
+}
+```
+
+<br>
+
+As this function might throw an error (eg: DecodingError), we will need to use a **try** and a **do / catch** statement to handle the error like this : 
+
+```swift
+// this URL contains an invalid JSON
+let url = URL(string: "https://demo0989623.mockable.io/car/invalid")!
+
+let task = URLSession.shared.dataTask(with: url) { data, response, dataTaskError in
+    
+    // ensure there is no error for this HTTP response
+    guard dataTaskError == nil else {
+        print ("error: \(dataTaskError!)")
+        return
+    }
+    
+    // ensure there is data returned from this HTTP response
+    guard let data = data else {
+        print("No data")
+        return
+    }
+    
+    // Parse JSON into array of Car struct using JSONDecoder
+    do {
+      let cars = try JSONDecoder().decode([Car].self, from: data)
+    } catch {
+      // If there is any error thrown, the 'catch' block will catch the error
+      // Swift will create and use a local constant named 'error' to store the error thrown by the function
+      print("error \(error)")
+    }
+}
+
+// execute the HTTP request
+task.resume()
+```
+
+
+
+Since the URL does not contain a valid JSON, an error will be thrown and it will be handled by the **catch** block. The error will be stored in a local constant named **error** inside the catch block. ([https://docs.swift.org/swift-book/LanguageGuide/ErrorHandling.html#ID541](https://docs.swift.org/swift-book/LanguageGuide/ErrorHandling.html#ID541))
+
+
+
+If you run the code above, you will see the following error in your console log : 
+
+![JSON Error](https://iosimage.s3.amazonaws.com/2018/27-try/jsonError.png)
+
+
+
+This is the **DecodingError** thrown by the **JSONDecoder.decode()** function we mentioned earlier.
+
+
+
+This is the basic of error handling using **try** and **do / catch** block, you can read more about error handling in the [Official Swift documentation here](https://docs.swift.org/swift-book/LanguageGuide/ErrorHandling.html).
+
+
+
+
+
+
 
 
 

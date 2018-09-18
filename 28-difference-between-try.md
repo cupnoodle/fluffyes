@@ -1,13 +1,12 @@
 # Difference between Try, Try? and Try!
 
-> What does try? means? When to use these
+> What does try? means? When do I use these?
 
 This post assume you have some knowledge on [Optionals](https://fluffy.es/eli-5-optional/).
 
 
 
 You might have came across the keyword `try` when trying to [parse JSON retrieved from API](https://fluffy.es/parse-json-using-decodable-protocol/) or other instances. 
-
 
 
 For example : 
@@ -53,7 +52,7 @@ What does the keyword **try** means? Why do you need to use **try** for certain 
 
 
 
-# Try
+## Try
 
 **try** indicates that a method might throw an error. If you Command + Click the **.decode** method and select 'Jump to Definition', you would see the .decode function has a **throws** keyword. The **throws** means that this function may throw an error and you have to use **try** to handle the potential error.
 

@@ -78,3 +78,4 @@ Pay attention to the `throws -> T` in the function and also the comment **throws
 
 
 
+// why throw/try is needed? to inform user an error is occurred, instead of returning nil which leave user confused.

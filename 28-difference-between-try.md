@@ -1,8 +1,13 @@
 # Difference between Try, Try? and Try!
 
+> What does try? means? When to use these
+
+This post assume you have some knowledge on [Optionals](https://fluffy.es/eli-5-optional/).
+
 
 
 You might have came across the keyword `try` when trying to [parse JSON retrieved from API](https://fluffy.es/parse-json-using-decodable-protocol/) or other instances. 
+
 
 
 For example : 
@@ -50,7 +55,7 @@ What does the keyword **try** means? Why do you need to use **try** for certain 
 
 # Try
 
-**try** indicates that a method will throw an error. If you Command + Click the **.decode** method and select 'Jump to Definition', you would see the .decode function has a **throws** keyword. The **throws** means that this function may throw an error and you have to use **try** to handle the potential error.
+**try** indicates that a method might throw an error. If you Command + Click the **.decode** method and select 'Jump to Definition', you would see the .decode function has a **throws** keyword. The **throws** means that this function may throw an error and you have to use **try** to handle the potential error.
 
 
 
@@ -80,7 +85,7 @@ open func decode<T>(_ type: T.Type, from data: Data) throws -> T where T : Decod
 
 
 
-The function body might look like this (not the actual code, just my guess as the implementation is not open source):
+The function implementation might look like this (not the actual code, just my guess as the implementation is not open source):
 
 ```swift
 func decode<T>(_ type: T.Type, from data: Data) throws -> T {
@@ -152,10 +157,85 @@ This is the basic of error handling using **try** and **do / catch** block, you 
 
 
 
+**try** is usually used when you want to handle the errors manually.
 
 
 
+## Try?
+
+Similar to `try`, you can use **try?**  on function that might throw error too. The difference is that you won't need to put `try?` inside a do/catch block. You can use it directly like this :
+
+```swift
+let cars = try? JSONDecoder().decode([Car].self, from: data)
+```
+
+<br>
+
+If the **JSONDecoder.decode()** function return a value successfully without error, that value will be saved into **cars** as usual. 
 
 
 
-// why throw/try is needed? to inform user an error is occurred, instead of returning nil which leave user confused.
+If **JSONDecoder.decode()** throws an error, the error will be ignored and **cars** will be assigned a nil value.
+
+
+For the example below, as the URL contains an invalid JSON, you will see the console log outputs '*cars is nil because JSONDecoder().decode thrown an error*' .
+
+```swift
+// this URL contains an invalid JSON
+let url = URL(string: "https://demo0989623.mockable.io/car/invalid")!
+
+let task = URLSession.shared.dataTask(with: url) { data, response, dataTaskError in
+    
+    // ensure there is no error for this HTTP response
+    guard dataTaskError == nil else {
+        print ("error: \(dataTaskError!)")
+        return
+    }
+    
+    // ensure there is data returned from this HTTP response
+    guard let data = data else {
+        print("No data")
+        return
+    }
+    
+    // Parse JSON into array of Car struct using JSONDecoder
+    if let cars = try? JSONDecoder().decode([Car].self, from: data) {
+      // do stuff with the parsed cars data here
+      
+    } else {
+      print("cars is nil because JSONDecoder().decode thrown an error")
+    }
+}
+
+// execute the HTTP request
+task.resume()
+```
+
+<br>
+
+
+
+If you don't care much about the error handling and just want to focus on the value returned, **try?** is a good way to do it.
+
+
+
+## Try!
+
+When there's an exclaimation mark in the syntax, it means something horrible can happen. Similar to `try?`, **try!** doesn't need to be put inside do/catch block as well. The difference is that when an error is thrown, **your app will crash** instead of returning nil. This is similar to unwrapping a nil value in optionals.
+
+
+
+```swift
+// Only do this if you are very very sure that the .decode function below won't throw an error
+let cars = try! JSONDecoder().decode([Car].self, from: data)
+
+// this is equivalent to
+let optionalCars = try? JSONDecoder().decode([Car].self, from: data)
+let cars = optionalCars!
+```
+
+<br>
+
+
+
+If you are **absolutely sure** that the function won't throw an error, you can use **try!** . Usually I will avoid using anything that has an exclaimation mark **!** in code, better be safe than sorry.

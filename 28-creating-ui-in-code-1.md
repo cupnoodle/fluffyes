@@ -18,6 +18,8 @@ In this post, we will learn how to create UILabel / UIImageView / UIButton in co
 
 
 
+## Create UILabel using code
+
 To create an UILabel in code, simply create an UILabel object in the `viewDidLoad` function of the view controller : 
 
 ```swift
@@ -37,9 +39,111 @@ override func viewDidLoad() {
 }
 ```
 
+<br>
+
+
+
+This is the root view of the view controller : 
+![root view](https://iosimage.s3.amazonaws.com/2018/28-creating-ui-in-code/rootView.png)
+
+
+
+Build and run the app, you should see an UILabel is added to the view. Its position and size would be like this :
+
+![labelFrame](https://iosimage.s3.amazonaws.com/2018/28-creating-ui-in-code/labelFrame.png)
+
+
+
+The label's position and size is following the frame value we coded earlier, **x: 50** (50pt from left of the root view), **y: 50** (50pt from top of the root view), **width: 100** (100pt as width), **height: 30** (30pt as height).
+
+
+
+This is equivalent of dragging a Label to the view controller in Storyboard, and setting its X, Y, Width and Height in the attribute inspector : 
+
+![Label equivalent](https://iosimage.s3.amazonaws.com/2018/28-creating-ui-in-code/labelEquivalent.png)
+
+
+
+You can customize the label font and color by using the **textColor** and **font** attributes : 
+
+```swift
+override func viewDidLoad() {
+    super.viewDidLoad()
+    // Do any additional setup after loading the view, typically from a nib.
+    
+    // Create the UILabel object with frame
+    let label = UILabel(frame: CGRect(x: 50, y: 50, width: 100, height: 30))
+    label.text = "Test Label"
+    label.textColor = UIColor.red
+    label.font = UIFont(name: "GillSans-Bold", size: 17.0)
+    
+    // Add the label to the view controller's root view
+    self.view.addSubview(label)
+}
+```
+
+<br>
+
+![customizedLabel](https://iosimage.s3.amazonaws.com/2018/28-creating-ui-in-code/customizedLabel.png)
+
+You can check out [iOSFonts.com](http://iosfonts.com) for the list of fonts available to use in iOS. To use the system font, you can use `UIFont.systemFont(ofSize:)` . 
+
+
+
+You can also check [Apple's documentation on UILabel](https://developer.apple.com/documentation/uikit/uilabel) for a list of attributes you can customize for UILabel. (eg: alignment, number of lines etc)
+
+
+
+## Create UIImageView using code
+
+Similar to UILabel, we can create an UIImageView object in the `viewDidLoad` function.
 
 
 
 
+We will be using an image named 'asriel' in the Assets.xcassets folder for the image view.
 
+![imageAsset](https://iosimage.s3.amazonaws.com/2018/28-creating-ui-in-code/imageAsset.png)
+
+
+
+In viewDidLoad, 
+
+```swift
+override func viewDidLoad() {
+    super.viewDidLoad()
+    // Do any additional setup after loading the view, typically from a nib.
+    
+    // Create the UIImageView object with frame
+    let imageview = UIImageView(frame: CGRect(x: 50, y: 50, width: 100, height: 100))
+    imageview.image = UIImage(named: "asriel")
+
+    // set the image to aspect fit
+    imageview.contentMode = .scaleAspectFit
+        
+    self.view.addSubview(imageview)
+}
+```
+
+<br>
+
+
+
+Build and run the app, you should see an UIImageView is added to the view. Its position and size would be like this :
+
+![image view](https://iosimage.s3.amazonaws.com/2018/28-creating-ui-in-code/imageView.png)
+
+
+
+This is equivalent of dragging an Image View to the view controller in Storyboard, setting its X, Y, Width and Height in the attribute inspector, and setting the image to 'asriel' : 
+
+![image view equivalent](https://iosimage.s3.amazonaws.com/2018/28-creating-ui-in-code/imageViewEquivalent.png)
+
+
+
+You can check [Apple's documentation on UIImageView](https://developer.apple.com/documentation/uikit/uiimageview) for a list of attributes you can customize for UIImageView.
+
+
+
+## Create UIButton using code
 

@@ -280,9 +280,19 @@ class ViewController: UIViewController {
 
 
 
-The code above  will produce layout like this :  
+The code above will produce layout like this :  
 
 ![combined UI](https://iosimage.s3.amazonaws.com/2018/28-creating-ui-in-code/combinedUI.png)
 
 
+
+Pretty neat right? Now you can create UI Elements in code just like how you drag-and-drop in the Storyboard / Interface Builder. 
+
+
+
+Since we used the **.frame** property to set the position and size of the UI element in this post, its position/size is fixed regardless of device screen size and orientation. We will explain more on how to create Auto Layout constraints for these UI element in code for the next part.
+
+
+
+## Extra : Frame is relative to superview
 

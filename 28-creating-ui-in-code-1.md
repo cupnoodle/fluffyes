@@ -18,7 +18,7 @@ The practical answer to "**Do UI in Storyboard or code?**" is to **learn both of
 
 
 
-In this post, we will learn how to create UILabel / UIImageView / UIButton in code and also create IBAction for UIButton. Part 2 of this post will cover how to create Auto Layout constraint in code.
+In this post, we will learn how to create UILabel / UIImageView / UIButton in code and also create IBAction for UIButton. Part 2 of this post will cover how to create Auto Layout constraint in code (Work in progress).
 
 
 
@@ -35,7 +35,8 @@ override func viewDidLoad() {
     // Do any additional setup after loading the view, typically from a nib.
 
     // Create the UILabel object with frame
-    let label = UILabel(frame: CGRect(x: 50, y: 50, width: 100, height: 30))
+    let label = UILabel()
+    label.frame = CGRect(x: 50, y: 50, width: 100, height: 30)
     label.text = "Test Label"
 
     // Add the label to the view controller's root view
@@ -76,7 +77,8 @@ override func viewDidLoad() {
     // Do any additional setup after loading the view, typically from a nib.
     
     // Create the UILabel object with frame
-    let label = UILabel(frame: CGRect(x: 50, y: 50, width: 100, height: 30))
+    let label = UILabel()
+    label.frame = CGRect(x: 50, y: 50, width: 100, height: 30)
     label.text = "Test Label"
     label.textColor = UIColor.red
     label.font = UIFont(name: "GillSans-Bold", size: 17.0)
@@ -119,7 +121,8 @@ override func viewDidLoad() {
     // Do any additional setup after loading the view, typically from a nib.
     
     // Create the UIImageView object with frame
-    let imageview = UIImageView(frame: CGRect(x: 50, y: 50, width: 100, height: 100))
+    let imageview = UIImageView()
+    imageView.frame = CGRect(x: 50, y: 50, width: 100, height: 100)
     imageview.image = UIImage(named: "asriel")
 
     // set the image to aspect fit
@@ -160,7 +163,8 @@ override func viewDidLoad() {
     // Do any additional setup after loading the view, typically from a nib.
     
     // Create the UIButton object with frame
-    let button = UIButton(frame: CGRect(x: 50, y: 50, width: 170, height: 30))
+    let button = UIButton()
+    button.frame = CGRect(x: 50, y: 50, width: 170, height: 30)
 
     // Set the font of the button text
     button.titleLabel?.font = UIFont.boldSystemFont(ofSize: 18.0)
@@ -203,7 +207,8 @@ override func viewDidLoad() {
     // Do any additional setup after loading the view, typically from a nib.
     
     // Create the UIButton object with frame
-    let button = UIButton(frame: CGRect(x: 50, y: 50, width: 170, height: 30))
+    let button = UIButton()
+    button.frame = CGRect(x: 50, y: 50, width: 170, height: 30)
 
     button.titleLabel?.font = UIFont.boldSystemFont(ofSize: 18.0)
     button.setTitle("Tap Me", for: .normal)
@@ -250,16 +255,19 @@ class ViewController: UIViewController {
         // Do any additional setup after loading the view, typically from a nib.
         
         // Create the UILabel object with frame
-        let label = UILabel(frame: CGRect(x: 50, y: 50, width: 100, height: 30))
+        let label = UILabel()
+        label.frame = CGRect(x: 50, y: 50, width: 100, height: 30)
         label.text = "Test Label"
         
         // Create the UIImageView object with frame
-        let imageview = UIImageView(frame: CGRect(x: 50, y: 100, width: 100, height: 100))
+        let imageview = UIImageView()
+        imageView.frame = CGRect(x: 50, y: 100, width: 100, height: 100)
         imageview.image = UIImage(named: "asriel")
         imageview.contentMode = .scaleAspectFit
         
         // Create the UIButton with frame
-        let button = UIButton(frame: CGRect(x: 50, y: 220, width: 170, height: 30))
+        let button = UIButton()
+        button.frame = CGRect(x: 50, y: 220, width: 170, height: 30)
         button.titleLabel?.font = UIFont.boldSystemFont(ofSize: 18.0)
         button.setTitle("Tap Me", for: .normal)
         button.setTitle("I am being tapped", for: .highlighted)
@@ -290,15 +298,19 @@ The code above will produce layout like this :
 
 
 
-Pretty neat right? Now you can create UI Elements in code just like how you drag-and-drop in the Storyboard / Interface Builder. 
+Pretty neat right? Now you can create UI Elements in code just like how you drag-and-drop in the Storyboard / Interface Builder. This process is similar for other UI Elements as well, like UISwitch, UISegmentedControl etc. 
 
 
 
-Since we used the **.frame** property to set the position and size of the UI element in this post, its position/size is fixed regardless of device screen size and orientation. We will explain more on how to create Auto Layout constraints for these UI element in code for the next part.
+You can google keywords like "UISwitch swift programmatically" if you want to know how to create UISwitch using code etc.
 
 
 
-## Extra : Frame is relative to superview
+Since we used the **.frame** property to set the position and size of the UI element in this post, its position/size is fixed regardless of device screen size and orientation. We will explain more on how to create Auto Layout constraints for these UI element in code in the next part.
+
+
+
+## Frame is relative to superview
 
 One of the important thing to take note when using the **frame** property is that the **x** , **y** used in the frame is **relative to its superview**.
 
@@ -311,10 +323,12 @@ override func viewDidLoad() {
 super.viewDidLoad()
     // Do any additional setup after loading the view, typically from a nib.
 
-    let greenView = UIView(frame: CGRect(x: 50, y: 50, width: 200, height: 200))
+    let greenView = UIView()
+    greenView.frame = CGRect(x: 50, y: 50, width: 200, height: 200)
     greenView.backgroundColor = UIColor.green
 
-    let label = UILabel(frame: CGRect(x: 50, y: 50, width: 80, height: 30))
+    let label = UILabel()
+    label.frame = CGRect(x: 50, y: 50, width: 80, height: 30)
     label.text = "test Label"
     label.backgroundColor = UIColor.gray
     // notice that label is added into the greenView
@@ -327,3 +341,54 @@ super.viewDidLoad()
 ```
 
  
+
+Notice that the parent view (superview) of the label is greenView, and the parent view (superview) of greenView is the view controller's root view.
+
+
+
+The output of the code will look like below :
+
+![frame](https://iosimage.s3.amazonaws.com/2018/28-creating-ui-in-code/frame.png)
+
+
+
+Notice that the **x: 50** and **y: 50** for the **greenView** is measured **from** the top and left of the **root view**.
+
+
+
+Whereas the **x: 50** and **y: 50** for the **label** is measured **from** the top and left of the **greenView**.
+
+
+
+The x, y in a frame of an UI element is measured from its parent view.
+
+
+
+# Extra : Creating UI in Xcode Playground
+
+Since Xcode Playground doesn't have Interface Builder / Storyboard, you can only create UI using code. Now that you know how to create UI in code, you can experiment with UI in Playground! Playground let's you prototype UI quickly as you won't need to wait for the compilation of the whole project every time you run the code.
+
+
+
+To create UI in Playground, select **Single View** when creating a new Playground.
+
+
+
+![Single View](https://iosimage.s3.amazonaws.com/2018/28-creating-ui-in-code/singleView.png)
+
+
+
+Then in the window, open **Assistant Editor** and select **Live View** if it is not yet selected. Build and run the code and you should see the UI appear in the right column, awesome right? 😆
+
+
+
+![Live View](https://iosimage.s3.amazonaws.com/2018/28-creating-ui-in-code/liveView.png)
+
+
+
+
+
+
+
+
+

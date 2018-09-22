@@ -296,3 +296,30 @@ Since we used the **.frame** property to set the position and size of the UI ele
 
 ## Extra : Frame is relative to superview
 
+One of the important thing to take note when using the **frame** property is that the **x** , **y** used in the frame is **relative to its superview**.
+
+
+
+To demonstrate this, we will use the code below : 
+
+```swift
+override func viewDidLoad() {
+super.viewDidLoad()
+    // Do any additional setup after loading the view, typically from a nib.
+
+    let greenView = UIView(frame: CGRect(x: 50, y: 50, width: 200, height: 200))
+    greenView.backgroundColor = UIColor.green
+
+    let label = UILabel(frame: CGRect(x: 50, y: 50, width: 80, height: 30))
+    label.text = "test Label"
+    label.backgroundColor = UIColor.gray
+    // notice that label is added into the greenView
+    // greenView is the parent view (superview) of the label
+    greenView.addSubview(label)
+    
+    // root view is the parent view (superview) of the greenView
+    self.view.addSubview(greenView)
+}
+```
+
+ 

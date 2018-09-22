@@ -10,7 +10,11 @@ The debate of whether to create UI in Storyboard or Code has been so old now, th
 
 
 
-These points are all valid, the practical answer to "**Do UI in Storyboard or code?**" is to **learn both of them**.  Some company might list ability to do UI in code in their job requirement, if you are planning to apply for a job, it is best to learn doing UI in both storyboard and code to increase your options.
+These points are all valid and there's no point to persuade the opponent as there's merit in both approach. 
+
+
+
+The practical answer to "**Do UI in Storyboard or code?**" is to **learn both of them**.  Some company might list ability to do UI in code in their job requirement, if you are planning to apply for an iOS dev job, it is best to learn doing UI in both storyboard and code to increase your job prospects.
 
 
 

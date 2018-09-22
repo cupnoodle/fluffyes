@@ -18,7 +18,26 @@ In this post, we will learn how to create UILabel / UIImageView / UIButton in co
 
 
 
-To create an UILabel in code, 
+To create an UILabel in code, simply create an UILabel object in the `viewDidLoad` function of the view controller : 
+
+```swift
+// ViewController.swift
+
+// viewDidLoad is called when the controller's root view (self.view) is loaded into memory
+override func viewDidLoad() {
+    super.viewDidLoad()
+    // Do any additional setup after loading the view, typically from a nib.
+
+    // Create the UILabel object with frame
+    let label = UILabel(frame: CGRect(x: 50, y: 50, width: 100, height: 30))
+    label.text = "Test Label"
+
+    // Add the label to the view controller's root view
+    self.view.addSubview(label)
+}
+```
+
+
 
 
 

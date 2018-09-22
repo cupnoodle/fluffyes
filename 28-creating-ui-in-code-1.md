@@ -147,3 +147,5 @@ You can check [Apple's documentation on UIImageView](https://developer.apple.com
 
 ## Create UIButton using code
 
+You know the drill now, we are going to create an UIButton object in the `viewDidLoad` function.
+

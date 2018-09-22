@@ -145,7 +145,144 @@ You can check [Apple's documentation on UIImageView](https://developer.apple.com
 
 
 
-## Create UIButton using code
+## Create UIButton and IBAction using code
 
 You know the drill now, we are going to create an UIButton object in the `viewDidLoad` function.
+
+
+```swift
+override func viewDidLoad() {
+    super.viewDidLoad()
+    // Do any additional setup after loading the view, typically from a nib.
+    
+    // Create the UIButton object with frame
+    let button = UIButton(frame: CGRect(x: 50, y: 50, width: 170, height: 30))
+
+    // Set the font of the button text
+    button.titleLabel?.font = UIFont.boldSystemFont(ofSize: 18.0)
+
+    // The default text of the button
+    button.setTitle("Tap Me", for: .normal)
+
+    // The text that will appear when the button is tapped
+    button.setTitle("I am being tapped", for: .highlighted)
+    
+    // The default color of the button text
+    button.setTitleColor(UIColor.blue, for: .normal)
+
+    // The color of the button text when the button is tapped
+    button.setTitleColor(UIColor.black, for: .highlighted)
+    
+    self.view.addSubview(button)
+}
+```
+
+<br>
+
+
+
+The result will look like this :
+
+![tap me gif](https://iosimage.s3.amazonaws.com/2018/28-creating-ui-in-code/tapMe.gif)
+
+
+
+UIButton is a bit more complex as it have a **.titleLabel** element which store the text for the button. Setting the text directly using `button.titleLabel?.text = "tap me"` somehow doesn't work, you will need to call the `setTitle(, for:)` function in order to set text for the button. Same goes to the text color as well.
+
+
+
+To add action to the button (eg: run a function when a button is tapped), we can use the `addTarget` method :
+
+```swift
+override func viewDidLoad() {
+    super.viewDidLoad()
+    // Do any additional setup after loading the view, typically from a nib.
+    
+    // Create the UIButton object with frame
+    let button = UIButton(frame: CGRect(x: 50, y: 50, width: 170, height: 30))
+
+    button.titleLabel?.font = UIFont.boldSystemFont(ofSize: 18.0)
+    button.setTitle("Tap Me", for: .normal)
+    button.setTitle("I am being tapped", for: .highlighted)
+    
+    button.setTitleColor(UIColor.blue, for: .normal)
+    button.setTitleColor(UIColor.black, for: .highlighted)
+  
+    // Add action when user tap the button and release finger within the button area
+    button.addTarget(self, action: #selector(buttonTapped(_:)), for: .touchUpInside)
+    
+    self.view.addSubview(button)
+}
+
+// IBAction
+@IBAction func buttonTapped(_ sender: UIButton){
+    print("button tapped")
+}
+```
+
+
+
+We will need to manually add the function that will be executed when the button is tapped (`@IBAction func buttonTapped`), this is similar to when you control + drag the UIButton to the view controller and select action.
+
+
+
+The **self** in the code  **.addTarget(self, action: #selector(buttonTapped(_:))** refer to the controller itself, which mean that the **ViewController.buttonTapped()** function will be executed when user tap the button and release finger within the button area.
+
+
+
+Since [Target-Action pattern](https://developer.apple.com/library/archive/documentation/General/Conceptual/Devpedia-CocoaApp/TargetAction.html) relies on Objective-C, normally you would need to add `@objc` in front of the **buttonTapped** function in order to use the **#selector()** function in Swift. If you add `@IBAction` in front of the function, Swift compiler knows that this function relies on Objective-C automatically, hence you wont need to put @objc in front of @IBAction.
+
+
+
+## Combining UILabel, UIImageView and UIButton code
+
+We can combine the UILabel, UIImageView and UIButton code used above like this : 
+
+```swift
+class ViewController: UIViewController {
+
+    override func viewDidLoad() {
+        super.viewDidLoad()
+        // Do any additional setup after loading the view, typically from a nib.
+        
+        // Create the UILabel object with frame
+        let label = UILabel(frame: CGRect(x: 50, y: 50, width: 100, height: 30))
+        label.text = "Test Label"
+        
+        // Create the UIImageView object with frame
+        let imageview = UIImageView(frame: CGRect(x: 50, y: 100, width: 100, height: 100))
+        imageview.image = UIImage(named: "asriel")
+        imageview.contentMode = .scaleAspectFit
+        
+        // Create the UIButton with frame
+        let button = UIButton(frame: CGRect(x: 50, y: 220, width: 170, height: 30))
+        button.titleLabel?.font = UIFont.boldSystemFont(ofSize: 18.0)
+        button.setTitle("Tap Me", for: .normal)
+        button.setTitle("I am being tapped", for: .highlighted)
+        button.setTitleColor(UIColor.blue, for: .normal)
+        button.setTitleColor(UIColor.black, for: .highlighted)
+        button.addTarget(self, action: #selector(buttonTapped(_:)), for: .touchUpInside)
+        
+        // Add the UIelements to the view controller's root view
+        self.view.addSubview(label)
+        self.view.addSubview(imageview)
+        self.view.addSubview(button)
+    }
+
+    // IBAction
+    @objc func buttonTapped(_ sender: UIButton){
+        print("button tapped")
+    }
+}
+```
+
+<br>
+
+
+
+The code above  will produce layout like this :  
+
+![combined UI](https://iosimage.s3.amazonaws.com/2018/28-creating-ui-in-code/combinedUI.png)
+
+
 

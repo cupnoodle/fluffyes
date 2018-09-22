@@ -1,6 +1,6 @@
-# Intro to creating UI in code (programmatically) part 1
+# Intro to creating UI in code (programmatically) part 1 - Create UI with frame
 
-The debate of whether to create UI in Storyboard or Code has been so old now, there will always be developers on the different side justifying their view point, like:
+The debate of whether to create UI in Storyboard or Code has become so old now, there will always be developers on the different side justifying their view point, like:
 
 > Using Storyboard can lead to complex merge conflict if there are multiple people working on the same project!
 
@@ -364,7 +364,7 @@ The x, y in a frame of an UI element is measured from its parent view.
 
 
 
-# Extra : Creating UI in Xcode Playground
+## Extra : Creating UI in Xcode Playground
 
 Since Xcode Playground doesn't have Interface Builder / Storyboard, you can only create UI using code. Now that you know how to create UI in code, you can experiment with UI in Playground! Playground let's you prototype UI quickly as you won't need to wait for the compilation of the whole project every time you run the code.
 

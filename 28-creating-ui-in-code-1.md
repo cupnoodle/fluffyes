@@ -306,7 +306,7 @@ You can google keywords like "UISwitch swift programmatically" if you want to kn
 
 
 
-Since we used the **.frame** property to set the position and size of the UI element in this post, its position/size is fixed regardless of device screen size and orientation. We will explain more on how to create Auto Layout constraints for these UI element in code in the next part.
+Since we used the **.frame** property to set the position and size of the UI element in this post, its position/size is fixed regardless of device screen size and orientation. We will explain more on how to create Auto Layout constraints for these UI element in code in part 2.
 
 
 
@@ -386,7 +386,7 @@ Then in the window, open **Assistant Editor** and select **Live View** if it is 
 
 
 
-
+We will explain more on how to create Auto Layout constraints for UI element in code in part 2.
 
 
 

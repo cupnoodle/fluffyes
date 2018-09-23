@@ -1,5 +1,6 @@
 # Intro to creating UI in code (programmatically) part 1 - Create UI with frame
 
+
 The debate of whether to create UI in Storyboard or Code has become so old now, there will always be developers on the different side justifying their view point, like:
 
 > Using Storyboard can lead to complex merge conflict if there are multiple people working on the same project!
@@ -19,6 +20,17 @@ The practical answer to "**Do UI in Storyboard or code?**" is to **learn both of
 
 
 In this post, we will learn how to create UILabel / UIImageView / UIButton in code and also create IBAction for UIButton. Part 2 of this post will cover how to create Auto Layout constraint in code (Work in progress).
+
+
+Table of contents :
+1. [Create UILabel using code](#createuilabelusingcode)
+2. [Create UIImageView using code](#createuiimageviewusingcode)
+3. [Create UIButton and IBAction using code](#createuibuttonandibactionusingcode)
+4. [Combining UILabel, UIImageView and UIButton code](#combininguilabeluiimageviewanduibuttoncode)
+5. [UI Elements scoping](#uielementsscoping)
+6. [Frame is relative to superview](#frameisrelativetosuperview)
+7. [Extra: Creating UI in Playground](#extracreatinguiinxcodeplayground)
+
 
 
 
@@ -310,6 +322,49 @@ Since we used the **.frame** property to set the position and size of the UI ele
 
 
 
+# UI Elements scoping
+
+Most of the time you would probably want to change the text of an UILabel on another function outside of viewDidLoad. To access the UILabel on another function in the same view controller, we can move the UILabel declaration outside the viewDidLoad like this : 
+
+
+
+```swift
+class ViewController: UIViewController {
+    
+    // declare the label in the view controller scope, so other function can access it
+    let testLabel = UILabel()
+    
+    override func viewDidLoad() {
+        super.viewDidLoad()
+        // Do any additional setup after loading the view, typically from a nib.
+        testLabel.frame = CGRect(x: 50, y: 50, width: 80, height: 30)
+        testLabel.text = "Label"
+        
+        // Create the UIButton with frame
+        let button = UIButton()
+        button.frame = CGRect(x: 50, y: 220, width: 200, height: 30)
+        button.setTitle("Tap to change label", for: .normal)
+        button.setTitleColor(UIColor.blue, for: .normal)
+        button.addTarget(self, action: #selector(buttonTapped(_:)), for: .touchUpInside)
+        
+        self.view.addSubview(testLabel)
+        self.view.addSubview(button)
+    }
+
+    // IBAction
+    @objc func buttonTapped(_ sender: UIButton){
+        // change the label text
+        testLabel.text = "Wooooo"
+    }
+}
+```
+
+<br>
+
+
+
+
+
 ## Frame is relative to superview
 
 One of the important thing to take note when using the **frame** property is that the **x** , **y** used in the frame is **relative to its superview**.
@@ -389,6 +444,38 @@ Then in the window, open **Assistant Editor** and select **Live View** if it is 
 We will explain more on how to create Auto Layout constraints for UI element in code in part 2.
 
 
+<div class="post-subscribe">
+  <div class="post-subscribe-left">
+    <h4> Learn and understand how Auto Layout works</h4>
+    <span style="font-size:0.8em;"> 
+    Can't wrap your head around Auto Layout? <br><br>
+    In this free 6 lesson email course, you will learn :
+    <ol>
+        <li>How Auto Layout determines the position and size of a view 📏</li>
+        <li>How to solve red lines (missing / conflicting constraint) in Interface Builder❗️</li>
+        <li>How to create dynamic height label and using it for dynamic layout⚡️</li>
+    </ol>
+    </span>
+</div>
+        <div class="post-subscribe-right">
+            <form action="https://www.getdrip.com/forms/448009646/submissions" method="post" data-drip-embedded-form="448009646">
+                <div style="margin-bottom: 0.5rem;">
+                    <label for="drip-firstname">Name<span style="color:#952B45;">*</span></label><br />
+                    <input type="text" id="drip-firstname" name="fields[firstname]" value="" />
+                </div>
+                <div>
+                    <label for="drip-email">Email Address<span style="color:#952B45;">*</span></label><br />
+                    <input type="email" id="drip-email" name="fields[email]" value="" />
+                </div>
+              <div>
+                <br>
+                <input type="submit" value="Send me Lesson 1" data-drip-attribute="sign-up-button" />
+                <br>
+                <span style="font-size: 0.8rem;">+ Weekly ish iOS Development tips to help you become a better iOS developer.<br> No Spam. Unsubscribe any time.</span>
+              </div>
+            </form>
+        </div>
+    </div>
 
 
 

@@ -71,7 +71,7 @@ override func viewDidLoad() {
 
 
 
-We create a leading constraint for the greenView by using **greenView.leadingAnchor.constraint(equalTo: self.view.leadingAnchor, constant: 30.0).isActive = true**. This will create a leading constraint with 30.0 constant from the greenView to the root view. Remember to put `isActive = true` at the end of the constraint declaration code to activate it, else the constraint won't work.
+We create a leading constraint for the greenView by using **greenView.leadingAnchor.constraint(equalTo: self.view.leadingAnchor, constant: 30.0).isActive = true**. This will create a leading constraint with 30.0 constant from the greenView to the root view. Remember to put `isActive = true` at the end of the constraint declaration code to activate it, else the constraint won't work. This is same for other constraints defined above.
 
 
 
@@ -134,6 +134,65 @@ Build and run the code, you will see the result like this :
 ## Safe Area Layout Guide
 
 If we run the previous code in iPhone X, you will see that the top part of the green view is cropped 😱 :  
+
+![top notch](https://iosimage.s3.amazonaws.com/2018/29-creating-ui-in-code-2/topNotch.png)
+
+
+
+This is because we have set the topAnchor of the greenView to self.view.topAnchor, which mean the absolute top of the root view. 
+
+
+
+Apple has introduced [Safe Area Layout Guide](https://developer.apple.com/documentation/uikit/uiview/2891102-safearealayoutguide?language=objc) in iOS 11 which excludes area that might be cropped by the top notch and the rounded corner of the phone. We can change the anchor to set constraint against the safe area instead of absolute top of root view to prevent it being cropped.
+
+
+
+
+```swift
+// Replace the topAnchor to compare 
+// greenView.topAnchor.constraint(equalTo: self.view.topAnchor).isActive = true
+
+greenView.topAnchor.constraint(equalTo: self.view.safeAreaLayoutGuide.topAnchor).isActive = true
+```
+
+<br>
+
+
+
+Using the Safe Area Layout Guide's top anchor, the resulting layout looks like this in iPhone X :  
+
+![safe area](https://iosimage.s3.amazonaws.com/2018/29-creating-ui-in-code-2/safeArea.png)
+
+
+
+When you create constraint in the Storyboard / Interface Builder, it will automatically select Safe Area as comparison. 
+
+
+
+As a preemptive caution, I advise to always use Safe Area Layout Guide when creating constraint related to root view (self.view) :
+
+```swift
+greenView.leadingAnchor.constraint(equalTo: self.view.safeAreaLayoutGuide.leadingAnchor, constant: 30.0).isActive = true
+greenView.trailingAnchor.constraint(equalTo: self.view.safeAreaLayoutGuide.trailingAnchor, constant: -30.0).isActive = true
+greenView.topAnchor.constraint(equalTo: self.view.safeAreaLayoutGuide.topAnchor).isActive = true
+greenView.heightAnchor.constraint(equalToConstant: 100.0).isActive = true
+```
+
+<br>
+
+
+
+Creating UI + Auto Layout constraint in code is greatly simplified thanks to NSLayoutAnchor and UIKit Initializer (eg: `let label = UILabel()`) provided by Apple. These are the basics you need to know to create UI in code.
+
+
+
+### Further reading
+
+If you are interested to know more about NSLayoutAnchor, I recommend this [explanation of NSLayoutAnchor by Keith Harrison](https://useyourloaf.com/blog/pain-free-constraints-with-layout-anchors/).
+
+
+
+If you are interested to know more about why **translatesAutoresizingMaskIntoConstraints** need to be set to false, [Keegan Rush explanation on Autoresizing Mask](http://www.thecodedself.com/autoresizing-masks/) is great!
 
 
 

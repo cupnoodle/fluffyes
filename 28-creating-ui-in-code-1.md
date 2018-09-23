@@ -322,7 +322,7 @@ Since we used the **.frame** property to set the position and size of the UI ele
 
 
 
-# UI Elements scoping
+## UI Elements scoping
 
 Most of the time you would probably want to change the text of an UILabel on another function outside of viewDidLoad. To access the UILabel on another function in the same view controller, we can move the UILabel declaration outside the viewDidLoad like this : 
 

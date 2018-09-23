@@ -1,4 +1,4 @@
-# Intro to creating UI in code (programmatically) part 1 - Create UI with frame
+# Intro to creating UI in code (programmatically) part 1 / 2 - Create UI with frame
 
 
 The debate of whether to create UI in Storyboard or Code has become so old now, there will always be developers on the different side justifying their view point, like:

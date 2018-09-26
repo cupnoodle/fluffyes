@@ -10,6 +10,10 @@
 
 
 
+![push tapped gif](https://iosimage.s3.amazonaws.com/2018/30-perform-action-notification-tap/pushtapped.gif)
+
+
+
 I came across this problem a while ago, as many answers in Stack Overflow used Objective-C and the deprecated *didReceiveRemoteNotification* function, I thought of writing this post to use Swift and the latest UNUserNotificationCenter delegate.
 
 
@@ -124,6 +128,8 @@ func userNotificationCenter(_ center: UNUserNotificationCenter, didReceive respo
 <br>
 
 
+
+> How do I perform action when user launch the app by tapping on notification?
 
 If the app is not running / not in background and user tap on the notification , the app will be launched. The method **didFinishLaunchingWithOptions launchOptions:** will be called and iOS will add the **remoteNotification** key to the launchOptions.
 

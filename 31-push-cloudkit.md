@@ -104,9 +104,63 @@ Next, we will add some code to our app so that the app will get notified (by pus
 
 
 
-## Step 3 Add CloudKit subscription code to app
+## Step 3 - Add Push notification handling code
+
+Add the code below in **AppDelegate.swift** 's didFinishLaunchingWithOptions method to request permission from user to send notifications:
+
+```swift
+// AppDelegate.swift
+func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplicationLaunchOptionsKey: Any]?) -> Bool {
+  // Override point for customization after application launch.
+  
+  // set self (AppDelegate) to handle notification
+  UNUserNotificationCenter.current().delegate = self
+
+  // Request permission from user to send notification
+  UNUserNotificationCenter.current().requestAuthorization(options: [.alert, .badge, .sound], completionHandler: { authorized, error in
+    if authorized {
+      DispatchQueue.main.async(execute: {
+        application.registerForRemoteNotifications()
+      })
+    }
+  })
+  
+  return true
+}
+```
+
+<br>
 
 
+
+And add the following code to make AppDelegate conform to the UNUserNotificationCenterDelegate protocol.
+
+
+
+```swift
+extension AppDelegate: UNUserNotificationCenterDelegate{
+    
+  // This function will be called when the app receive notification
+  func userNotificationCenter(_ center: UNUserNotificationCenter, willPresent notification: UNNotification, withCompletionHandler completionHandler: @escaping (UNNotificationPresentationOptions) -> Void) {
+    
+    // show the notification alert (banner), and with sound
+    completionHandler([.alert, .sound])
+  }
+  
+  // This function will be called right after user tap on the notification
+  func userNotificationCenter(_ center: UNUserNotificationCenter, didReceive response: UNNotificationResponse, withCompletionHandler completionHandler: @escaping () -> Void) {
+    
+    // tell the app that we have finished processing the user’s action (eg: tap on notification banner) / response
+    completionHandler()
+  }
+}
+```
+
+<br>
+
+
+
+## Step 4 - Add CloudKit Subscription code 
 
 
 

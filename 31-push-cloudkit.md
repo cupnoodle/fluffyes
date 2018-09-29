@@ -41,6 +41,77 @@ Table of Contents:
 
 In your Xcode Project, select a valid team for Signing if you haven't already :
 
+![Change Team](https://iosimage.s3.amazonaws.com/2018/31-push-cloudkit/changeTeam.png)
+
+
+
+Enable **Push Notification** in the App Target > Capabilities
+
+![Capabilities](https://iosimage.s3.amazonaws.com/2018/31-push-cloudkit/capabilities.png)
+
+
+
+![push notification](https://iosimage.s3.amazonaws.com/2018/31-push-cloudkit/push.png)
+
+
+
+Enable **iCloud** in the App Target > Capabilities, and check **CloudKit** 
+![iCloud](https://iosimage.s3.amazonaws.com/2018/31-push-cloudkit/iCloud.png)
+
+
+
+Next, we will create a record type in CloudKit to store the data for the notification.
+
+
+
+## Step 2 - Create record types in CloudKit
+
+This post won't go into detail on explaining CloudKit, but here's an overview of what is RecordType, Record and Field mean (similar to a spreadsheet) :
+
+![Cloudkit description](https://iosimage.s3.amazonaws.com/2018/31-push-cloudkit/cloudkitDescription.png)
+
+
+
+Click the **Cloudkit Dashboard** button shown previously to go to the Apple Cloudkit Dashboard, or go to [https://icloud.developer.apple.com/dashboard](https://icloud.developer.apple.com/dashboard) .
+
+
+
+Open the container for your app,
+
+![Container](https://iosimage.s3.amazonaws.com/2018/31-push-cloudkit/appContainer.png)
+
+
+
+Select Development > Data,
+
+![Development](https://iosimage.s3.amazonaws.com/2018/31-push-cloudkit/devData.png)
+
+
+
+Development Data are separated with Production Data, Development will be used when you are developing the app in your mac / phone. Production will be used when your app is in the App Store.
+
+
+
+Select **Record Types**, Create a new type named **Notifications**. And add fields named **content**, **subtitle** and **title**. Click Save.
+
+
+
+![Record type](https://iosimage.s3.amazonaws.com/2018/31-push-cloudkit/recordType.png)
+
+
+
+Next, we will add some code to our app so that the app will get notified (by push notification) when a new record is created in the CloudKit dashboard.
+
+
+
+## Step 3 Add CloudKit subscription code to app
+
+
+
+
+
+ 
+
 
 
 

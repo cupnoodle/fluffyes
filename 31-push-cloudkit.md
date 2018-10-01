@@ -1,4 +1,4 @@
-# Set up Push Notification easily using CloudKit
+# Implement Push Notification easily using CloudKit
 
 
 
@@ -18,7 +18,7 @@ Firebase does ease the pain a bit, but you will need to install the huge Firebas
 
 
 
-"I just want to send a generic push notification to all of my users"
+> "I just want to send a generic push notification to all of my users"
 
 The good news is that Apple's own CloudKit can handle these for you (for free too!), you wouldn't need to worry about certificates / keys / device tokens / APNS if you use CloudKit.
 
@@ -35,7 +35,17 @@ This tutorial assume that
 
 Table of Contents:
 
+1. [Step 1 - Enabling Push Notifications and CloudKit capabilities in your app](#capabilities)
+2. [Step 2 - Create record types in CloudKit](#recordtypes)
+3. [Step 3 - Add Push notification handling code](#pushcode)
+4. [Step 4 - Add CloudKit Subscription code](#subscriptioncode)
+5. [Step 5 - Send the push notification!](#sendpush)
+6. [What if I want to let user only receive notification with specific conditions?](#conditions)
+7. [What if I want to let user cancel subscription / choose not to receive notification in the app?](#cancel)
 
+
+
+<span id="capabilities"></span>
 
 
 ## Step 1  - Enabling Push Notifications and CloudKit capabilities in your app
@@ -64,6 +74,8 @@ Enable **iCloud** in the App Target > Capabilities, and check **CloudKit**
 Next, we will create a record type in CloudKit to store the data for the notification.
 
 
+
+<span id="recordtypes"></span>
 
 ## Step 2 - Create record types in CloudKit
 
@@ -104,6 +116,8 @@ Select **Record Types**, Create a new type named **Notifications**. And add fiel
 Next, we will add some code to our app so that the app will get notified (by push notification) when a new record is created in the CloudKit dashboard.
 
 
+
+<span id="pushcode"></span>
 
 ## Step 3 - Add Push notification handling code
 
@@ -160,6 +174,8 @@ extension AppDelegate: UNUserNotificationCenterDelegate{
 <br>
 
 
+
+<span id="subscriptioncode"></span>
 
 ## Step 4 - Add CloudKit Subscription code 
 
@@ -276,7 +292,7 @@ Build and run the app on your physical devices (not simulator). Then go to the C
 
 
 
-
+<span id="sendpush"></span>
 
 ## Step 5 - Send the push notification!
 
@@ -300,22 +316,54 @@ You can send push notification just by creating a new record in CloudKit Dashboa
 
 
 
-## What if I want to let user choose not to receive notification in the app?
+<span id="conditions"></span>
 
-If user want to opt out of notification, you can cancel their subscription by putting the following code in maybe settings view controller of you app : 
+## What if I want to let user only receive notification with specific conditions?
+
+Let's say a user only want to receive notification if the 'Notifications' record's ''**content**'' field contain the word ''**promotion**"", you can use the **predicate** parameter to do the filtering : 
+
+```swift
+// content field contains the word 'promotion' ([c] means case insensitive)
+let subscription = CKQuerySubscription(recordType: "Notifications", predicate: NSPredicate(format: "content CONTAINS[c] %@", "promotion"), options: .firesOnRecordCreation)
+```
+
+<br>
 
 
 
-
-// cancel subscription in app
-
-ibaction 
-
-loop through subscription and remove them
+You can learn more on [how to use NSPredicate here](http://nspredicate.xyz).
 
 
 
-// example conditional subscribing
+<span id="cancel"></span>
 
-// like only receive notification if the user is male/female etc
+## What if I want to let user cancel subscription / choose not to receive notification in the app?
+
+If user want to opt out of notification, you can cancel their subscription by putting the following code : 
+
+```swift
+@IBAction func turnOffNotificationTapped(){
+  // fetch all subscriptions by the user and delete them
+  CKContainer.default().publicCloudDatabase.fetchAllSubscriptions(completionHandler: { subscriptions, error in
+    if error != nil {
+      // failed to fetch all subscriptions, handle error here
+      // end the function early
+      return
+    }
+
+    if let subscriptions = subscriptions {
+      for subscription in subscriptions {
+        CKContainer.default().publicCloudDatabase.delete(withSubscriptionID: subscription.subscriptionID, completionHandler: { string, error in
+          if(error != nil){
+              // deletion of subscription failed, handle error here
+          }
+        })
+      }
+    }
+
+  })
+}
+```
+
+<br>
 

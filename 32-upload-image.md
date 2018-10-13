@@ -1,10 +1,14 @@
 # Upload image to a server using NSURLSessionUploadTask
 
-This post assume you have some experience working with [URLSession](https://fluffy.es/nsurlsession-urlsession-tutorial/) and some brief knowledge on how HTTP works.
+This post assume you have some experience working with [URLSession](https://fluffy.es/nsurlsession-urlsession-tutorial/) and some brief knowledge on how HTTP works.  This post will be focusing on multipart data content type.
 
 
 
-You might have come across scenarios where your app need to send some image data to a server API endpoint (eg: user updates profile picture). A quick search on Google / Stack Overflow will get you many answers recommending you to use Alamofire / AFNetworking, but is it really necessary to install a library just for handling image upload? What is happening under the hood of Alamofire / AFNetworking library?
+You might have come across scenarios where your app need to send some image data to a server API endpoint (eg: user updates profile picture). A quick search on Google / Stack Overflow will get you many answers recommending you to use Alamofire / AFNetworking, but is it really necessary to install a library just for handling image upload? What is happening under the hood of Alamofire / AFNetworking library? 
+
+
+
+Some answer from Stack Overflow might contain weird looking string like `\r\n--61752208` , what does this mean?
 
 
 
@@ -16,7 +20,56 @@ The Catbox API endpoint is located at **https://catbox.moe/user/api.php**
 
 
 
-According to their [API documentation](https://catbox.moe/tools.php), to upload a file to their server, we will need to send the parameters below : 
+## How raw HTTP request / response looks like
+
+Say you have a URLSession POST request like this : 
+
+
+```swift
+func postRequest(){
+    let config = URLSessionConfiguration.default
+
+    let session = URLSession(configuration: config)
+
+    let url = URL(string: "http://httpbin.org/anything")!
+    var urlRequest = URLRequest(url: url)
+    urlRequest.httpMethod = "POST"
+
+    // your post request data
+    let postDict : [String: Any] = ["name": "axel",
+                                    "favorite_animal": "fox"]
+
+    guard let postData = try? JSONSerialization.data(withJSONObject: postDict, options: []) else {
+        return
+    }
+
+    urlRequest.httpBody = postData
+
+    let task = session.dataTask(with: urlRequest) { data, response, error in
+      ...
+    }
+
+    task.resume()
+} 
+```
+
+<br>
+
+
+
+The code above will generate and send a raw HTTP request (which the backend server will see and receive) like this :
+
+![rawRequest](https://iosimage.s3.amazonaws.com/2018/32-upload-image/rawRequest.png)
+
+
+
+This is the HTTP request that the backend server will receive from the mobile app. To figure out how to write URLSession code which upload file and other parameters to server, we can take the raw HTTP request  and reverse engineer it. In the next section we will discuss how to get the raw HTTP request.
+
+
+
+## Raw HTTP request for multipart file upload
+
+According to Catbox's [API documentation](https://catbox.moe/tools.php), to upload a file to their server, we will need to send the parameters below : 
 
 **File Uploads**
 
@@ -26,7 +79,190 @@ reqtype="fileupload" fileToUpload=(file data here)
 
 
 
-Before we start to work on the image upload code, let's take a look at how the HTTP request looks like 
+Before we start to work on the image upload code, let's take a look at how the HTTP request looks like for the file upload.
+
+
+
+The API documentation has a cURL example : 
+
+**cURL to API**
+
+```
+curl -F "reqtype=fileupload" -F "userhash=####" -F "fileToUpload=@Asriel.png" https://catbox.moe/user/api.php
+```
+
+
+
+>  [cURL](https://curl.haxx.se) is a command line tool and library for transferring data with URLs — cURL official website
+
+cURL is bundled along the macOS, this post won't go into detail of cURL but it is a command line tool to simplify making HTTP request.
+
+
+
+We will use [Charles Proxy](https://www.charlesproxy.com)  to sniff the HTTP request. It cost $50 but you can use its free trial version without expiry date (just a minor timer annoyance when you open the app), it will be one of the best 50 dollars you spent in your iOS dev career. You can continue reading without downloading the app as we will explain how it works below.
+
+
+
+Charles Proxy will perform a [Man-in-the-middle attack](https://en.wikipedia.org/wiki/Man-in-the-middle_attack) on the network request (installing a root certificate and alter the chain of trust).  Here is a very simplified diagram on how the attack works : 
+
+
+![Proxy](https://iosimage.s3.amazonaws.com/2018/32-upload-image/proxy.png)
+
+To intercept the request, we will make a cURL request to the API in the Terminal using the command below : 
+
+```bash
+curl --proxy 127.0.0.1:8888 --insecure -F "reqtype=fileupload" -F "userhash=caa3dce4fcb36cfdf9258ad9c" -F "fileToUpload=@Asriel.png" https://catbox.moe/user/api.php
+```
+
+<br>
+
+You can change the directory to a folder with image first, then replace the "@Asriel.png" to "@[Your image filename]", the **@** indicates a local file.
+
+
+
+The **--proxy** flag is used to instruct that the HTTP request generated by cURL to pass through the Charles Proxy so we can intercept it.
+
+
+The **--insecure** flag is used to tell cURL to ignore any modification made to the SSL [Chain of Trust](https://en.wikipedia.org/wiki/Chain_of_trust). As Charles Proxy creates a fake Root Certificate and modify the chain of trust, cURL will know the chain of trust has been modified and stop the request. The --insecure flag is to tell cURL to ignore the modification of chain of trust and let the request pass through.
+
+
+
+The **-F** flag is used to indicate a multipart form post data, this is similar when you submit a form with file upload in web browser (eg: [https://www.w3schools.com/html/tryit.asp?filename=tryhtml_input_file](https://www.w3schools.com/html/tryit.asp?filename=tryhtml_input_file))
+
+
+After running the command, you will see it outputs the link of the uploaded image (eg: https://files.catbox.moe/uz9di8.png)
+
+
+
+Here is the raw HTTP request data captured by Charles Proxy : 
+
+![raw request data](https://iosimage.s3.amazonaws.com/2018/32-upload-image/charlesRequest1.png)
+
+![raw request data](https://iosimage.s3.amazonaws.com/2018/32-upload-image/charlesRequest2.png)
+
+
+
+
+
+Notice that there is a separator between each of the field (**reqtype**, userhash and **fileToUpload**), the separator is the `-----8acddfe16d30fcb8` string. This is called **boundary** in HTTP terms, this is used to separate different field name and value. The boundary string has to be specified in the HTTP header **content-type** field.
+
+
+
+When browsing some website, you might notice that the URL looks like https://example.com?orderID=2&userID=5 , the `&` here is used to separate the orderID and userID in URL, boundary works similar as well. [This Stack Overflow Answer](https://stackoverflow.com/questions/3508338/what-is-the-boundary-in-multipart-form-data) explains what is boundary pretty well.
+
+
+
+The boundary string can be set to any custom string as long that doesn't appear anywhere else in the raw HTTP request data, so that server won't get confused on where to split the data.
+
+
+
+As the boundary string used by cURL contain a lot of dash in front, it might be confusing to explain, I will use another example. 
+
+
+Say your chosen boundary string is `FLUFFY_ES`, to separate different field/value, you will need to use 
+
+`--FLUFFY_ES` (2 dashes padded in front).
+
+And at the end of the HTTP request, you will need to put `--FLUFFY_ES--` (2 dashes in front and 2 dashes at the back) to indicate the end of the HTTP request data.
+
+This is according to the [specification of HTTP 1.1](https://tools.ietf.org/html/rfc2616.html).
+
+
+
+
+
+To produce this raw HTTP request output, we will need to manually craft the raw data and use it in URLSessionUploadTask. The code is as below : 
+
+
+
+```swift
+// the image in UIImage type
+guard let image = tmpImage else { return  }
+
+let filename = "avatar.png"
+
+// generate boundary string using a unique per-app string
+let boundary = UUID().uuidString
+
+let fieldName = "reqtype"
+let fieldValue = "fileupload"
+
+let fieldName2 = "userhash"
+let fieldValue2 = "caa3dce4fcb36cfdf9258ad9c"
+
+let config = URLSessionConfiguration.default
+let session = URLSession(configuration: config)
+
+// Set the URLRequest to POST and to the specified URL
+var urlRequest = URLRequest(url: URL(string: "https://catbox.moe/user/api.php")!)
+urlRequest.httpMethod = "POST"
+
+// Set Content-Type Header to multipart/form-data, this is equivalent to submitting form data with file upload in a web browser
+urlRequest.setValue("multipart/form-data; boundary=\(boundary)", forHTTPHeaderField: "Content-Type")
+
+var data = Data()
+
+// Add the reqtype field and its value to the raw http request data
+data.append("\r\n--\(boundary)\r\n".data(using: .utf8)!)
+data.append("Content-Disposition: form-data; name=\"\(fieldName)\"\r\n\r\n".data(using: .utf8)!)
+data.append("\(fieldValue)".data(using: .utf8)!)
+
+// Add the userhash field and its value to the raw http reqyest data
+data.append("\r\n--\(boundary)\r\n".data(using: .utf8)!)
+data.append("Content-Disposition: form-data; name=\"\(fieldName2)\"\r\n\r\n".data(using: .utf8)!)
+data.append("\(fieldValue2)".data(using: .utf8)!)
+
+// Add the image data to the raw http request data
+data.append("\r\n--\(boundary)\r\n".data(using: .utf8)!)
+data.append("Content-Disposition: form-data; name=\"fileToUpload\"; filename=\"\(filename)\"\r\n".data(using: .utf8)!)
+data.append("Content-Type: image/png\r\n\r\n".data(using: .utf8)!)
+data.append(UIImagePNGRepresentation(image)!)
+
+// End the raw http request data, note that there is 2 extra dash ("-") at the end, this is to indicate the end of the data
+// According to the HTTP 1.1 specification https://tools.ietf.org/html/rfc7230
+data.append("\r\n--\(boundary)--\r\n".data(using: .utf8)!)
+
+// Send a POST request to the URL, with the data we created earlier
+session.uploadTask(with: urlRequest, from: data, completionHandler: { responseData, response, error in
+    
+    if(error != nil){
+        print("\(error!.localizedDescription)")
+    }
+    
+    guard let responseData = responseData else {
+        print("no response data")
+        return
+    }
+    
+    if let responseString = String(data: responseData, encoding: .utf8) {
+        print("uploaded to: \(responseString)")
+    }
+}).resume()
+```
+
+<br>
+
+
+
+The `\r\n` means new line (like you press the enter key to move to the next line), according to the definition of HTTP 1.1 specification as well ([https://stackoverflow.com/questions/27966357/new-line-definition-for-http-1-1-headers](https://stackoverflow.com/questions/27966357/new-line-definition-for-http-1-1-headers)).
+
+
+
+We convert the string into data form using the **"string".data(using: .utf8)!** method, this will convert the string into data type using UTF8 encoding.
+
+
+
+We then use the function **UIImagePNGRepresentation(image)** to convert the UIImage into PNG data form.
+
+
+
+
+
+
+
+
+
+
 
 
 

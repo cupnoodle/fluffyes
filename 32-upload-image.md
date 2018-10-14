@@ -1,6 +1,10 @@
-# Upload image to a server using NSURLSessionUploadTask
+# Upload image to server using NSURLSessionUploadTask
 
 This post assume you have some experience working with [URLSession](https://fluffy.es/nsurlsession-urlsession-tutorial/) and some brief knowledge on how HTTP works.  This post will be focusing on multipart data content type.
+
+
+
+[TL;DR - Jump to the code](#swiftcode)
 
 
 
@@ -19,6 +23,16 @@ In this post, we will use Apple's own URLSession and its [uploadTask](https://de
 The Catbox API endpoint is located at **https://catbox.moe/user/api.php**
 
 
+
+Table of Contents
+
+1. [How raw HTTP request / response looks like](#rawhttp)
+2. [Raw HTTP request for multipart file upload](#rawmultipart)
+3. [Boundary String](#boundary)
+4. [Swift code to upload image and other fields](#swiftcode)
+
+
+<span id="rawhttp"></span>
 
 ## How raw HTTP request / response looks like
 
@@ -66,6 +80,8 @@ The code above will generate and send a raw HTTP request (which the backend serv
 This is the HTTP request that the backend server will receive from the mobile app. To figure out how to write URLSession code which upload file and other parameters to server, we can take the raw HTTP request  and reverse engineer it. In the next section we will discuss how to get the raw HTTP request.
 
 
+
+<span id="rawmultipart"></span>
 
 ## Raw HTTP request for multipart file upload
 
@@ -142,7 +158,9 @@ Here is the raw HTTP request data captured by Charles Proxy :
 
 
 
+<span id="boundary"></span>
 
+## Boundary String
 
 Notice that there is a separator between each of the field (**reqtype**, userhash and **fileToUpload**), the separator is the `-----8acddfe16d30fcb8` string. This is called **boundary** in HTTP terms, this is used to separate different field name and value. The boundary string has to be specified in the HTTP header **content-type** field.
 
@@ -156,22 +174,27 @@ The boundary string can be set to any custom string as long that doesn't appear 
 
 
 
-As the boundary string used by cURL contain a lot of dash in front, it might be confusing to explain, I will use another example. 
+As the boundary string used by cURL contain a lot of dashes in front, it might be confusing to explain, I will use another example. 
 
 
-Say your chosen boundary string is `FLUFFY_ES`, to separate different field/value, you will need to use 
 
-`--FLUFFY_ES` (2 dashes padded in front).
+Say your chosen boundary string is `FLUFFY_ES`, you will need to use `--FLUFFY_ES` (2 dashes padded in front) to separate different field/value.
+
+
 
 And at the end of the HTTP request, you will need to put `--FLUFFY_ES--` (2 dashes in front and 2 dashes at the back) to indicate the end of the HTTP request data.
+
+
 
 This is according to the [specification of HTTP 1.1](https://tools.ietf.org/html/rfc2616.html).
 
 
 
+<span id="swiftcode"></span>
 
+## Swift code to upload image and other fields
 
-To produce this raw HTTP request output, we will need to manually craft the raw data and use it in URLSessionUploadTask. The code is as below : 
+To produce the raw HTTP request output shown previously, we will need to manually craft the raw data and use it in URLSessionUploadTask. The code is as below : 
 
 
 
@@ -198,6 +221,7 @@ var urlRequest = URLRequest(url: URL(string: "https://catbox.moe/user/api.php")!
 urlRequest.httpMethod = "POST"
 
 // Set Content-Type Header to multipart/form-data, this is equivalent to submitting form data with file upload in a web browser
+// And the boundary is also set here
 urlRequest.setValue("multipart/form-data; boundary=\(boundary)", forHTTPHeaderField: "Content-Type")
 
 var data = Data()
@@ -253,6 +277,10 @@ We convert the string into data form using the **"string".data(using: .utf8)!** 
 
 
 We then use the function **UIImagePNGRepresentation(image)** to convert the UIImage into PNG data form.
+
+
+
+There you have it! Uploading images in iOS might seem complex at first, but once you understand the concept of boundary and under the hood it is just generating the correct HTTP request for server, it becomes manageable.
 
 
 

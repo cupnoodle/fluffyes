@@ -48,7 +48,7 @@ func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> U
 
 
 
-This approach works at first glance but I feel like it is a workaround. [Tag property](https://developer.apple.com/documentation/uikit/uiview/1622493-tag) is original intended to use to uniquely identify a view in app (similar to creating an IBOutlet), not to use as a data store (in this case, storing the row / index of the item). Abusing tag can quickly lead to a [nightmare](http://doing-it-wrong.mikeweller.com/2012/08/youre-doing-it-wrong-4-uiview.html) like this if you have multiple section :
+This approach works at first glance but I feel like it is a workaround. [Tag property](https://developer.apple.com/documentation/uikit/uiview/1622493-tag) is original intended to use to uniquely identify a view in app (similar to creating an IBOutlet to identify a view), not to use as a data store (in this case, storing the row / index of the item). Abusing tag can quickly lead to a [nightmare](http://doing-it-wrong.mikeweller.com/2012/08/youre-doing-it-wrong-4-uiview.html) like this if you have multiple section :
 
 ```swift
 cell.likeButton.tag = indexPath.row + 100
@@ -59,7 +59,7 @@ self.tableView.scrollToRow(at: IndexPath(row: sender.tag, section: sender.tag / 
 
 <br>
 
-How would I know what is the **/100** is for ?! Shouldn't we use something more intuitive than this math calculation?
+How would I know what is the **/100** is for?! Shouldn't we use something more intuitive than this math calculation?
 
 
 
@@ -67,6 +67,115 @@ The stack overflow post has linked to [another post](https://stackoverflow.com/q
 
 
 
-Passing the index data shouldn't be that difficult! 
+Passing the index data shouldn't be that difficult! There are multiple ways to go about this, this post will cover using delegate and closure.
+
+
+## The delegate way
+
+You can read [how delegate works here](https://fluffy.es/eli-5-delegate/) if you are not farmiliar with it yet. To use the delegate way, we will add a **index** integer property (to keep track of the index) and **delegate** property to the cell class.
+
+
+```swift
+//YoutuberTableViewCell.swift
+
+class YoutuberTableViewCell: UITableViewCell {
+
+  @IBOutlet weak var youtuberLabel: UILabel!
+    
+  @IBOutlet weak var subscribeButton: UIButton!
+    
+  // used to keep track the index of the cell
+  var index : Int = 0
+    
+  // the delegate
+  var delegate : YoutuberTableViewCellDelegate?
+    
+  override func awakeFromNib() {
+    super.awakeFromNib()
+    // Initialization code
+        
+    // Add action to perform when the button is tapped
+    self.subscribeButton.addTarget(self, action: #selector(subscribeButtonTapped(_:)), for: .touchUpInside)
+  }
+
+  override func setSelected(_ selected: Bool, animated: Bool) {
+    super.setSelected(selected, animated: animated)
+
+    // Configure the view for the selected state
+  }
+    
+  @IBAction func subscribeButtonTapped(_ sender: UIButton){
+    // ask the delegate (in most case, its the view controller) to 
+    // call the function 'subscribeButtonTappedAt' on itself.
+    self.delegate?.youtuberTableViewCell(self, subscribeButtonTappedAt: index)
+  }
+    
+}
+
+protocol YoutuberTableViewCellDelegate {
+  func youtuberTableViewCell(_ youtuberTableViewCell: YoutuberTableViewCell, subscribeButtonTappedAt index: Int)
+}
+```
+
+<br>
+
+
+
+The **delegate** is any object which conform to the **YoutuberTableViewCellDelegate** protocol, which means the object has to implement the **subscribeButtonTappedAt** function to be able to be the delegate.
+
+
+
+In the Tableview data source, we will assign the index and delegate property in **cellForRowAt** function : 
+
+```swift
+extension ViewController : UITableViewDataSource {
+  func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+    let cell = tableView.dequeueReusableCell(withIdentifier: cellReuseIdentifier, for: indexPath) as! YoutuberTableViewCell
+    cell.youtuberLabel.text = youtubers[indexPath.row]
+    
+    // assign the index to cell
+    cell.index = indexPath.row
+    
+    // the 'self' here means the view controller, set view controller as the delegate
+    cell.delegate = self
+        
+    return cell
+}
+    
+  func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+    return youtubers.count
+  }
+}
+```
+
+<br>
+
+
+
+As the view controller needs to conform to the YoutuberTableViewCellDelegate, we will add the following code : 
+
+```swift
+extension ViewController : YoutuberTableViewCellDelegate {
+  func youtuberTableViewCell(_ youtuberTableViewCell: YoutuberTableViewCell, subscribeButtonTappedAt index: Int) {
+    // use the passed index to select the correct youtuber
+    let youtuber = youtubers[index]
+    
+    // show alert
+    let alert = UIAlertController(title: "Subscribed!", message: "Subscribed to \(youtuber)", preferredStyle: .alert)
+    let okAction = UIAlertAction(title: "OK", style: .default, handler: nil)
+    alert.addAction(okAction)
+    
+    self.present(alert, animated: true, completion: nil)
+  }
+}
+```
+
+<br>
+
+The code above will be executed when user tap on the subscribe button on each cell, and the index will be passed via this function.
+
+
+
+## The closure way
 
 use closure or delegate 

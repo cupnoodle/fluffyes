@@ -1,4 +1,4 @@
-## Determine which button got tapped inside UITableViewCell without using tag
+## Handling button tap inside UITableViewCell without using tag
 
 TL;DR :
 

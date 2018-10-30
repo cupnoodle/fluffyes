@@ -100,7 +100,22 @@ That's all to it for the iOS code! Pretty straightforward right?
 
 ## Server side
 
-For this part, I will be using [Sinatra](http://sinatrarb.com) (a lightweight ruby web framework) for the server side code, you can use any language/framework as long as it can serve as a backend server 😆.
+For this part, I will be using [Sinatra](http://sinatrarb.com) (a lightweight ruby web framework) for the server side code, you can use any server side language/framework  as the same concept still apply.
+
+
+
+Before proceeding to the server code, we will first need to generate a DeviceCheck Key on Apple developer portal. Go to [https://developer.apple.com/account/ios/authkey/create](https://developer.apple.com/account/ios/authkey/create) to create a key, and check **DeviceCheck** in the Key Services list.
+
+
+
+![create key](https://iosimage.s3.amazonaws.com/2018/34-devicecheck-tutorial/createkey.png)
+
+Click continue, download the key file, and also copy the Key ID, we will need this later on.
+
+![keyID](https://iosimage.s3.amazonaws.com/2018/34-devicecheck-tutorial/keyID.png)
+
+
+
 
 
 

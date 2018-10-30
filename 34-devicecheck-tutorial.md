@@ -100,7 +100,10 @@ That's all to it for the iOS code! Pretty straightforward right?
 
 ## Server side
 
- 
+For this part, I will be using [Sinatra](http://sinatrarb.com) (a lightweight ruby web framework) for the server side code, you can use any language/framework as long as it can serve as a backend server 😆.
+
+
+
 
 
 

@@ -1,8 +1,30 @@
 ## Uniquely identify iOS device using DeviceCheck (Tutorial)
 
+Table of contents :
+
+1. [Why other way doesn't work](#intro)
+
+App side
+
+2. [App side](#appside)
+
+Server side
+
+3. [Server side](#serverside)
+4. [Authorization Token (JSON Web Token)](#jwt)
+5. [Query Two Bits](#query)
+6. [Update Two Bits](#update)
+7. [Applying DeviceCheck on redeeming reward](#apply)
+
+
+
+
+
 Say you want to let a user do something only once from a single device. For example, to redeem a one-time reward of $100 in-game currency. How can you prevent user from doing said action more than once on their device?
 
 
+
+<span id="intro"></span>
 
 Here's some way you can try :
 
@@ -31,6 +53,8 @@ The DeviceCheck class in iOS allows us to generate a temporary token (which Appl
 This post will separate into app side and server side. Most of the difficult part is on the server side.
 
 
+
+<span id="appside"></span>
 
 ## App side
 
@@ -98,6 +122,8 @@ That's all to it for the iOS code! Pretty straightforward right?
 
 
 
+<span id="serverside"></span>
+
 ## Server side
 
 For this part, I will be using Ruby language for the server side code, you can use any server side language/framework as the same concept still apply.
@@ -117,6 +143,8 @@ Click continue, download the key file, and also copy the Key ID, we will need th
 You can open the key file (.p8) using TextEdit App to get its content.
 
 
+
+<span id="jwt"></span>
 
 ### Authorization Token (JWT Token)
 
@@ -184,6 +212,8 @@ We need to include this HTTP header when communicating with Apple's DeviceCheck 
 
 
 
+<span id="query"></span>
+
 ### Query Two Bits
 
 To get the two bits state of a device, we will make a HTTP request to https://api.devicecheck.apple.com/v1/query_two_bits (this is the production server for app live in App Store or Testflight). If you are in development mode (plugging iPhone to Mac), use this API instead : https://api.development.devicecheck.apple.com/v1/query_two_bits .
@@ -242,6 +272,8 @@ If the bit state of the device has been set before, Apple server will return HTT
 
 
 
+<span id="update"></span>
+
 ### Update Two Bits
 
 To update the two bits state of a device, we will make a HTTP request to https://api.devicecheck.apple.com/v1/update_two_bits (this is the production server for app live in App Store or Testflight). If you are in development mode (plugging iPhone to Mac), use this API instead : https://api.development.devicecheck.apple.com/v1/update_two_bits .
@@ -298,7 +330,7 @@ Apple's server will return a blank HTTP response with status 200 if the update i
 
 
 
-
+<span id="apply"></span>
 
 ## Applying DeviceCheck on redeeming reward
 

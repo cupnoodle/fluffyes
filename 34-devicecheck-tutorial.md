@@ -114,6 +114,129 @@ Click continue, download the key file, and also copy the Key ID, we will need th
 
 ![keyID](https://iosimage.s3.amazonaws.com/2018/34-devicecheck-tutorial/keyID.png)
 
+You can open the key file (.p8) using TextEdit App to get its content.
+
+
+
+### Authorization Token (JWT Token)
+
+This is the most confusing part of communicating with Apple's DeviceCheck API. To verify that the server is owned by you, you will need to use the key file downloaded earlier to generate a [JSON web token](https://jwt.io) (JWT). JWT  is an encoded string generated with header and payload.
+
+Here is how JWT is generated : 
+![JWT generation](https://iosimage.s3.amazonaws.com/2018/34-devicecheck-tutorial/jwt.png)
+
+
+
+Header and Payload is a JSON type. 
+
+
+
+In the header, we will include **alg** key  (algorithm) with value of **ES256**, Apple mentioned in documentation that ES256 algorithm is used so we will use this. The **kid** key means key_id, this is the Key ID you copied in previous part.
+
+
+
+In the payload, we will include **iss** key (issuer) with value of your Apple developer team's ID, you can get this value here : [https://developer.apple.com/account/#/membership](https://developer.apple.com/account/#/membership) . The **iat** key means issued_at, we will use the Unix Timestamp of current time (**in seconds**).
+
+
+
+The ruby code to generate jwt token: 
+
+```ruby
+def jwt_token
+  # use the content of the .p8 key file you downloaded, it should look like this :
+	#-----BEGIN PRIVATE KEY-----
+	#ILIKEFOXES
+  #-----END PRIVATE KEY----
+  private_key = ENV['DEVICE_CHECK_KEY_STRING']
+  
+  # the Key ID you saw earlier
+  key_id = ENV['DEVICE_CHECK_KEY_ID']
+  
+  # Team ID of your Apple developer account
+  team_id = ENV['DEVICE_CHECK_TEAM_ID']
+
+  # Elliptic curve key, used to encrypt the JWT
+  ec_key = OpenSSL::PKey::EC.new(private_key)
+  jwt_token = JWT.encode({iss: team_id, iat: Time.now.to_i}, ec_key, 'ES256', {kid: key_id,})
+end
+```
+
+<br>
+
+
+
+We then use this JWT in the HTTP Header (Authorization field) :
+
+```
+"Authorization" : "Bearer eyJhbGciOiJIU...."
+```
+
+<br>
+
+
+
+We will include this HTTP header when communicating with Apple's DeviceCheck API.
+
+
+
+### Query Two Bits
+
+To get the two bits state of a device, we will make a HTTP request to https://api.devicecheck.apple.com/v1/query_two_bits (this is the production server for app live in App Store or Testflight). If you are in development mode (plugging iPhone to Mac), use this API instead : https://api.development.devicecheck.apple.com/v1/query_two_bits .
+
+![query](https://iosimage.s3.amazonaws.com/2018/34-devicecheck-tutorial/query.png)
+
+
+
+We will make a POST request to Apple's server with JSON containing device_token, timestamp and transaction_id.
+
+**device_token** is the 64 base encoded token generated from the app.
+**timestamp** is the current time in Unix Timestamp when you send the request to Apple, **in milliseconds** 
+
+**transaction_id** is a unique string, this can be any string you want, as long as each HTTP request you make to Apple's server uses a different transaction_id.
+
+
+
+The ruby code to perform the querying: 
+
+```ruby
+def query_two_bits(device_token)
+  payload = {
+    'device_token' => device_token,
+    'timestamp' => (Time.now.to_f * 1000).to_i,
+    'transaction_id' => SecureRandom.uuid
+  }
+
+  query_url = 'https://api.development.devicecheck.apple.com/v1/query_two_bits'
+  response = HTTP.auth("Bearer #{jwt_token}").post(query_url, json: payload)
+
+  # if there is no bit state set before, 
+  # Apple will return the string 'Bit State Not Found' instead of json
+
+  # if the bit state was set before, json below will be returned
+  #{"bit0":false,"bit1":false,"last_update_time":"2018-10"}
+end
+```
+
+<br>
+
+
+
+If the bit state of the device haven't been set before, Apple server will return HTTP response with status 200 and a text of 'Bit State Not Found'.
+
+
+
+If the bit state of the device has been set before, Apple server will return HTTP response with status 200 containing JSON.
+
+![Query JSON](https://iosimage.s3.amazonaws.com/2018/34-devicecheck-tutorial/query2.png)
+
+
+
+### Update Two Bits
+
+
+
+
+
 
 
 

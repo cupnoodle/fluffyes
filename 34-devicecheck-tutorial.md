@@ -100,7 +100,7 @@ That's all to it for the iOS code! Pretty straightforward right?
 
 ## Server side
 
-For this part, I will be using [Sinatra](http://sinatrarb.com) (a lightweight ruby web framework) for the server side code, you can use any server side language/framework  as the same concept still apply.
+For this part, I will be using Ruby language for the server side code, you can use any server side language/framework as the same concept still apply.
 
 
 
@@ -142,6 +142,11 @@ In the payload, we will include **iss** key (issuer) with value of your Apple de
 The ruby code to generate jwt token: 
 
 ```ruby
+require 'openssl'
+require 'http'
+require 'jwt'
+require 'securerandom'
+
 def jwt_token
   # use the content of the .p8 key file you downloaded, it should look like this :
 	#-----BEGIN PRIVATE KEY-----
@@ -175,7 +180,7 @@ We then use this JWT in the HTTP Header (Authorization field) :
 
 
 
-We will include this HTTP header when communicating with Apple's DeviceCheck API.
+We need to include this HTTP header when communicating with Apple's DeviceCheck API.
 
 
 
@@ -190,15 +195,21 @@ To get the two bits state of a device, we will make a HTTP request to https://ap
 We will make a POST request to Apple's server with JSON containing device_token, timestamp and transaction_id.
 
 **device_token** is the 64 base encoded token generated from the app.
-**timestamp** is the current time in Unix Timestamp when you send the request to Apple, **in milliseconds** 
+
+**timestamp** is the current time in Unix Timestamp when you send the request to Apple, **in milliseconds** .
 
 **transaction_id** is a unique string, this can be any string you want, as long as each HTTP request you make to Apple's server uses a different transaction_id.
 
 
 
-The ruby code to perform the querying: 
+The ruby code to perform the bits query: 
 
 ```ruby
+require 'openssl'
+require 'http'
+require 'jwt'
+require 'securerandom'
+
 def query_two_bits(device_token)
   payload = {
     'device_token' => device_token,
@@ -233,11 +244,69 @@ If the bit state of the device has been set before, Apple server will return HTT
 
 ### Update Two Bits
 
+To update the two bits state of a device, we will make a HTTP request to https://api.devicecheck.apple.com/v1/update_two_bits (this is the production server for app live in App Store or Testflight). If you are in development mode (plugging iPhone to Mac), use this API instead : https://api.development.devicecheck.apple.com/v1/update_two_bits .
+
+
+
+![Update bits](https://iosimage.s3.amazonaws.com/2018/34-devicecheck-tutorial/update.png)
+
+
+
+We will make a POST request to Apple's server with JSON containing device_token, timestamp, transaction_id, bit0 and bit1.
+
+
+
+**device_token** is the 64 base encoded token generated from the app.
+
+**timestamp** is the current time in Unix Timestamp when you send the request to Apple, **in milliseconds** .
+
+**transaction_id** is a unique string, this can be any string you want, as long as each HTTP request you make to Apple's server uses a different transaction_id.
+
+**bit0** is a boolean, you can set this to either true or false.
+
+**bit1** is a boolean, you can set this to either true or false.
+
+
+
+The ruby code to perform the bits update :
+
+```ruby
+require 'openssl'
+require 'http'
+require 'jwt'
+require 'securerandom'
+
+def update_two_bits(device_token, bit_zero, bit_one)
+  payload = {
+    'device_token' => device_token,
+    'timestamp' => (Time.now.to_f * 1000).to_i,
+    'transaction_id' => SecureRandom.uuid,
+    'bit0': bit_zero, # true / false
+    'bit1': bit_one # true / false
+  }
+
+  response = HTTP.auth("Bearer #{jwt_token}").post(settings.update_url, json: payload)
+  # Apple will return status 200 with blank response body if the update is successful
+end
+```
+
+<br>
+
+
+
+Apple's server will return a blank HTTP response with status 200 if the update is successful.
 
 
 
 
 
+## Applying DeviceCheck on redeeming reward
+
+In your server code, you can make an API endpoint say '/redeem' , the iOS app will make a HTTP request (containing device token) to this endpoint (https://example.com/redeem) , then the server will use the device token and check with Apple's server. If bit0 is not set or is false, user can redeem the reward, else user can't. Server can set back a JSON telling the app that user can/can't claim the reward. After user claim the reward, server will make another request to Apple's server to update bits (set bit0 to true).
+
+
+
+DeviceCheck is very useful and is the only legit way to uniquely identify an iOS device (as of iOS 12.1). However there is only two bits to use and **this is shared among all the apps** ,not two bits per app. If you have 10 apps, all of them will get the same bit data.
 
 
 

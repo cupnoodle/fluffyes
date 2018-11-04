@@ -1,5 +1,8 @@
 # What is escaping closure and when to use it
 
+This post assume you have worked with [closure](https://fluffy.es/closure-overview/) and [URLSession](https://fluffy.es/nsurlsession-urlsession-tutorial/) before.
+
+
 > What does "Closure use of non-escaping parameter may allow it to escape" means?!
 
 
@@ -64,6 +67,17 @@ What does this error means? To understand this, we will first need to know about
 
 
 
+Table of contents :
+1. [Default closure behaviour (non-escaping)](#nonescaping)
+2. [Escaping closure behaviour](#escaping)
+3. [Why Swift forces us to put the keyword @escaping](#swiftwhy)
+4. [When to use @escaping](#when)
+5. [Resources](#resources)
+
+
+
+<span id="nonescaping"></span>
+
 ## Default closure behaviour (non-escaping)
 
 Say for a simple function with closure like this :
@@ -102,6 +116,8 @@ After the app finish execute the **macICanBuy** function, the app no longer need
 ![nonescaping](https://iosimage.s3.amazonaws.com/2018/35-escaping-closure/nonescapingMemory.png)
 
 
+
+<span id="escaping"></span>
 
 ## Escaping closure behaviour
 
@@ -169,6 +185,8 @@ Xcode shows us the error message "Closure use of non-escaping parameter may allo
 
 
 
+<span id="swiftwhy"></span>
+
 ## Why Swift forces us to put the keyword @escaping
 
 As this point, you might wonder
@@ -177,11 +195,82 @@ As this point, you might wonder
 
 
 
-Andrew has written a [great explanation](https://www.andrewcbancroft.com/2017/05/11/why-do-we-need-to-annotate-escaping-closures-in-swift/) on this behaviour. In short, Swift forces you to put **@escaping** to remind yourself that the closure will be executed asynchronously / in the future (not now). This serve as a reminder so you won't get confused like "Why this certain output only appear 3 seconds after I execute the function?".
+Andrew has written a [great explanation](https://www.andrewcbancroft.com/2017/05/11/why-do-we-need-to-annotate-escaping-closures-in-swift/) on this behaviour. In short, Swift forces you to put **@escaping** to remind yourself that the closure will be executed asynchronously / in the future (not now). This serve as a reminder so you won't get confused like "Why this certain output only appear 3 seconds after I execute the function?" when you have moved to other parts of your code.
 
 
+
+<span id="when"></span>
 
 ## When to use @escaping
 
+As explained above, we will need to use **@escaping** on closure that might be executed after the function has finish execution / has returned.
 
+
+
+An example of this would be the URLSession datatask block, since the HTTP response will take some time to retrieve after the app makes the HTTP request.
+
+
+
+```swift
+func fetchUser(userID: Int, userCompletionHandler: @escaping (User?, Error?) -> Void) {
+  let url = URL(string: "https://reqres.in/api/users/\(userID)")!
+  
+  // the dataTask will make a HTTP request to the url, then after a while the HTTP response will be returned.
+  let task = URLSession.shared.dataTask(with: url, completionHandler: { data, response, error in
+
+    guard let data = data else { return }
+    do {
+      // parse json data and return it
+      let decoder = JSONDecoder()
+      let jsonDict = try decoder.decode([String: User].self, from: data)
+      if let userData = jsonDict["data"] {
+        
+        // the closure is called after the HTTP response is retrieved.
+        // hence it needs to be saved to the memory even after the fetchUser function has finished executed / returned.
+        userCompletionHandler(userData, nil)
+      }
+      
+    } catch let parseErr {
+      print("JSON Parsing Error", parseErr)
+      userCompletionHandler(nil, parseErr)
+    }
+  })
+  
+  task.resume()
+  // function will end here and return
+  // then after receiving HTTP response, the completionHandler will be called
+}
+
+```
+
+<br>
+
+
+
+Other than URLSession, we can also use it when doing graphical processing, disk IO etc. The pattern is as below : 
+
+```swift
+func someFunction(someParam: Int, closure: @escaping (String) -> Void) {
+  // other stuff...
+  
+  // When the closure is contained inside a block which take some time to finish
+  DispatchQueue.main.asyncAfter(deadline: .now() + 2, execute: {
+    closure("Mcdonalds' Big Mac")
+  })
+  
+  // other stuff...
+}
+```
+
+<br>
+
+
+
+<span id="resources"></span>
+
+## Resources
+
+[Why do we need to annotate escaping closure in Swift?](<https://www.andrewcbancroft.com/2017/05/11/why-do-we-need-to-annotate-escaping-closures-in-swift/>) by Andrew Bancroft
+
+[What is an escaping closure](https://www.hackingwithswift.com/example-code/language/what-is-an-escaping-closure) by Paul Hudson
 

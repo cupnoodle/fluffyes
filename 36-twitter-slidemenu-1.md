@@ -1,4 +1,4 @@
-# Replicating Twitter-like Slide Menu - Part 1
+# Replicating Twitter Slide Menu - Part 1
 
 
 

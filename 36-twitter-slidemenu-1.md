@@ -68,7 +68,7 @@ After dragging, you will see that Xcode auto link a new view controller to the C
 
 
 
-Then we will link the container view to the tab bar view controller. Select the Container view, then hold control and drag it to the tab bar controller.
+Then we will link the container view to the tab bar view controller. Select the Container view, then hold control and drag it to the tab bar controller. Select "**Embed**".
 
 
 
@@ -76,13 +76,21 @@ Then we will link the container view to the tab bar view controller. Select the 
 
 
 
+![select embed](https://iosimage.s3.amazonaws.com/2018/36-twitter-slidemenu-1/section1/selectEmbed.png)
+
+
+
 You might see the tab bar controller shrinked to match the container view size 😱, no worries, we will add some constraint to the container view so that it will match the screen size.
 
 
 
+// change to top 0, leading 0 ,equal width, equal height
+
 Let's create a top 0, leading 0, trailing 0 and bottom 0 constraints for the container view like this : 
 
 ![container view constraints](https://iosimage.s3.amazonaws.com/2018/36-twitter-slidemenu-1/section1/containerViewConstraint.png)
+
+
 
 
 
@@ -141,9 +149,19 @@ As we will add another container view for side menu later on, we should give a l
 
 ## Setup Container View for Side Menu View Controller
 
+Similar to previous section, drag another container view to MainViewController, link it to the side menu view controller, setup constraints (top 0, leading 0, trailing 0, bottom 0) and change the safe area to superview.
 
 
 
+![container view](https://iosimage.s3.amazonaws.com/2018/36-twitter-slidemenu-1/section2/controlDrag2.png)
+
+
+
+Add a label to this container view, we will label it as **SideMenuView**
+
+
+
+![side menu label](https://iosimage.s3.amazonaws.com/2018/36-twitter-slidemenu-1/section2/sidemenulabel.png)
 
 
 

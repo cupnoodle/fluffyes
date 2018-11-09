@@ -469,10 +469,10 @@ class ContentViewController: UIViewController {
 
 <br>
 
+<br>
+
 
 Build and run the app, now we have toggle-able side menu 🤘!
-
-
 
 
 ![toggling](https://iosimage.s3.amazonaws.com/2018/36-twitter-slidemenu-1/section4/toggling.gif)
@@ -485,24 +485,35 @@ Cool right? In the next part, we will add slide gesture to show/hide menu, and s
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+<div class="post-subscribe">
+  <div class="post-subscribe-left">
+    <h4> Learn and understand how Auto Layout works</h4>
+    <span style="font-size:0.8em;"> 
+    Can't wrap your head around Auto Layout? <br><br>
+    In this free 6 lesson email course, you will learn :
+    <ol>
+        <li>How Auto Layout determines the position and size of a view 📏</li>
+        <li>How to solve red lines (missing / conflicting constraint) in Interface Builder❗️</li>
+        <li>How to create dynamic height label and using it for dynamic layout⚡️</li>
+    </ol>
+    </span>
+</div>
+        <div class="post-subscribe-right">
+            <form action="https://www.getdrip.com/forms/448009646/submissions" method="post" data-drip-embedded-form="448009646">
+                <div style="margin-bottom: 0.5rem;">
+                    <label for="drip-firstname">Name<span style="color:#952B45;">*</span></label><br />
+                    <input type="text" id="drip-firstname" name="fields[firstname]" value="" />
+                </div>
+                <div>
+                    <label for="drip-email">Email Address<span style="color:#952B45;">*</span></label><br />
+                    <input type="email" id="drip-email" name="fields[email]" value="" />
+                </div>
+              <div>
+                <br>
+                <input type="submit" value="Send me Lesson 1" data-drip-attribute="sign-up-button" />
+                <br>
+                <span style="font-size: 0.8rem;">+ Weekly ish iOS Development tips to help you become a better iOS developer.<br> No Spam. Unsubscribe any time.</span>
+              </div>
+            </form>
+        </div>
+    </div>

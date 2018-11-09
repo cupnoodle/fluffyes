@@ -54,7 +54,13 @@ If you are planning to start the project from scratch, the steps below assume yo
 
 ## Setup Container View for Tab bar controller
 
-To accomodate the side menu and tab bar controllers, we will create a new view controller named **MainViewController** , and drag a container view to it.
+To accomodate the side menu and tab bar controllers, we will create a new view controller in storyboard named **MainViewController** , and drag a container view to it.
+
+
+
+![create new file](https://iosimage.s3.amazonaws.com/2018/36-twitter-slidemenu-1/section3/createNewFile.png)
+
+![mainVC](https://iosimage.s3.amazonaws.com/2018/36-twitter-slidemenu-1/section1/mainVC.png)
 
 
 
@@ -170,6 +176,139 @@ Select **SideMenuView** , then click on 'Edit' on its Equal width constraint, ch
 
 
 ![proportional width](https://iosimage.s3.amazonaws.com/2018/36-twitter-slidemenu-1/section2/multiplierWidth.png)
+
+
+
+Build and run the app, you should see the side menu is overlapping the tab bar controller like this : 
+
+![side menu run](https://iosimage.s3.amazonaws.com/2018/36-twitter-slidemenu-1/section2/sidemenurun.png)
+
+
+
+Now we have two container view on the main view controller 🙌! 
+
+
+
+As we are going to setup the top left profile button in the next step, let's move the side menu to the left so the tab bar controller is visible. We will set the leading constraint value of the side menu container to -350 for now.
+
+![side menu leading](https://iosimage.s3.amazonaws.com/2018/36-twitter-slidemenu-1/section3/sideMenuLeading.png)
+
+
+
+
+Later we will create outlet for the leading constraints of these two container view so we can manipulate their horizontal position.
+
+
+## Setup top left profile button 
+
+Notice that for every tab in the tab bar controller, they have the same top left profile button (the rounded avatar on top left) like this : 
+
+![top left profile button](https://iosimage.s3.amazonaws.com/2018/36-twitter-slidemenu-1/section3/topLeftButton.png)
+
+
+
+To reduce the repeating work of creating the top left button for each of the tab, we can create a View Controller class named '**ContentViewController**',  and then subclass view controller in each tab to it.
+
+
+![create new file](https://iosimage.s3.amazonaws.com/2018/36-twitter-slidemenu-1/section3/createNewFile.png)
+
+
+
+![content VC](https://iosimage.s3.amazonaws.com/2018/36-twitter-slidemenu-1/section3/contentVC.png)
+
+
+
+We will add the following code to the **ContentViewController.swift** to create the left top profile button : 
+
+```swift
+class ContentViewController: UIViewController {
+    
+  let profileButton = UIButton(type: .custom)
+  
+  override func viewDidLoad() {
+    super.viewDidLoad()
+
+    // Do any additional setup after loading the view.
+    profileButton.setImage(UIImage(named: "Avatar") , for: .normal)
+    profileButton.contentMode = .scaleAspectFit
+    profileButton.translatesAutoresizingMaskIntoConstraints = false
+    
+    // function performed when the button is tapped
+    profileButton.addTarget(self, action: #selector(profileButtonTapped(_:)), for: .touchUpInside)
+    
+    // Add the profile button as the left bar button of the navigation bar
+    let barbutton = UIBarButtonItem(customView: profileButton)
+    self.navigationItem.leftBarButtonItem = barbutton
+    
+    // Set the width and height for the profile button
+    NSLayoutConstraint.activate([
+        profileButton.widthAnchor.constraint(equalToConstant: 35.0),
+        profileButton.heightAnchor.constraint(equalToConstant: 35.0)
+    ])
+    
+    // Make the profile button become circular
+    profileButton.layer.cornerRadius = 35.0 / 2
+    profileButton.clipsToBounds = true   
+  }
+    
+  @IBAction func profileButtonTapped(_ sender: Any){
+
+  }
+}
+```
+
+<br>
+
+
+
+And then we replace the UIViewController subclass to **ContentViewController** subclass for HomeViewController, SearchViewController, NotificationViewController and MessageViewController.
+
+
+```swift
+// HomeViewController.swift
+// Change the UIViewController to ContentViewController
+class HomeViewController: ContentViewController {
+  ...
+}
+```
+
+<br><br>
+
+```swift
+// SearchViewController.swift
+// Change the UIViewController to ContentViewController
+class SearchViewController: ContentViewController {
+  ...
+}
+```
+<br><br>
+
+```swift
+// NotificationViewController.swift
+// Change the UIViewController to ContentViewController
+class NotificationViewController: ContentViewController {
+  ...
+}
+```
+<br><br>
+
+```swift
+// MessageViewController.swift
+// Change the UIViewController to ContentViewController
+class MessageViewController: ContentViewController {
+  ...
+}
+```
+
+<br>
+
+
+
+Build and run the app, we have a top left profile button for each tab now 👌!
+
+
+
+![top left profile button](https://iosimage.s3.amazonaws.com/2018/36-twitter-slidemenu-1/section3/topLeftProfileButtonDone.png)
 
 
 

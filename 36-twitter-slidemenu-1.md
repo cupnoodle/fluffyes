@@ -84,50 +84,42 @@ You might see the tab bar controller shrinked to match the container view size ð
 
 
 
-// change to top 0, leading 0 ,equal width, equal height
+Let's create a leading space, top space, equal width and equal height constraints for the container view (to its parent view) like this : 
 
-Let's create a top 0, leading 0, trailing 0 and bottom 0 constraints for the container view like this : 
+![Constraint gif](https://iosimage.s3.amazonaws.com/2018/36-twitter-slidemenu-1/section1/multipleConstraints.gif)
 
-![container view constraints](https://iosimage.s3.amazonaws.com/2018/36-twitter-slidemenu-1/section1/containerViewConstraint.png)
-
-
+Select the container view, Hold **control** and drag to its parent view. Then once the list of constraints appear, hold **shift** to select multiple constraints, then click 'Add Constraints' once you are done.
 
 
 
-As by default Xcode align the top / bottom constraint to Safe Area, the container view will have some margin on top/ bottom when viewed in iPhone X / XR / XS : 
+As by default Xcode align the top / bottom constraint to Safe Area, the container view will have some margin on top when viewed in iPhone X / XR / XS : 
+
+![Safe Area](https://iosimage.s3.amazonaws.com/2018/36-twitter-slidemenu-1/section1/safeArea.png)
 
 
 
-![safe area](https://iosimage.s3.amazonaws.com/2018/36-twitter-slidemenu-1/section1/safeArea.png)
+We want the container view to align to the screen top, not safe area, hence we will need to edit the constraint.
 
 
-
-We want the container view to align to the screen top and bottom, not safe area, hence we will need to edit the constraint.
 
 
 Select the container view and double click its Align Top constraint : 
 
-![doubleClick](https://iosimage.s3.amazonaws.com/2018/36-twitter-slidemenu-1/section1/doubleClickTopConstraint.png)
+![Double click top constraint](https://iosimage.s3.amazonaws.com/2018/36-twitter-slidemenu-1/section1/selectAlignTop.png)
 
 
 
 Change the "**Safe Area**" in First/Second Item to "**Superview**", and then set the constant to **0** .
 
-![safe area to superview](https://iosimage.s3.amazonaws.com/2018/36-twitter-slidemenu-1/section1/safeAreaToSuperview.png)
+![Safe Area](https://iosimage.s3.amazonaws.com/2018/36-twitter-slidemenu-1/section1/changeSafeAreaToSuperView.png)
 
 
 
-Remember to set the constant to zero as Xcode will auto change the value when you change Safe Area to Superview.
-
-![superview zero](https://iosimage.s3.amazonaws.com/2018/36-twitter-slidemenu-1/section1/superviewConstantZero.png)
+![constant zero](https://iosimage.s3.amazonaws.com/2018/36-twitter-slidemenu-1/section1/constantZeroSuperview.png)
 
 
 
-Repeat this step for the bottom constraint.
-
-
-
-After adjusting the top/bottom constraint, set the MainViewController as the initial view controller.
+After adjusting the top constraint, set the MainViewController as the initial view controller.
 
 ![initial view controller](https://iosimage.s3.amazonaws.com/2018/36-twitter-slidemenu-1/section1/initialViewController.png)
 
@@ -149,7 +141,7 @@ As we will add another container view for side menu later on, we should give a l
 
 ## Setup Container View for Side Menu View Controller
 
-Similar to previous section, drag another container view to MainViewController, link it to the side menu view controller, setup constraints (top 0, leading 0, trailing 0, bottom 0) and change the safe area to superview.
+Similar to previous section, drag another container view to MainViewController, link it to the side menu view controller, setup constraints (top, leading, equal width and equal height) and change the safe area to superview.
 
 
 
@@ -157,9 +149,7 @@ Similar to previous section, drag another container view to MainViewController, 
 
 
 
-Add a label to this container view, we will label it as **SideMenuView**
-
-
+Add a label to this container view, we will label it as **SideMenuView**.
 
 ![side menu label](https://iosimage.s3.amazonaws.com/2018/36-twitter-slidemenu-1/section2/sidemenulabel.png)
 

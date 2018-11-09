@@ -84,7 +84,7 @@ You might see the tab bar controller shrinked to match the container view size ð
 
 
 
-Let's create a leading space, top space, equal width and equal height constraints for the container view (to its parent view) like this : 
+Let's create a leading space 0 , top space 0, equal width and equal height constraints for the container view (to its parent view) like this : 
 
 ![Constraint gif](https://iosimage.s3.amazonaws.com/2018/36-twitter-slidemenu-1/section1/multipleConstraints.gif)
 
@@ -119,7 +119,11 @@ Change the "**Safe Area**" in First/Second Item to "**Superview**", and then set
 
 
 
-After adjusting the top constraint, set the MainViewController as the initial view controller.
+After adjusting the top constraint, remember to set the constant of leading constraint to 0 as well.
+
+
+
+Set the MainViewController as the initial view controller.
 
 ![initial view controller](https://iosimage.s3.amazonaws.com/2018/36-twitter-slidemenu-1/section1/initialViewController.png)
 
@@ -141,7 +145,7 @@ As we will add another container view for side menu later on, we should give a l
 
 ## Setup Container View for Side Menu View Controller
 
-Similar to previous section, drag another container view to MainViewController, link it to the side menu view controller, setup constraints (top, leading, equal width and equal height) and change the safe area to superview.
+Similar to previous section, drag another container view to MainViewController, link it to the side menu view controller, setup constraints (top 0, leading 0, equal width and equal height) and change the safe area to superview.
 
 
 
@@ -149,9 +153,23 @@ Similar to previous section, drag another container view to MainViewController, 
 
 
 
+
+
 Add a label to this container view, we will label it as **SideMenuView**.
 
 ![side menu label](https://iosimage.s3.amazonaws.com/2018/36-twitter-slidemenu-1/section2/sidemenulabel.png)
+
+
+
+As we want the width of side menu to be 80% of screen width (so the side menu won't cover the whole screen when opened), we will change its equal width constraint to equal 80% of its parent view's width.
+
+
+
+Select **SideMenuView** , then click on 'Edit' on its Equal width constraint, change the multipler to 0.8 . This will make the side menu view width to be 80% of its parent view.
+
+
+
+![proportional width](https://iosimage.s3.amazonaws.com/2018/36-twitter-slidemenu-1/section2/multiplierWidth.png)
 
 
 

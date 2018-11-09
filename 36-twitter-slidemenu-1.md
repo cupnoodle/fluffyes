@@ -2,7 +2,7 @@
 
 
 
-In this post, we will breakdown, analyze the Slide Menu mechanism of Twitter app, and try to replicate it using Auto Layout and Container View. This post assume you have some experience working with [Auto Layout](https://fluffy.es/making-sense-of-auto-layout/).
+In this post, we will breakdown, analyze the Slide Menu mechanism of Twitter app, and try to replicate it using Auto Layout and Container View. This post assume you have some experience working with [Auto Layout](https://fluffy.es/making-sense-of-auto-layout/). No third party library is used in this tutorial.
 
 
 
@@ -309,6 +309,194 @@ Build and run the app, we have a top left profile button for each tab now 👌!
 
 
 ![top left profile button](https://iosimage.s3.amazonaws.com/2018/36-twitter-slidemenu-1/section3/topLeftProfileButtonDone.png)
+
+
+
+
+
+## Create outlet for constraints
+
+To be able to modify the constraint value in code, we need to create and link outlet of constraint to the MainViewController.
+
+
+
+
+Select the Side Menu Container View in storyboard, double click the leading constraint, then hold control + drag the highlighted constraint to the view controller. Name the outlet as **sideMenuViewLeadingConstraint**.
+
+
+
+![double click constraint](https://iosimage.s3.amazonaws.com/2018/36-twitter-slidemenu-1/section4/doubleclickLeading.png)
+
+
+
+![control drag to view controller](https://iosimage.s3.amazonaws.com/2018/36-twitter-slidemenu-1/section4/controlDragConstraint.png)
+
+
+
+![side menu view constraint outlet](https://iosimage.s3.amazonaws.com/2018/36-twitter-slidemenu-1/section4/sideMenuViewConstraint.png)
+
+
+
+Repeat the same step for the leading constraint of Tab Bar Container View (ContentView), and name the outlet as **contentViewLeadingConstraint**.
+
+
+
+Create an outlet for the Side Menu Container View, name it as **sideMenuContainer** .
+
+ 
+
+Your MainViewController.swift should look like this now : 
+
+```swift
+class MainViewController: UIViewController {
+	
+  @IBOutlet weak var sideMenuContainer: UIView!
+  @IBOutlet weak var contentViewLeadingConstraint: NSLayoutConstraint!
+  @IBOutlet weak var sideMenuViewLeadingConstraint: NSLayoutConstraint!
+
+...
+}
+```
+
+<br>
+
+
+
+## Toggle side menu when top left profile button is tapped
+
+When you tap on the top left avatar circle button on Twitter app, the side menu appears if it is not visible yet, or the side menu disappear if it is currently visible.  Now we are going to replicate this functionality.
+
+
+
+Add a boolean variable to keep track if the side menu is visible on screen.
+
+```swift
+class MainViewController: UIViewController {
+	
+  @IBOutlet weak var sideMenuContainer: UIView!
+  @IBOutlet weak var contentViewLeadingConstraint: NSLayoutConstraint!
+  @IBOutlet weak var sideMenuViewLeadingConstraint: NSLayoutConstraint!
+	
+  // if side menu is visible
+  var menuVisible = false
+...
+}
+```
+
+<br>
+
+
+
+In viewDidLoad, we set the leading constraint of side menu container to negative width of the side menu container. So that the side menu container will be invisible at first. 
+
+
+
+```swift
+override func viewDidLoad() {
+  super.viewDidLoad()
+
+  // Do any additional setup after loading the view.
+  sideMenuContainerLeadingConstraint.constant = 0 - self.sideMenuContainer.frame.size.width
+}
+```
+
+<br>
+
+
+
+![side menu leading explanation](https://iosimage.s3.amazonaws.com/2018/36-twitter-slidemenu-1/section4/sideMenuLeadingExplanation.png)
+
+Next, we will add a function to toggle the side menu :  
+
+```swift
+class MainViewController: UIViewController {
+
+    @IBOutlet weak var sideMenuContainer: UIView!
+    @IBOutlet weak var contentViewLeadingConstraint: NSLayoutConstraint!
+    @IBOutlet weak var sideMenuViewLeadingConstraint: NSLayoutConstraint!
+    
+    var menuVisible = false
+
+    ...
+
+  @objc func toggleSideMenu(fromViewController: UIViewController) {
+    if(menuVisible){
+      UIView.animate(withDuration: 0.5, animations: {
+        // hide the side menu to the left
+        self.sideMenuViewLeadingConstraint.constant = 0 - self.sideMenuContainer.frame.size.width
+        // move the content view (tab bar controller) to original position
+        self.contentViewLeadingConstraint.constant = 0
+        self.view.layoutIfNeeded()
+      })
+    } else {
+      self.view.layoutIfNeeded()
+      UIView.animate(withDuration: 0.5, animations: {
+        // move the side menu to the right to show it
+        self.sideMenuViewLeadingConstraint.constant = 0
+        // move the content view (tab bar controller) to the right
+        self.contentViewLeadingConstraint.constant = self.sideMenuContainer.frame.size.width
+        self.view.layoutIfNeeded()
+      })
+    }
+    
+    menuVisible = !menuVisible
+  }
+```
+
+
+
+<br>
+
+
+
+Then in the ContentViewController, we toggle the side menu when the profile button is tapped :  
+
+```swift
+class ContentViewController: UIViewController {
+
+  ...
+
+  @IBAction func profileButtonTapped(_ sender: Any){
+    // current view controller (self) is embed in navigation controller which is embed in tab bar controller
+    // .parent means the view controller that has the container view (ie. MainViewController)
+    
+    if let mainVC = self.navigationController?.tabBarController?.parent as? MainViewController {
+        mainVC.toggleSideMenu(fromViewController: self)
+    }
+  }
+}
+```
+
+<br>
+
+
+Build and run the app, now we have toggle-able side menu 🤘!
+
+
+
+
+![toggling](https://iosimage.s3.amazonaws.com/2018/36-twitter-slidemenu-1/section4/toggling.gif)
+
+
+
+Cool right? In the next part, we will add slide gesture to show/hide menu, and segue to profile view controller when one of the table view row in side menu view controller is tapped.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

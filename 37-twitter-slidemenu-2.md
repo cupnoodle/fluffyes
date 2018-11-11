@@ -180,7 +180,7 @@ Next, we will add some menu to the side menu's table view, and add action to seg
 
 For the segue, we will push the profile view controller to the navigation controller of the selected tab.  
 
-The code (no need to type this first, this is just explanation of what we will do later) : 
+The code (no need to type this first, this is just an explanation of what we will do later) : 
 
 ```swift
 // SideMenuViewController.swift
@@ -322,6 +322,119 @@ class MainViewController: UIViewController {
 ```
 
 <br>
+
+We have finished preparing for the setup, next, we will setup the table view and implement the tap action in the side menu.
+
+
+## Setup Table view and row tap action
+
+Let's create an outlet for the table view in the side menu view controller (hold control and drag), and name it **menuTableView**.
+
+
+
+![create outlet](https://iosimage.s3.amazonaws.com/2018/37-twitter-slidemenu-2/menuOutlet.png)
+
+
+
+![create outlet 2](https://iosimage.s3.amazonaws.com/2018/37-twitter-slidemenu-2/menuOutlet2.png)
+
+
+
+Also create a variable **cellIdentifier** to hold the identifier for cell reuse : 
+
+```swift
+class SideMenuViewController: UIViewController {
+    
+    @IBOutlet weak var menuTableView: UITableView!
+    
+    let cellIdentifier = "cellIdentifier"
+    var currentActiveNav : UINavigationController?
+  
+//...
+}
+```
+
+<br>
+
+
+
+In viewDidLoad, set the table view datasource/ delegate to self : 
+
+```swift
+// SideMenuViewController.swift
+
+override func viewDidLoad() {
+    super.viewDidLoad()
+    menuTableView.register(UITableViewCell.self, forCellReuseIdentifier: cellIdentifier)
+    menuTableView.dataSource = self
+    menuTableView.delegate = self
+}
+```
+
+<br>
+
+
+
+Then implement the datasource / delegate method : 
+
+```swift
+// SideMenuViewController.swift
+
+class SideMenuViewController: UIViewController {
+// ...
+}
+
+extension SideMenuViewController : UITableViewDataSource {
+  func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+      return 3
+  }
+  
+  func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+    let cell = tableView.dequeueReusableCell(withIdentifier: cellIdentifier, for: indexPath)
+    
+    switch indexPath.row {
+    case 0:
+      cell.textLabel?.text = "Profile"
+    case 1:
+      cell.textLabel?.text = "List"
+    case 2:
+      cell.textLabel?.text = "Moments"
+    default:
+      cell.textLabel?.text = ""
+    }
+    
+    return cell
+  }
+}
+
+extension SideMenuViewController : UITableViewDelegate {
+  func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+    tableView.deselectRow(at: indexPath, animated: true)
+    
+    if let currentActiveNav = self.currentActiveNav,
+      let mainVC = self.parent as? MainViewController {
+      mainVC.hideSideMenu()
+      let storyboard = UIStoryboard(name: "Main", bundle: nil)
+      let profileVC = storyboard.instantiateViewController(withIdentifier: "ProfileViewController")
+      currentActiveNav.pushViewController(profileVC, animated: true)
+    }
+  }
+}
+```
+
+<br>
+
+
+
+Build and run the app, open the side menu and tap on any row, you should see this : 
+
+![push segue](https://iosimage.s3.amazonaws.com/2018/37-twitter-slidemenu-2/pushSegue.gif)
+
+
+
+You have now implemented Twitter slide menu without using any library / Cocoapods 🎉!  Container views helped us a lot on implementing the slide menu, now you can use one less library when you want to implement slide menu 🙌.
+
+
 
 
 

@@ -309,7 +309,7 @@ class MainViewController: UIViewController {
     // and find the side menu view controller and assign it
     for childViewController in self.childViewControllers {
       if let sideMenuVC = childViewController as? SideMenuViewController {
-        sideMenuController = sideMenuVC
+        sideMenuViewController = sideMenuVC
         break
       }
     }

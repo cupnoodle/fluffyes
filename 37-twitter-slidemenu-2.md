@@ -172,3 +172,156 @@ Build and run the app, and try to release while dragging. The side menu should s
 
 We have successfully added the swipe to open/close gesture for the side menu, Awesome!
 
+Next, we will add some menu to the side menu's table view, and add action to segue when it is tapped.
+
+
+
+## Setup before coding the segue
+
+For the segue, we will push the profile view controller to the navigation controller of the selected tab.  
+
+The code (no need to type this first, this is just explanation of what we will do later) : 
+
+```swift
+// SideMenuViewController.swift
+
+/* inside tableView didSelectRowAt function */
+
+// currentActiveNav is the navigation controller of the selected tab
+if let currentActiveNav = self.currentActiveNav,
+let mainVC = self.parent as? MainViewController {
+  // ask the MainViewController (which have the two container view) to hide the sidemenu
+  // side menu view should be hidden after user tap on the menu
+  mainVC.hideSideMenu()
+
+  // instantiate the Profile View Controller from Storyboard using Identifier
+  let storyboard = UIStoryboard(name: "Main", bundle: nil)
+  let profileVC = storyboard.instantiateViewController(withIdentifier: "ProfileViewController")
+
+  // push the profile view controller to the navigation controller
+  currentActiveNav.pushViewController(profileVC, animated: true)
+}
+```
+
+<br>
+
+
+
+To identify which navigation controller to push the profile view controller to, we will need to create a variable to hold this value. Let's name it **currentActiveNav** :
+
+```swift
+class SideMenuViewController: UIViewController {
+
+  var currentActiveNav : UINavigationController?
+  // ...
+}
+```
+
+<br>
+
+
+
+Next, we will need to add an identifier to the profile view controller (or any other controller you want to segue to) in the Storyboard. So that we can instantiate this view controller in code like this : **storyboard.instantiateViewController(withIdentifier: "ProfileViewController")**.
+
+![storyboard identifier](https://iosimage.s3.amazonaws.com/2018/37-twitter-slidemenu-2/storyboardIdentifier.png)
+
+
+
+Next, we will implement the **hideSideMenu()** function in the MainViewController : 
+
+```swift
+class MainViewController: UIViewController {
+  // .. below the toggleSideMenu's function
+  /* its very similar to the toggleSideMenu function, 
+     except it doesn't do anything when the side menu is already hidden.
+     And it doesn't have the parameter fromViewController
+  */
+  func hideSideMenu() {
+    if(menuVisible){
+      UIView.animate(withDuration: 0.5, animations: {
+          self.sideMenuViewLeadingConstraint.constant = 0 - self.sideMenuContainer.frame.size.width
+          self.contentViewLeadingConstraint.constant = 0
+          self.view.layoutIfNeeded()
+      })
+    
+      menuVisible = !menuVisible
+    }
+  }
+}
+```
+
+<br>
+
+
+
+Next, we will modify the **toggleSideMenu(fromViewController:)** function in the MainViewController. We want to set the value of **currentActiveNav** to the navigation controller of the selected tab when the menu is shown.
+
+
+```swift
+@objc func toggleSideMenu(fromViewController: UIViewController) {
+  if(menuVisible){
+    UIView.animate(withDuration: 0.5, animations: {
+      // hide the side menu to the left
+      self.sideMenuViewLeadingConstraint.constant = 0 - self.sideMenuContainer.frame.size.width
+      // move the content view (tab bar controller) to original position
+      self.contentViewLeadingConstraint.constant = 0
+      self.view.layoutIfNeeded()
+    })
+  } else {
+    // set the current active navigation controller 
+    // fromViewController is the view controller which called this toggleSideMenu function (view controller of the selected tab)
+    self.sideMenuViewController?.currentActiveNav = fromViewController.navigationController
+
+    self.view.layoutIfNeeded()
+    UIView.animate(withDuration: 0.5, animations: {
+      // move the side menu to the right to show it
+      self.sideMenuViewLeadingConstraint.constant = 0
+      // move the content view (tab bar controller) to the right
+      self.contentViewLeadingConstraint.constant = self.sideMenuContainer.frame.size.width
+      self.view.layoutIfNeeded()
+    })
+  }
+  
+  menuVisible = !menuVisible
+}
+```
+
+<br>
+
+
+
+After typing the code above, you will get an error mentioning "*Value of type 'MainViewController' has no member 'sideMenuViewController'*", this is because we haven't add the **sideMenuViewController** variable to the MainViewController yet. We will proceed to add it like this. :
+
+
+
+```swift
+class MainViewController: UIViewController {
+  
+  // ...
+  var sideMenuViewController : SideMenuViewController?
+  
+  override func viewDidLoad() {
+    super.viewDidLoad()
+
+    // Do any additional setup after loading the view.
+    
+    // loop through all of the child view controllers (view controllers inside container views)
+    // and find the side menu view controller and assign it
+    for childViewController in self.childViewControllers {
+      if let sideMenuVC = childViewController as? SideMenuViewController {
+        sideMenuController = sideMenuVC
+        break
+      }
+    }
+    
+    sideMenuViewLeadingConstraint.constant = 0 - self.sideMenuContainer.frame.size.width
+  }
+  
+  // ...
+}
+```
+
+<br>
+
+
+

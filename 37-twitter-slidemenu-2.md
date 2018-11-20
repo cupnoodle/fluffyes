@@ -1,10 +1,10 @@
 # Replicating Twitter Slide Menu - Part 2
 
-In [Part 1](https://fluffy.es/twitter-slide-menu-1/) , we have create two container views, linked outlet to their leading constraints and implemented the toggling function. In this part, we will implement the pan gesture to show / hide menu and segue to profile view controller when user tap on the tableview row. This post assume that you already knew about [Auto Layout](https://fluffy.es/making-sense-of-auto-layout/).
+In [Part 1](https://fluffy.es/twitter-slide-menu-1/) , we have create two container views, linked outlet to their leading constraints and implemented the toggling function. In this part, we will implement the pan gesture to show / hide menu and segue to profile view controller when user tap on the tableview row. This post assume that you already knew about [Auto Layout](https://fluffy.es/making-sense-of-auto-layout/) and [Delegate](https://fluffy.es/eli-5-delegate/).
 
 
 
-# Create Pan Gesture to detect finger pan
+## Create Pan Gesture to detect finger pan
 
 As the side menu will move according to the distance we swiped in the app, we will create a Pan Gesture recognizer to capture the movement of finger on the ContentViewController (which every view controllers in tab bar are subclassed from, so the pan gesture will apply on each of them).
 
@@ -436,5 +436,47 @@ You have now implemented Twitter slide menu without using any library / Cocoapod
 
 
 
+<br>
+
+<script src="https://gumroad.com/js/gumroad.js"></script>
+<p style="text-align:center;">
+<br>
+Want to dive in the completed project and try it out?<br><br>
+<a class="gumroad-button" href="https://gum.co/twitterslidemenu" target="_blank">Get the completed project</a>
+</p>
+
+
+<div class="post-subscribe">
+  <div class="post-subscribe-left">
+    <h4> Learn and understand how Auto Layout works</h4>
+    <span style="font-size:0.8em;"> 
+    Can't wrap your head around Auto Layout? <br><br>
+    In this free 6 lesson email course, you will learn :
+    <ol>
+        <li>How Auto Layout determines the position and size of a view 📏</li>
+        <li>How to solve red lines (missing / conflicting constraint) in Interface Builder❗️</li>
+        <li>How to create dynamic height label and using it for dynamic layout⚡️</li>
+    </ol>
+    </span>
+</div>
+        <div class="post-subscribe-right">
+            <form action="https://www.getdrip.com/forms/448009646/submissions" method="post" data-drip-embedded-form="448009646">
+                <div style="margin-bottom: 0.5rem;">
+                    <label for="drip-firstname">Name<span style="color:#952B45;">*</span></label><br />
+                    <input type="text" id="drip-firstname" name="fields[firstname]" value="" />
+                </div>
+                <div>
+                    <label for="drip-email">Email Address<span style="color:#952B45;">*</span></label><br />
+                    <input type="email" id="drip-email" name="fields[email]" value="" />
+                </div>
+              <div>
+                <br>
+                <input type="submit" value="Send me Lesson 1" data-drip-attribute="sign-up-button" />
+                <br>
+                <span style="font-size: 0.8rem;">+ Weekly ish iOS Development tips to help you become a better iOS developer.<br> No Spam. Unsubscribe any time.</span>
+              </div>
+            </form>
+        </div>
+    </div>
 
 

@@ -8,3 +8,110 @@ There are many ways to store data locally in iOS app. UserDefaults, Keychain and
 
 ## UserDefaults
 
+As per [Apple Documentation](), UserDefaults is 
+
+> An interface to the user’s defaults database, where you store key-value pairs persistently across launches of your app.
+
+
+
+What type of data can we store in UserDefaults? 
+
+> A default object must be a property list—that is, an instance of (or for collections, a combination of instances of) [`NSData`](https://developer.apple.com/documentation/foundation/nsdata), [`NSString`](https://developer.apple.com/documentation/foundation/nsstring), [`NSNumber`](https://developer.apple.com/documentation/foundation/nsnumber), [`NSDate`](https://developer.apple.com/documentation/foundation/nsdate), [`NSArray`](https://developer.apple.com/documentation/foundation/nsarray), or [`NSDictionary`](https://developer.apple.com/documentation/foundation/nsdictionary). If you want to store any other type of object, you should typically archive it to create an instance of NSData.
+
+
+
+Wait... what is a property list? 🤔 What does "A default object must be a property list" means? 
+
+
+
+You might have seen a .plist file before, plist is short for property list. There is usually an **info.plist** file created for you when you start new iOS project :
+
+![Info Plist](https://iosimage.s3.amazonaws.com/2018/39-persist-data/infoplist.png)
+
+
+
+When you store data in UserDefaults, the data format is similar to Info.plist as well. The UserDefaults plist is saved in the **Library** folder inside the app folder ([Read more on app folder structure here](https://developer.apple.com/library/archive/documentation/FileManagement/Conceptual/FileSystemProgrammingGuide/FileSystemOverview/FileSystemOverview.html#//apple_ref/doc/uid/TP40010672-CH2-SW12)). We can take a peek into the Library folder like this : 
+
+```swift
+UserDefaults.standard.set("https://fluffy.es", forKey: "homepage")
+UserDefaults.standard.set(false, forKey: "darkmode")
+
+let library_path = NSSearchPathForDirectoriesInDomains(.libraryDirectory, .userDomainMask, true)[0]
+
+print("library path is \(library_path)")
+```
+
+<br>
+
+Build and run the app in Simulator, then open Finder and press <kbd>command</kbd> + <kbd>shift</kbd> + <kbd>G</kbd> , paste in the library path and click 'Go' to navigate to the Library folder.
+
+
+
+![Library Path](https://iosimage.s3.amazonaws.com/2018/39-persist-data/libraryPath.png)
+
+
+
+You will see two folder, 'Caches' and 'Preferences' , the UserDefaults plist file is stored inside the 'Preferences' folder.
+
+
+
+![Library folders](https://iosimage.s3.amazonaws.com/2018/39-persist-data/libraryFolders.png)
+
+
+
+![plist](https://iosimage.s3.amazonaws.com/2018/39-persist-data/defaultPlist.png)
+
+
+
+If we double click the .plist file, Xcode will show a property list format to us : 
+
+![content of plist](https://iosimage.s3.amazonaws.com/2018/39-persist-data/plistContent.png)
+
+
+
+As UserDefaults uses .plist format to save data, we can only store data with type of NSString, NSNumber, NSData, NSArray, NSDictionary or NSData. If we want to store custom object into UserDefaults, we can use [Codable and PropertyListEncoder](https://fluffy.es/saving-custom-object-into-userdefaults/) to turn the custom object into NSData.
+
+
+
+In the documentation, Apple mentioned few example use cases : 
+
+> For example, you can allow users to specify their preferred units of measurement or media playback speed. Apps store these preferences by assigning values to a set of parameters in a user’s defaults database.
+
+
+
+You can use UserDefaults for storing user settings (eg: settings page in your app with UISwitch, Segmented Control or simple Textfield)
+
+
+
+![Settings](https://iosimage.s3.amazonaws.com/2018/39-persist-data/settingsView.png)
+
+
+
+
+You can also store non-sensitive data such as high score for a game, recently played song etc. In my public transport app [Komuter](https://komuter.app), the last 5 trips are stored in UserDefaults (Array of custom objects encoded into NSData). User can then tap the recent trips when they select station.
+
+
+![recent trip](https://iosimage.s3.amazonaws.com/2018/39-persist-data/recentTrip.jpg)
+
+
+Avoid storing large amount of data in a single UserDefaults key such as 50 rows of user's favorite songs. 
+
+And also **avoid storing image data** (conversion of UIImage to NSData) into UserDefaults, as UserDefaults are not meant to store large amount of data. A better way to do this is to save the image file (eg: avatar.png) into the Library folder of app, then store the path to the image (eg: "AppFolder/Library/avatar.png") into UserDefaults, and show the image using `UIImage(contentsOfFile: savedPath)`.
+
+
+
+Storing large amount of data into UserDefaults could affect performance of your app significantly as the whole UserDefaults plist file is loaded into memory when your app launches. As mentioned in Apple Documentation : 
+
+> `UserDefaults` caches the information to avoid having to open the user’s defaults database each time you need a default value.
+
+
+
+
+
+## Keychain
+
+Previously, we have explained that UserDefaults saves data into plist. Using apps such as [iExplorer](https://macroplant.com/iexplorer), users can access the Library/Preferences folder of their iPhone and read / modify the UserDefaults plist data easily (eg: Change the boolean value of "boughtProVersion" from false to true !). **Don't ever store a boolean for checking if user has bought in-app purchase in UserDefaults**! User can change it very easily and get your goodies for free! 😬
+
+
+
+Other than in-app purchase status, you shouldn't store user password / API Keys in UserDefaults for the same reason as well.

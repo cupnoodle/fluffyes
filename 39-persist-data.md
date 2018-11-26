@@ -110,7 +110,7 @@ Storing large amount of data into UserDefaults could affect performance of your 
 
 ## Keychain
 
-Previously, we have explained that UserDefaults saves data into plist. Using apps such as [iExplorer](https://macroplant.com/iexplorer), users can access the Library/Preferences folder of their iPhone and read / modify the UserDefaults plist data easily (eg: Change the boolean value of "boughtProVersion" from false to true, or change the amount of coins). **Don't ever store a boolean for checking if user has bought in-app purchase in UserDefaults**! User can change it very easily and get your goodies for free! 😬
+Previously, we have explained that UserDefaults saves data into plist. Using apps such as [iExplorer](https://macroplant.com/iexplorer), users can access the Library/Preferences folder of their iPhone and read / modify the UserDefaults plist data easily (eg: Change the boolean value of "boughtProVersion" from false to true, or change the amount of coins). **Don't ever store a boolean for checking if user has bought in-app purchase in UserDefaults**! User can change it very easily (without jailbreaking) and get your goodies for free! 😬
 
 
 
@@ -118,4 +118,47 @@ Other than in-app purchase status, you shouldn't store user password / API Keys 
 
 
 
-This is where Keychain comes in, 
+This is where Keychain comes in, from [Apple documentation](https://developer.apple.com/documentation/security/keychain_services) : 
+
+> The keychain services API helps you solve this problem by giving your app a mechanism to store small bits of user data in an encrypted database called a keychain. When you securely remember the password for them, you free the user to choose a complicated one.
+
+
+
+![keychain](https://iosimage.s3.amazonaws.com/2018/39-persist-data/keychain.png)
+
+Most of the Keychain services API provided by Apple are written in C language and require some configuration to use 😅. To simplify the usage of keychain, we can use some open source Keychain wrapper library like [Keychain Access](https://github.com/kishikawakatsumi/KeychainAccess) . 
+
+
+
+Using Keychain Access library, we can save / load password like this : 
+
+```swift
+// Save the user password into keychain
+let keychain = Keychain(service: "com.yourcompany.yourappbundlename")
+keychain["user_password"] = "correcthorsebatterystaple"
+
+// Load the user password
+let keychain = Keychain(service: "com.yourcompany.yourappbundlename")
+let user_password = keychain["user_password"]
+```
+
+<br>
+
+Look easy isn't it? The Keychain Access library has done a lot of under the hood operation for us. 😬
+
+
+
+You should always use Keychain to store sensitive data like password, keys, certificates etc.
+
+
+
+Data saved in Keychain can be accessed by multiple apps, provided that the data are created from the apps from the same developer. This is how SSO (Secure sign on, like you login in one app and then another app will auto login for you) in iOS app works.
+
+
+
+## Core Data
+
+
+
+
+

@@ -110,8 +110,12 @@ Storing large amount of data into UserDefaults could affect performance of your 
 
 ## Keychain
 
-Previously, we have explained that UserDefaults saves data into plist. Using apps such as [iExplorer](https://macroplant.com/iexplorer), users can access the Library/Preferences folder of their iPhone and read / modify the UserDefaults plist data easily (eg: Change the boolean value of "boughtProVersion" from false to true !). **Don't ever store a boolean for checking if user has bought in-app purchase in UserDefaults**! User can change it very easily and get your goodies for free! 😬
+Previously, we have explained that UserDefaults saves data into plist. Using apps such as [iExplorer](https://macroplant.com/iexplorer), users can access the Library/Preferences folder of their iPhone and read / modify the UserDefaults plist data easily (eg: Change the boolean value of "boughtProVersion" from false to true, or change the amount of coins). **Don't ever store a boolean for checking if user has bought in-app purchase in UserDefaults**! User can change it very easily and get your goodies for free! 😬
 
 
 
 Other than in-app purchase status, you shouldn't store user password / API Keys in UserDefaults for the same reason as well.
+
+
+
+This is where Keychain comes in, 

@@ -158,6 +158,114 @@ Data saved in Keychain can be accessed by multiple apps, provided that the data 
 
 ## Core Data
 
+Core Data is a huge topic in iOS Development, some developers love it, some hate it, but nevertheless it provides a lot of feature on saving/loading/using data. From [Apple documentation](https://developer.apple.com/library/archive/documentation/Cocoa/Conceptual/CoreData/index.html), 
+
+
+
+> Core Data is a framework that you use to manage the model layer objects in your application. It provides generalized and automated solutions to common tasks associated with object life cycle and object graph management, including persistence.
+
+
+
+From [Dave DeLong 's blog post on Core Data](https://davedelong.com/blog/2018/05/09/the-laws-of-core-data/) : 
+
+>  Core Data is an “object graph and persistence framework”, which is basically like a fancy kind of [object-relational mapping](https://en.wikipedia.org/wiki/Object-relational_mapping). That means it is a whole bunch of code to help you maintain a graph (ie, a “network” of related pieces of data with a defined organization) of objects and then persist them in some fashion.
+
+
+
+I would like to emphasize that **Core Data is not the database** nor it consists of table of rows and columns. Core Data is a framework for managing object relations, and it can save the data in 4 formats : 
+
+1. SQLite file
+2. XML file
+3. Binary file
+4. In-memory (RAM)
+
+
+
+An example of object-relational mapping : Order class can have many items (Item class), meaning an Order can have multiple items. The "Order have many Item" is the **relationship** between Order class and Item class.
+
+
+
+![core data sample](https://iosimage.s3.amazonaws.com/2018/39-persist-data/coreData.png)
+
+
+
+```swift
+// context of the persistent container of core data (where data is saved)
+let context = appDelegate.persistentContainer.viewContext
+
+// create Item of Macbook Air and Mac Mini
+let macbookAir = NSEntityDescription.insertNewObject(forEntityName: "Item", into: context) as! Item
+macbookAir.name = "Macbook Air"
+macbookAir.price = NSDecimalNumber(decimal: 1199.00)
+        
+let macMini = NSEntityDescription.insertNewObject(forEntityName: "Item", into: context) as! Item
+macMini.name = "Mac Mini"
+macMini.price = NSDecimalNumber(decimal: 799.00)
+
+
+// create Order with items Macbook Air and Mac Mini
+let order = NSEntityDescription.insertNewObject(forEntityName: "Order", into: context) as! Order
+    
+order.items = [macbookAir, macMini]
+
+// save the order and its items , so it persist the next time the app is opened
+do {
+    try context.save()
+} catch let error as NSError {
+    print("Could not save. \(error), \(error.userInfo)")
+}
+```
+
+<br>
+
+
+
+Aside from saving / loading object with relationships, Core Data also offer querying function which we can use to filter the data we want to load.
+
+
+
+For example,  we can query for overdue orders (due date is earlier than today's date) using NSPredicate on Core Data :
+
+```swift
+let fetchRequest = NSFetchRequest<Person>(entityName: "Order")
+// get overdue orders, ie. dueDate is earlier than current date
+fetchRequest.predicate = NSPredicate(format: "dueDate < %@", Date())
+do {
+  overdueOrders = try managedContext.fetch(fetchRequest)
+} catch let error as NSError {
+  print("Could not fetch. \(error), \(error.userInfo)")
+}
+```
+
+<br>
+
+
+
+I have built a reference site on using [NSPredicate query](https://nspredicate.xyz) here if you are interested. I recommend reading Apple's own [Getting started with Core Data guide](https://developer.apple.com/library/archive/documentation/Cocoa/Conceptual/CoreData/index.html) on beginning Core Data.
+
+
+
+Core Data is great for when you have a long list of data (eg: to-do list, list of bookmarks etc) to save / load. Especially if your data have some relationships (eg: Order with multiple items) , require custom query / filtering (eg: Getting items below certain price) or require sorting function (sort the retrieved data by price), Core Data can handles these for you out of the box.
+
+
+
+
+## Comparison Summary
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

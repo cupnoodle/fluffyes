@@ -6,6 +6,20 @@ There are many ways to store data locally in iOS app. UserDefaults, Keychain and
 
 
 
+Table of Contents: 
+
+1. [UserDefaults](#userdefaults)
+
+2. [Keychain](#keychain)
+
+3. [Core Data](#coredata)
+
+4. [Comparison Summary](#summary)
+
+
+
+<span id="userdefaults"></span>
+
 ## UserDefaults
 
 As per [Apple Documentation](), UserDefaults is 
@@ -106,7 +120,7 @@ Storing large amount of data into UserDefaults could affect performance of your 
 
 
 
-
+<span id="keychain"></span>
 
 ## Keychain
 
@@ -155,6 +169,8 @@ You should always use Keychain to store sensitive data like password, keys, cert
 Data saved in Keychain can be accessed by multiple apps, provided that the data are created from the apps from the same developer. This is how SSO (Secure sign on, like you login in one app and then another app will auto login for you) in iOS app works.
 
 
+
+<span id="coredata"></span>
 
 ## Core Data
 
@@ -249,24 +265,32 @@ Core Data is great for when you have a long list of data (eg: to-do list, list o
 
 
 
+<span id="summary"></span>
+
 
 ## Comparison Summary
 
+Here's a simplified guide on choosing which approach for storing data.
 
 
 
+**Sensitive data** like passwords, in-app purchase status (paid, unpaid), coins amount, etc? Store it in **Keychain**.
 
 
 
+**Preference data** that can be presented in Switch / Action Sheets / Segmented Control ? Store it in **UserDefaults**.
+
+![UI Types](https://iosimage.s3.amazonaws.com/2018/39-persist-data/uitypes.png)
 
 
 
+**Small amount** of text / number / array **data** that is not sensitive (eg: high score, level, display name) ? Store it in **UserDefaults**.
 
 
 
+**Large amount of data**, or potential to be large amount, or **usually in a list** that is expandable (eg: to-do list, posts, comments) ? Store it in **Core Data**.
 
 
 
-
-
+Data that might be **queried / filtered often**? Definitely **Core Data**.
 

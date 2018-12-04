@@ -54,15 +54,66 @@ Change the Table view's **Content** to '**Static cells**'. Now you have a Static
 
 
 
+## Passing table view row tap to view controller
+
+Most of the time you would want the parent view controller (which have the container view) to perform an action say, segue to another view controller , when a row inside the embedded table view is tapped.
+
+
+
+How do we notify the view controller that the embedded table view row is tapped?
+
+
+
+There's many way to do this, one of the way to do it is by using [delegate pattern](https://fluffy.es/eli-5-delegate/).
+
+
+
+In the table view controller, add a delegate variable which conforms to the **TableViewControllerDelegate** protocol, and the protocol contain some function you want to use to notify the parent view controller.
+
+```swift
+class ProfileTableViewController: UITableViewController {
+ 
+    // this would be the parent view controller
+    weak var delegate : ProfileTableViewControllerDelegate?
+}
+
+protocol ProfileTableViewControllerDelegate {
+  func logoutTapped()
+}
+```
+
+<br>
+
+
+
+And in the parent view controller, you can access the table view controller by using `self.children` property. `self.children` will return a list of container view / embedded view controllers from the parent view controller. Since there is only one container view / embedded view controller (the table view controller), we can assure that self.children[0] will be that table view controller. 
+
+
+
+```swift
+class ViewController: UIViewController {
+    
+    var tableViewController : ProfileTableViewController?
+    
+    override func viewDidLoad() {
+        super.viewDidLoad()
+        // Do any additional setup after loading the view, typically from a nib.
+        
+        // .children is a list of container view controller of the parent view controller
+        // since you only have one container view,
+        // safe to grab the first one ([0]), and cast it to table VC class
+        tableViewController = self.children[0] as? ProfileTableViewController
+        tableViewController?.delegate = self
+    }
+}
+```
+
+<br>
+
 
 
 // How to pass table view row tap to view controller
 
 // delegate
 
-
-
-// How to pass textfield data in table view row outlet to view controller
-
-// self.children
 

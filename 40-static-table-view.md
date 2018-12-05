@@ -20,6 +20,8 @@ This error seems like an artificial restriction made by Apple, perhaps Apple wan
 
 As the error mentioned **only valid when embedded in**, we can use a container view to resolve this.
 
+
+
 First, remove the static table view from the view controller. Then drag a container view to the view controller.
 
 
@@ -75,6 +77,19 @@ class ProfileTableViewController: UITableViewController {
  
     // this would be the parent view controller
     weak var delegate : ProfileTableViewControllerDelegate?
+  
+  //....
+  override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+      tableView.deselectRow(at: indexPath, animated: true)
+
+      if(indexPath.row == 1){
+          // tell the delegate (view controller) to perform logoutTapped() function
+          if let delegate = delegate {
+              delegate.logoutTapped()
+          }
+      }
+  }
+  //...
 }
 
 protocol ProfileTableViewControllerDelegate {
@@ -86,11 +101,12 @@ protocol ProfileTableViewControllerDelegate {
 
 
 
-And in the parent view controller, you can access the table view controller by using `self.children` property. `self.children` will return a list of container view / embedded view controllers from the parent view controller. Since there is only one container view / embedded view controller (the table view controller), we can assure that self.children[0] will be that table view controller. 
+And in the parent view controller, we can access the table view controller by using `self.children` property. `self.children` will return a list of container view / embedded view controllers from the parent view controller. Since there is only one container view / embedded view controller (the table view controller), we can assure that self.children[0] will be that table view controller. 
 
 
 
 ```swift
+// ViewController.swift
 class ViewController: UIViewController {
     
     var tableViewController : ProfileTableViewController?
@@ -112,8 +128,38 @@ class ViewController: UIViewController {
 
 
 
-// How to pass table view row tap to view controller
+At this point, Xcode might throw an error telling you that the ViewController doesn't conform to the TableViewDelegate protocol, this is because ViewController haven't implement the required function **logoutTapped()** yet. We can proceed to add this : 
 
-// delegate
+
+
+```swift
+// ViewController.swift
+class ViewController: UIViewController {
+  //...
+}
+
+extension ViewController : ProfileTableViewControllerDelegate {
+    // do stuff here
+    func logoutTapped() {
+        print("logout tapped")
+    }
+}
+```
+
+<br>
+
+
+
+Not sure how delegate works? [Check out the explanation here](https://fluffy.es/eli-5-delegate/).
+
+
+
+
+
+
+
+
+
+
 
 

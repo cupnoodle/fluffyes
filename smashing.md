@@ -113,7 +113,7 @@ Next, we inform the app which view controllers will need to be preserved. We do 
 
 
 
-Restoration ID string should be unique across the whole project. You can also check '**Use Storyboard ID**' to use storyboard ID as the restoration ID.
+You can also check '**Use Storyboard ID**' to use storyboard ID as the restoration ID.
 
 
 
@@ -126,5 +126,9 @@ self.restorationIdentifier = "MainVC"
 
 
 
+During state preservation, any view controller or view that have been assigned a restoration identifier will have it's state saved to disk.
 
 
+
+Restoration identifiers can be grouped together to form a restoration path. Say there's a ScheduleViewController embed inside a Navigation Controller which is embed in another Tab Bar Controller, assuming they are using their own class names as restoration identifier, the restoration path will look like this : 
+**TabBarController/NavigationController/ScheduleViewController** . When a user leave the app while schedule view controller is active, this path will be saved by the app, then the app will preserve the state for all the view controllers that appear in this path (Schedule View Controller, Navigation Controller and Tab Bar Controller).

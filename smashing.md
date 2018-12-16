@@ -87,7 +87,7 @@ From Apple's [article](https://developer.apple.com/documentation/uikit/view_cont
 
 
 
-UIKit has done a lot of work to simplify state preservation and restoration for us, it handles the saving and loading of app state to disk automatically at appropriate times. All we need to do is add some configuration to tell the app to support state preservation / restoration and inform the app what data needs to be preserved.
+UIKit has done a lot of work to simplify state preservation and restoration for us, it handles the saving and loading of app state automatically at appropriate times. All we need to do is add some configuration to tell the app to support state preservation / restoration and inform the app what data needs to be preserved.
 
 
 To enable state saving and restoring, implement this two method in **AppDelegate.swift** :
@@ -117,7 +117,7 @@ You can also check '**Use Storyboard ID**' to use storyboard ID as the restorati
 
 
 
-To set the restoration ID programmatically, we can use the **restorationIdentifier** property of the view controller.
+To set the restoration ID in code, we can use the **restorationIdentifier** property of the view controller.
 
 ```swift
 // ViewController.swift
@@ -130,5 +130,103 @@ During state preservation, any view controller or view that have been assigned a
 
 
 
-Restoration identifiers can be grouped together to form a restoration path. Say there's a ScheduleViewController embed inside a Navigation Controller which is embed in another Tab Bar Controller, assuming they are using their own class names as restoration identifier, the restoration path will look like this : 
-**TabBarController/NavigationController/ScheduleViewController** . When a user leave the app while schedule view controller is active, this path will be saved by the app, then the app will preserve the state for all the view controllers that appear in this path (Schedule View Controller, Navigation Controller and Tab Bar Controller).
+Restoration identifiers can be grouped together to form a restoration path, the identifiers are grouped using the view hierachy, from the root view controller to the current active view controller. Say there's a ScheduleViewController embed inside a Navigation Controller which is embed in another Tab Bar Controller, assuming they are using their own class name as restoration identifier, the restoration path will be like this : 
+**TabBarController/NavigationController/ScheduleViewController** . 
+
+
+
+When a user leave the app with schedule view controller being the active view controller, this path will be saved by the app, then the app will remember the previous view hierachy shown (Tab Bar Controller -> Navigation Controller -> Schedule View Controller).
+
+
+
+After assigning restoration identifier, we will need to implement **encodeRestorableState(with coder:)**  and **decodeRestorableState(with coder:)** methods for each of the preserved view controllers. These two methods let us specify what data needs to be saved/loaded and how to encode/decode them.
+
+
+
+In the view controller,
+
+```swift
+// ScheduleViewController.swift
+
+// MARK: State restoration
+// UIViewController already conform to UIStateRestoring protocol by default
+extension ScheduleViewController {
+    // will be called during state preservation
+    override func encodeRestorableState(with coder: NSCoder) {
+      
+        // encode the data you want to save during state preservation
+        coder.encode(self.stationName, forKey: "stationName")
+        
+        super.encodeRestorableState(with: coder)
+    }
+    
+    // will be called during state restoration
+    override func decodeRestorableState(with coder: NSCoder) {
+      
+      // decode the data saved and load it during state restoration
+      if let restoredStationName = coder.decodeObject(forKey: "stationName") as? String {
+        self.stationName = restoredStationName
+      }
+        
+        super.decodeRestorableState(with: coder)
+    }
+}  
+```
+
+Remember to call **super** at the bottom of implementation, this is to ensure that the parent class has a chance to save and restore state.
+
+
+
+After finishing decoding objects,  **applicationFinishedRestoringState()** method will be called to inform the view controller that the state has been restored. We can update the UI for the view controller in this method.
+
+
+
+```swift
+// ScheduleViewController.swift
+
+// MARK: State restoration
+// UIViewController already conform to UIStateRestoring protocol by default
+extension ScheduleViewController {
+    ...
+  
+    override func applicationFinishedRestoringState() {
+      // update the UI here
+      self.stationNameLabel.text = self.stationName
+    }
+}
+```
+
+
+
+There you have it! These are the essential methods to implement state preservation and restoration for an app. Keep in mind that the operating system will remove the saved state when the app is being force closed by the user, this is to prevent that in case something goes wrong in the state preservation / restoration code implementation that caused the app to crash, the app won't stuck in a forever crashing loop. 
+
+
+
+Also, don't store any model (eg: data that should have been saved into UserDefaults / Core Data) data into the state although it might seem convenient to do so, as state data will be removed when user force quit your app, you certainly don't want to lose model data like this.
+
+
+
+To test that if the state preservation / restoration is working well, you can follow the steps below : 
+
+1. Build and Launch the app in Simulator / Device using Xcode
+2. Navigate to the screen you want to test that have state preservation / restoration implemented
+3. Return to home screen (by swiping up or double clicking home button, ⇧⌘H), to send the app to background
+4. Stop the App in Xcode by pressing the ⏹ button
+5. Launch the app again and check if the state has been restored successfully
+
+
+
+As this section only covers the basic of state preservation / restoration, I recommend reading these article for advanced knowledge on state restoration : 
+
+1. [Apple's guide on preserving and restoring state](https://developer.apple.com/library/archive/featuredarticles/ViewControllerPGforiPhoneOS/PreservingandRestoringState.html)
+2. [Apple's article on UI preservation process](https://developer.apple.com/documentation/uikit/view_controllers/preserving_your_app_s_ui_across_launches/about_the_ui_preservation_process)
+3. [Apple's article on UI restoration process](https://developer.apple.com/documentation/uikit/view_controllers/preserving_your_app_s_ui_across_launches/about_the_ui_restoration_process)
+
+
+
+## 4. Reduce usage of non-opaque view as much as possible
+
+
+
+
+

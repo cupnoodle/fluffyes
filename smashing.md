@@ -41,5 +41,39 @@ By using dequeueReusableCell, we can reduce the memory used by the app and make 
 
 
 
-## 2. Using Launch Images that look like the initial screen
+## 2. Using Launch Screen that look like the initial screen
+
+As mentioned in Apple's [Human Interface Guideline](https://developer.apple.com/design/human-interface-guidelines/ios/icons-and-images/launch-screen/) , Launch Screen can be used to enhance the perception of the app responsiveness : 
+
+> It’s solely intended to enhance the perception of your app as quick to launch and immediately ready for use. Every app must supply a launch screen.
+
+
+
+When you start a new iOS project, a blank **LaunchScreen.storyboard** will be created. This screen will be shown to user while the app loads the view controllers and layout.
+
+
+
+To give an impression of responsive app, we can design the launch screen to be similar to the first screen (view controller) that will be shown to the user.
+
+
+
+For example, the Safari app's launch screen is similar to its first view :
+
+![launchscreen](smashing/launchscreen.png)
+
+
+
+
+
+Launch Screen storyboard is like any other storyboard file, except that you can only use the standard UIKit classes like UIViewController, UITabBarController, UINavigationController etc. If you attempt to use any other custom subclasses (eg: UserViewController), Xcode will notify you that it is illegal to use custom classnames.
+
+![illegal](smashing/illegal.png)
+
+
+
+Apple's HIG also advice not to include text on launch screen as launch screen is static and you can't localize text to cater for different languages.
+
+
+
+## 3. State restoration for view controllers
 

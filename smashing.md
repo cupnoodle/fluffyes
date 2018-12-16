@@ -77,3 +77,54 @@ Apple's HIG also advice not to include text on launch screen as launch screen is
 
 ## 3. State restoration for view controllers
 
+State preservation and restoration allow user to return back to the exact same UI state just before they leave the app. Sometimes due to insufficient memory, the operating system might need to remove your app from the memory while your app is in the background, and the app might lose track of its current UI state if it is not preserved, possibly causing users to lose their work progress! 😱 
+
+
+
+From Apple's [article](https://developer.apple.com/documentation/uikit/view_controllers/preserving_your_app_s_ui_across_launches?language=objc) : 
+
+> they expect your app to be in the same state as when they left it. State preservation and restoration ensures that your app returns to its previous state when it launches again.
+
+
+
+UIKit has done a lot of work to simplify state preservation and restoration for us, it handles the saving and loading of app state to disk automatically at appropriate times. All we need to do is add some configuration to tell the app to support state preservation / restoration and inform the app what data needs to be preserved.
+
+
+To enable state saving and restoring, implement this two method in **AppDelegate.swift** :
+
+```swift
+func application(_ application: UIApplication, shouldSaveApplicationState coder: NSCoder) -> Bool {
+    return true
+}
+    
+func application(_ application: UIApplication, shouldRestoreApplicationState coder: NSCoder) -> Bool {
+    return true
+}
+```
+
+
+
+This will inform the app to save and restore application state automatically.
+
+
+Next, we inform the app which view controllers will need to be preserved. We do this by specifying the **Restoration ID** in storyboard : 
+
+![restorationID](smashing/restorationID.png)
+
+
+
+Restoration ID string should be unique across the whole project. You can also check '**Use Storyboard ID**' to use storyboard ID as the restoration ID.
+
+
+
+To set the restoration ID programmatically, we can use the **restorationIdentifier** property of the view controller.
+
+```swift
+// ViewController.swift
+self.restorationIdentifier = "MainVC"
+```
+
+
+
+
+

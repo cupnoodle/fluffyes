@@ -228,5 +228,13 @@ As this section only covers the basic of state preservation / restoration, I rec
 
 
 
+Opaque view is view that has no transparency, meaning any UI element placed behind it is not visible at all.
 
+
+
+If a view has transparency (alpha < 1.0), the drawing system of iOS will have to do the work on calculating  the resulting display output by using all the views in the view hierachy. And this drawing process is triggered on almost every user interaction, eg: scrolling, tapping etc.
+
+
+
+To reduce the burden of the drawing system, 
 

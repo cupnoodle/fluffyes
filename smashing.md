@@ -300,19 +300,66 @@ We can then use this function to render opaque image and use the resulting UIIma
 
 ## 5. Pass heavy processing functions to background thread (GCD)
 
-The key of making a responsive app is to place as much heavy processing task to background thread as possible. Avoid doing complex calculation, networking, heavy IO operation (eg: reading / writing to disk) on the main thread, this is because main thread is used by UIKit to handle and response to user input, and also the drawing of screen.
+The key of making a responsive app is to move as much heavy processing task to background thread as possible. Avoid doing complex calculation, networking, heavy IO operation (eg: reading / writing to disk) on the main thread, this is because the main thread is used by UIKit to handle and response to user input, and also the drawing of screen.
 
 
 
-You might have used some app that suddenly become unresponsive to your touch input, and it feels like the app has hung , this is most probably caused by the app running heavy computation task on main thread. 
+You might have used some app that suddenly become unresponsive to your touch input before, and it feels like the app has hung, this is most probably caused by the app running heavy computation task on the main thread. 
 
 
 
-Main thread usually alternate between UIKit stuff and some light task in small  intervals. If there is a heavy task going on main thread, UIKit will need to wait until the heavy task has finished before being able to handle touch input.
+Main thread usually alternate between UIKit task (eg: handling user input) and some light task in small  intervals. If there is a heavy task going on main thread, UIKit will need to wait until the heavy task has finished before being able to handle touch input.
 
 ![mainThread](smashing/mainThread.png)
 
 
 
+By default, code inside view controllers lifecycle functions (eg: viewDidLoad) and IBOutlet functions are being executed in the main thread. To move heavy processing task to the background thread, we can utilize [Grand Central Dispatch](https://apple.github.io/swift-corelibs-libdispatch/) queues provided by Apple.
+
+
+
+Here's the template for switching queues :
+
+```swift
+// Switch to background thread to perform heavy task
+DispatchQueue.global(qos: .default).async { 
+    // perform heavy task here
+  
+    // Switch back to main thread to perform UI related task
+    DispatchQueue.main.async {
+        // update UI
+    }
+}
+```
+
+
+
+The **qos** stands for Quality Of Service, different Quality Of Service indicates different priority for the specificied task. The operating system will allocate more CPU time, CPU power I/O throughput for task allocated in queue with a higher **QoS**, meaning the task will be finished faster in a queue with higher **QoS**, a higher **QoS** will also consume more energy due to it using more resources.
+
+
+
+The list of **QoS** from highest priority to lowest priority : 
+
+**.userInteractive** >  **.userInitiated** > **.default** > **.utility** > **.background** .
+
+
+
+Apple has provided a handy table with examples of which QoS to use for different tasks here : [https://developer.apple.com/library/archive/documentation/Performance/Conceptual/EnergyGuide-iOS/PrioritizeWorkWithQoS.html#//apple_ref/doc/uid/TP40015243-CH39-SW1](https://developer.apple.com/library/archive/documentation/Performance/Conceptual/EnergyGuide-iOS/PrioritizeWorkWithQoS.html#//apple_ref/doc/uid/TP40015243-CH39-SW1)
+
+
+
+One thing to keep in mind is that UI related code **should always** be executed in the main thread. Modifying UI in background thread might have unintended consequence like UI not actually updating, crash etc.
+
+
+
+From Apple's [article](https://developer.apple.com/documentation/code_diagnostics/main_thread_checker) : 
+
+> Updating UI on a thread other than the main thread is a common mistake that can result in missed UI updates, visual defects, data corruptions, and crashes.
+
+
+
+I recommend watching Apple 2012 WWDC video on UI concurrency to get more understanding on building a responsive app :
+
+[Building Concurrent User Interfaces on iOS](https://developer.apple.com/videos/play/wwdc2012/211/)
 
 

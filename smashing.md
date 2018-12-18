@@ -2,6 +2,16 @@
 
 
 
+## Quick Summary 
+
+> Good performance is critical for delivering a good user experience, as iOS users often has high expectation towards iOS apps. Slow and unresponsive app might make users give up on using your app or worse, leaving a bad rating. In this article we will look into some optimization tricks to make your app feel more performant.
+
+
+
+Although modern iOS hardware is powerful enough to handle many intensive and complex tasks, it is still possible to make the device feel unresponsive if you are not careful on the performance impact of your app. Below are some tricks to make your iOS app feel more performant.
+
+
+
 ## 1. Dequeue reusable cell
 
 When you search for tutorials on implementing table view on the internet, most of them will instruct you to use the **tableView.dequeueReusableCell(withIdentifier:, for:)** method in **tableView(_:cellForRowAt:)** to reuse a cell. What is the function of reusable cell? To explain this, we will first look at scenario without using reusable cell.
@@ -362,4 +372,29 @@ I recommend watching Apple 2012 WWDC video on UI concurrency to get more underst
 
 [Building Concurrent User Interfaces on iOS](https://developer.apple.com/videos/play/wwdc2012/211/)
 
+
+
+
+
+## Notes
+
+The trade off of performance optimization is that you have to write more code or configure additional settings on top of the app functionality, this might make your app being delivered later than expected and you will have more code to maintain in the future. 
+
+
+
+Before spending time on optimizing your app, ask yourself if the app is already smooth or it has some unresponsive part that really needs to be optimized. Spending a lot time optimizing an already smooth app to shave off 0.01 seconds might be not worth it as the time could be spend on developing better feature etc.
+
+
+
+## Further Reading
+
+[Preserving Your App's UI Across Launches](https://developer.apple.com/documentation/uikit/view_controllers/preserving_your_app_s_ui_across_launches)
+
+[A Suite of Delicious iOS Eye Candy - Tim Oliver - Tokyo iOS Meetup 2018](https://www.youtube.com/watch?v=k81HRmMZLXc&t=653s ) - Tim Oliver talks about some UI optimizing trick
+
+[Building Concurrent User Interfaces on iOS (WWDC 2012)](https://developer.apple.com/videos/play/wwdc2012/211/) 
+
+[Main Thread Checker](https://developer.apple.com/documentation/code_diagnostics/main_thread_checker)
+
+[Concurreny Programming Guide - Dispatch Queue](https://developer.apple.com/library/archive/documentation/General/Conceptual/ConcurrencyProgrammingGuide/OperationQueues/OperationQueues.html)
 

@@ -228,13 +228,91 @@ As this section only covers the basic of state preservation / restoration, I rec
 
 
 
-Opaque view is view that has no transparency, meaning any UI element placed behind it is not visible at all.
+Opaque view is view that has no transparency, meaning any UI element placed behind it is not visible at all. We can set a view to be opaque in the interface builder : 
+
+![opaque](smashing/opaque.png)
 
 
 
-If a view has transparency (alpha < 1.0), the drawing system of iOS will have to do the work on calculating  the resulting display output by using all the views in the view hierachy. And this drawing process is triggered on almost every user interaction, eg: scrolling, tapping etc.
+or programmatically like this `view.isOpaque = true` .Setting a view to opaque will make the drawing system to optimize some drawing performance while rendering the screen.
 
 
 
-To reduce the burden of the drawing system, 
+If a view has transparency (alpha < 1.0), the drawing system of iOS will have to do extra work to calculate  the resulting output display by blending differrent layer of views in the view hierachy. Whereas if a view is set to opaque, the drawing system will just put this view in front and reduce the extra work of blending multiple view layers behind it.
+
+
+
+You can check which layers are being blended (non-opaque) in the iOS Simulator by checking **Debug** > **Color Blended Layers**.
+
+
+
+![colorBlendedLayers](smashing/colorBlendedLayers.png)
+
+
+
+After checking the 'Color Blended Layers' option, you can see that some views are red, some are green. Red color indicates that the view is not opaque and its output display is a result of blending layers behind it. Green color indicates that the view is opaque and no blending is done.
+
+
+
+![redGreen](smashing/redGreen.png)
+
+
+
+The labels shown above ('View Friends' etc) are filled with red color, this is because when a label is dragged to storyboard, its background color is set to transparent by default. When the drawing system is compositing the display near the label area, it will ask for the layer behind the label and do some calculation.
+
+
+
+One of the way to optimize app performance would be to reduce as much red rectangle as possible.
+
+
+
+By changing `label.backgroundColor = UIColor.clear` to `label.backgroundColor = UIColor.white`, we can reduce layer blending between label and the view layer behind it.
+
+
+
+![greenish](smashing/greenish.png)
+
+
+
+You might notice that even if you have set an UIImageView to opaque and assign a background color to it, the simulator still shows red on the image view. This is because by default, the UIImage instance is rendered in graphic context with the opaque option set to false. To remedy this, we can write a function to render the image in graphic context with the opaque option set to true : 
+
+```swift
+func opaqueImage(from image: UIImage) -> UIImage {
+    let imageSize: CGSize = image.size
+    // the 'true' indicates the image context is opaque
+    UIGraphicsBeginImageContextWithOptions(imageSize, true, UIScreen.main.scale)
+    image.draw(in: CGRect(x: 0, y: 0, width: imageSize.width, height: imageSize.height))
+    let opaqueImage = UIGraphicsGetImageFromCurrentImageContext()
+    UIGraphicsEndImageContext()
+
+    // return blank UIImage in case can't get image from image context
+    return opaqueImage ?? UIImage()
+}
+```
+
+
+
+We can then use this function to render opaque image and use the resulting UIImage for the UIImageView.
+
+
+
+
+
+## 5. Pass heavy processing functions to background thread (GCD)
+
+The key of making a responsive app is to place as much heavy processing task to background thread as possible. Avoid doing complex calculation, networking, heavy IO operation (eg: reading / writing to disk) on the main thread, this is because main thread is used by UIKit to handle and response to user input, and also the drawing of screen.
+
+
+
+You might have used some app that suddenly become unresponsive to your touch input, and it feels like the app has hung , this is most probably caused by the app running heavy computation task on main thread. 
+
+
+
+Main thread usually alternate between UIKit stuff and some light task in small  intervals. If there is a heavy task going on main thread, UIKit will need to wait until the heavy task has finished before being able to handle touch input.
+
+![mainThread](smashing/mainThread.png)
+
+
+
+
 

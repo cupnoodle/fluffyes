@@ -110,14 +110,58 @@ func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> U
 
 To make the **cellForRowAt** method looks cleaner, we can move the resetting code to the **prepareForResue** method in the custom cell class like this : 
 
+```swift
+//  TodoTableViewCell.swift
+class TodoTableViewCell: UITableViewCell {
+    override func prepareForReuse() {
+        // reset (hide) the checkmark label
+        self.checkLabel.isHidden = true
+        
+        // reset the task label text
+        self.taskLabel.text = ""
+    }
+}
+```
+
+<br>
+
+And in the cellForRowAt method in view controller : 
+
+```swift
+// ViewController.swift
+func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+    let cell = tableView.dequeueReusableCell(withIdentifier: todoCellIdentifier, for: indexPath) as! TodoTableViewCell
+    
+    // get the Task object in the taskArray (data source)
+    let task = self.taskArray[indexPath.row]
+    
+    // if the task has marked done, show the checkmark label
+    if(task.done){
+      cell.checkLabel.isHidden = false
+    }
+  
+    cell.taskLabel.text = "Task \(indexPath.row)"
+    return cell
+}
+```
+
+<br>
 
 
- 
+
+Below is the flow of cell reuse with queue (including prepareForReuse) : 
 
 
 
-// move the reset to prepareForReuse
+![prepareReuse](https://iosimage.s3.amazonaws.com/2018/41-solve-duplicated-cell/prepareReuse.png)
 
 
 
-// view model
+
+
+Most of the duplicated / repeated cell issues happen because we didn't reset the cell UI elements to hidden / blank state before reusing it in the table view. This can be easily solved by resetting the UI elements data in the **prepareForReuse** function in the custom cell class 🙌.
+
+
+
+
+

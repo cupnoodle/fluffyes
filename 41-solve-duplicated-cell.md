@@ -159,9 +159,13 @@ Below is the flow of cell reuse with queue (including prepareForReuse) :
 
 
 
-Most of the duplicated / repeated cell issues happen because we didn't reset the cell UI elements to hidden / blank state before reusing it in the table view. This can be easily solved by resetting the UI elements data in the **prepareForReuse** function in the custom cell class 🙌.
+Most of the duplicated / repeated cell issues happen because we didn't reset the cell UI elements to hidden / blank state before reusing it in the table view. This can be solved by resetting the UI elements data in the **prepareForReuse** function in the custom cell class 🙌.
 
 
+
+### Further reading
+
+[Apple's documentation on dequeueReusableCell(withIdentifier:)](https://developer.apple.com/documentation/uikit/uitableview/1614891-dequeuereusablecell)
 
 
 

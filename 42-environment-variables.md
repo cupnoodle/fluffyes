@@ -1,7 +1,6 @@
 # Using launch arguments / environment variables to simulate in-app purchase purchased and etc
 
 
-
 [TL;DR Jump to how to set launch arguments / environment variables](#howto)
 
 
@@ -53,7 +52,7 @@ func hasPurchasedPro(){
 
 
 
-I would often comment and uncomment the line `return true` between development and production (version that get submitted to App Store). And yes you have guessed correctly, one time I forgot to remove the `return true` statement and submitted the App to App Store 😅. The app got approved and my app has zero revenue for a week, before I realized what I have done, giving away the full version of my app to users for free during that week 😂💸. 
+I would often comment and uncomment the line `return true` between development and production (version that get submitted to App Store). And yes you have guessed correctly, one time I forgot to remove the `return true` statement and submitted it to the App to App Store 😅. The app got approved and my app has zero revenue for a week, until I realized what I have done, giving away the full version of my app to users for free during that week 😂💸. 
 
 
 
@@ -161,5 +160,3 @@ switch ProcessInfo.processInfo.environment["level"] {
 
 
 If you find yourself commenting / uncommenting parts of code frequently, it might be a good idea to replace them with launch arguments / environment variables instead. You can easily check / uncheck them in scheme window instead of having to go to a specific file, uncomment the code and compile and run again.
-
-

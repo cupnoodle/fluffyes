@@ -16,7 +16,7 @@ In my app [Komuter](https://komuter.app), users will need to purchase in-app pur
 
 
 
-In this screen, I call the function `hasPurchasedPro()` to check if the user has purchased in-app purchase, if user has bought in-app purchase, the buy button and blurred text will be hidden, and the actual upcoming train time will be shown.
+In this screen, I call a function `hasPurchasedPro()` to check if the user has purchased in-app purchase. If the user has bought in-app purchase, the buy button and blurred text will be hidden, and the actual upcoming train time will be shown.
 
 
 
@@ -28,6 +28,8 @@ func hasPurchasedPro(){
 ```
 
 <br>
+
+(You can read more on [how to check if user has bought in-app purchase using Keychain here](https://fluffy.es/check-purchased-iap-using-keychain/))
 
 
 
@@ -47,11 +49,15 @@ func hasPurchasedPro(){
 
 
 
-I would often comment and uncomment the line `return true` between development and production (submitting to App Store). And yes you guessed correct, one time I forgot to remove the `return true` statement and submitted the App to App Store 😅. The app got approved and my app has zero revenue for a week before I realized what I have done. 💸
+I would often comment and uncomment the line `return true` between development and production (submitting to App Store). And yes you have guessed correctly, one time I forgot to remove the `return true` statement and submitted the App to App Store 😅. The app got approved and my app has zero revenue for a week before I realized what I have done, giving away the full version of the app for users for free during that week 😂💸. 
 
 
 
-"There must be a better way to do this", I thought, then I stumbled across **Launch arguments** / **Environment Variables** , which you can set certain variables which will only be injected during debug run (it has no effect when you archive the app and submit to App Store).
+"There must be a better way to do this!", I thought, then I stumbled across **Launch arguments** / **Environment Variables** , which you can set certain variables which will only be injected during debug run (it has no effect when you archive the app and submit to App Store).
+
+
+
+
 
 
 

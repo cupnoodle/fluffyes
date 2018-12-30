@@ -2,7 +2,11 @@
 
 
 
-If you have experience programming in other language like Ruby , Python, Java etc, you might have used environment variable to store secrets. There's environment variable in iOS as well, these are injected to your app in runtime.
+[TL;DR Jump to how to set launch arguments / environment variables](#howto)
+
+
+
+If you have programmed in platform outside of iOS like Ruby , Python, Java etc, you might have used environment variable to store secrets. There's environment variable in iOS as well, these are injected to your app in runtime.
 
 
 
@@ -10,7 +14,7 @@ Here's how I learned to use launch argument / environment variable the hard way 
 
 
 
-In my app [Komuter](https://komuter.app), users will need to purchase in-app purchase to view upcoming trains arrival time.
+In my app [Komuter](https://komuter.app), users will need to purchase in-app purchase to view the full upcoming trains arrival time.
 
 ![purchase](https://iosimage.s3.amazonaws.com/2018/42-environment-variables/purchase.png)
 
@@ -49,13 +53,15 @@ func hasPurchasedPro(){
 
 
 
-I would often comment and uncomment the line `return true` between development and production (submitting to App Store). And yes you have guessed correctly, one time I forgot to remove the `return true` statement and submitted the App to App Store 😅. The app got approved and my app has zero revenue for a week before I realized what I have done, giving away the full version of the app for users for free during that week 😂💸. 
+I would often comment and uncomment the line `return true` between development and production (version that get submitted to App Store). And yes you have guessed correctly, one time I forgot to remove the `return true` statement and submitted the App to App Store 😅. The app got approved and my app has zero revenue for a week, before I realized what I have done, giving away the full version of my app to users for free during that week 😂💸. 
 
 
 
-"There must be a better way to do this!", I thought, then I stumbled across **Launch arguments** / **Environment Variables** , which you can set certain variables which will only be injected during debug run (it has no effect when you archive the app and submit to App Store).
+"There must be a better way to do this!", I thought, then I stumbled across **Launch arguments** / **Environment Variables** , which you can use to set some variables which will only be injected during debug run (it has no effect when you archive the app and submit it to the App Store).
 
 
+
+<span id="howto"></span>
 
 ## How to set launch arguments / environment variables
 
@@ -134,12 +140,26 @@ The process is similar for environment variables, open the scheme window, and cl
 Then in your code, you can check for the value of environment variables like this : 
 
 ```swift
-
+switch ProcessInfo.processInfo.environment["level"] {
+    case "member":
+        // show member UI here
+        print("member")
+    case "moderator":
+        // show moderator UI here
+        print("moderator")
+    case "administrator":
+        // show administrator UI here
+        print("administrator")
+    default:
+        // if the environment variable is not set or doesn't equal above values
+        print("environment variable not set / doesn't equal values above")
+}
 ```
 
-<br>
+<br><br><br>
 
 
 
+If you find yourself commenting / uncommenting parts of code frequently, it might be a good idea to replace them with launch arguments / environment variables instead. You can easily check / uncheck them in scheme window instead of having to go to a specific file, uncomment the code and compile and run again.
 
 

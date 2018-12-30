@@ -57,7 +57,87 @@ I would often comment and uncomment the line `return true` between development a
 
 
 
+## How to set launch arguments / environment variables
 
+To set launch arguments / environment variables, go to **Product** > **Scheme** > **Manage Schemes** .
+
+
+
+![Manage scheme](https://iosimage.s3.amazonaws.com/2018/42-environment-variables/manageScheme.png)
+
+
+
+Then double click the scheme with your app name : 
+
+![double click](https://iosimage.s3.amazonaws.com/2018/42-environment-variables/doubleClick.png)
+
+
+
+In the scheme window, select **Run (Debug)**  on the left side bar, and then select the **Arguments** tab on the right column. You will see two row **Arguments Passed On Launch** and **Environment Variables**. For the in-app purchase, we will set a launch argument by clicking the **+** button.
+
+![arguments](https://iosimage.s3.amazonaws.com/2018/42-environment-variables/arguments.png)
+
+
+
+Then we type in `BOUGHT` (can be any string you like) as one of the arguments.
+
+
+Then in the **hasPurchasedPro** function, we can modify it to check for launch argument like this :
+
+```swift
+func hasPurchasedPro(){
+  // if there is a 'BOUGHT' launch argument, simulate bought in-app purchase
+  if ProcessInfo.processInfo.arguments.contains("BOUGHT") {
+    return true
+  }
+  
+  // check Keychain to see if the purchase data exist or not
+  // return true if it exist, else false
+  // ...
+}
+```
+
+<br>
+
+
+
+Build and run the app, we then see the app showing the unlocked screen 🙌 : 
+
+![bought](https://iosimage.s3.amazonaws.com/2018/42-environment-variables/bought.png)
+
+
+
+To revert back to the unpurchased state, simply uncheck the launch argument and build and run the app again : 
+
+![uncheck](https://iosimage.s3.amazonaws.com/2018/42-environment-variables/uncheck.png)
+
+
+
+Then we will see the screen with buy button and blurred text : 
+
+![havent buy](https://iosimage.s3.amazonaws.com/2018/42-environment-variables/haventBuy.png)
+
+
+
+With launch arguments, we can toggle different state easily, and no need to worry if we have accidentally shipped the full version of the app to the App Store 😅, as launch arguments / environment variables will not be included in Archive / Production version of the app.
+
+
+
+The process is similar for environment variables, open the scheme window, and click the **+** button under **Environment Variables**. The difference is that you can set a key value pair for environment variable, whereas you can only set a string for launch argument.
+
+
+
+![environment variable](https://iosimage.s3.amazonaws.com/2018/42-environment-variables/envvar.png)
+
+
+
+Then in your code, you can check for the value of environment variables like this : 
+
+```swift
+
+```
+
+<br>
 
 
 

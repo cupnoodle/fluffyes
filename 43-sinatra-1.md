@@ -90,5 +90,46 @@ Now we have finished installing Ruby and Sinatra, let's move on to the fun part 
 
 ## Writing your first REST API
 
+Open your favorite text editor (I recommend [Sublime Text](https://www.sublimetext.com)), create a new text file and save it as **app.rb** in any location you like inside your Mac.
+
+
+
+In the text file, write this : 
+
+```ruby
+# app.rb
+require 'sinatra'
+
+get '/' do
+  'Awesome!'
+end
+```
+
+<br>
+
+
+
+`#app.rb` is a comment, it is similar to Swift comment eg:  `// ViewController.swift`.
+
+`require 'sinatra'` means importing the Sinatra library, it is similar to Swift import eg: `import UIKit`
+
+
+
+`get '/' do ... end` is calling a function named **get()** with parameter **'/'** . In Swift, this would look like :
+
+```swift
+func get(url: String) -> String{
+  return 'Awesome!'
+}
+```
+
+<br>
+
+
+
+// drag the file into terminal
+
+
+
 
 

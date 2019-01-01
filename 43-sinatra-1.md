@@ -6,7 +6,7 @@ Ever wondered how a REST API that returns JSON is being created? You asked aroun
 
 
 
-In this post, we will be using Ruby (the language) and Sinatra (the framework/library to build a web server easily). We choose Ruby as its syntax is similar to Swift and it is widely used as server side language, this post won't cover the whole Ruby syntax but will explain what does each line of ruby code do.
+In this post, we will be using Ruby (the language) and Sinatra (the framework/library to build a web app easily). We choose Ruby as its syntax is similar to Swift and it is widely used as server side language, this post won't cover the whole Ruby syntax but will explain what does each line of ruby code do.
 
 
 
@@ -104,7 +104,7 @@ Now we have finished installing Ruby and Sinatra, let's move on to the fun part 
 
 ## Writing your first REST API
 
-Open your favorite text editor (I recommend [Sublime Text](https://www.sublimetext.com)), create a new text file and save it as **app.rb** in any location you like inside your Mac.
+Open your favorite text editor (I recommend [Sublime Text](https://www.sublimetext.com)), create a new text file and save it as **app.rb** inside a folder named **rest**. You can store this folder in any location you like inside your Mac.
 
 
 
@@ -147,7 +147,7 @@ Open Terminal, change directory to the folder containing the **app.rb** file, th
 ```bash
 # cd /path/to/the/folder
 ruby app.rb
-# execute the app.rb file, this will execute the web server
+# execute the app.rb file, this will execute the web app
 ```
 
 <br>
@@ -205,7 +205,7 @@ end
 
 
 
-Save it and run the web server again (`ruby app.rb`), remember to stop the server and run again when you make changes to the file, else the web server won't get updated. 
+Save it and run the web app again (`ruby app.rb`), remember to stop the server and run again when you make changes to the file, else the web server won't get updated. 
 
 
 
@@ -213,7 +213,7 @@ Now when we visit **localhost:4567/jonyive**, we will see the text output below 
 
 ![jony ive](https://iosimage.s3.amazonaws.com/2019/43-sinatra/jonyive.png)
 
-Aluminium 👌, when we visit the path '/jonyive', the web server will return the text 'Aluminium'. When visiting the path '/timcook', we will get 'Gotta raise em Mac price'.
+Aluminium 👌, when we visit the path '/jonyive', the web app will return the text 'Aluminium'. When visiting the path '/timcook', we will get 'Gotta raise em Mac price'.
 
 
 
@@ -233,7 +233,7 @@ gem install sinatra-contrib
 
 
 
-Then in the web server file **app.rb** , we import the sinatra-contrib library on top, and change the plain text to json like this :
+Then in the web app file **app.rb** , we import the sinatra-contrib library on top, and change the plain text to json like this :
 
 ```ruby
 # app.rb
@@ -347,6 +347,102 @@ As 'localhost' won't work for app running in real device, we will need to upload
 
 
 ## Deploy your REST API online to Heroku
+
+Before putting up the app online, we will need to create a file named '**config.ru**', put it in the same folder as 'app.rb'. The content inside '**config.ru**' file is as follow : 
+
+```ruby
+# config.ru
+require './app'
+
+run Sinatra::Application
+```
+
+<br>
+
+This file (.ru stands for rack up) is used to instruct the [rack web server](http://rack.github.io) to run the web app (app.rb) we wrote earlier. This is needed when we put the web app online.
+
+
+
+Next, we will also need to create a file named '**Gemfile**' in the same folder, this will be used to instruct Heroku what gem / library will need to be installed.
+
+```ruby
+source 'https://rubygems.org'
+
+gem 'sinatra'
+gem 'sinatra-contrib'
+```
+
+<br>
+
+
+
+Before being able to deploy the web server code to Heroku, we will need to initialize a repository to store the code and push it to Github.
+
+
+
+Create a new repository in [Github](https://github.com), name it as you like, I name it as '**rest**'.
+
+
+
+Open terminal, navigate to the folder containing **app.rb** (the folder named 'rest') , you can use drag and drop like this : 
+
+![navigate folder](https://iosimage.s3.amazonaws.com/2019/43-sinatra/navigateFolder.gif)
+
+
+
+Before initializing the git repository, run the command below to generate Gemfile.lock. Heroku will need this later on
+
+```bash
+bundle install
+```
+
+<br>
+
+
+
+Then initialize a git repository on the folder (in you Mac)  and push it to Github like this :
+
+```bash
+git init
+git add -A
+git commit -m "first commit"
+git remote add origin https://github.com/YOUR_GITHUB_USERNAME/REPO_NAME.git
+git push -u origin master
+```
+
+<br>
+
+Remember to change **YOUR_GITHUB_USERNAME** to your github username and **REPO_NAME** to the github repository name.
+
+
+
+Now that we have pushed to code to Github repository, let's head over to [Heroku](https://heroku.com). You can [create a free account on Heroku](https://signup.heroku.com) if you haven't had one yet. After creating the account, sign into Heroku and you will ve redirected to the dashboard.
+
+
+
+Let's create a new app by clicking 'New' -> 'App' on the top right corner.
+
+
+
+![Create New App](https://iosimage.s3.amazonaws.com/2019/43-sinatra/createNewApp.png)
+
+
+
+Type in a name and click 'Create app'
+
+![app name](https://iosimage.s3.amazonaws.com/2019/43-sinatra/firstrestapi.png)
+
+
+
+Then connect the app to the Github repository you created earlier : 
+
+![connect](https://iosimage.s3.amazonaws.com/2019/43-sinatra/connect.png)
+
+
+
+After connecting Github repository, scroll down and you will see a 'Manual Deploy' section, click the 'Deploy Branch' button to put your REST API online! 🚀
+
+![deploy branch](https://iosimage.s3.amazonaws.com/2019/43-sinatra/deployBranch.png)
 
 
 

@@ -446,3 +446,17 @@ After connecting Github repository, scroll down and you will see a 'Manual Deplo
 
 
 
+It will take few seconds to process after you press the button, once it is deployed, Heroku will show a "View" button. Clicking it will bring you to your online web app. Congratulations, you have managed to put your own REST API online! 🎉
+
+
+
+![heroku](https://iosimage.s3.amazonaws.com/2019/43-sinatra/heroku.png)
+
+
+
+Now you can replace the url in your iOS app from 'localhost:4567/jonyive' to 'https://your-app-name-on-heroku.herokuapp.com' , and you can build and run the app on any iOS device! (You can even submit it to the App Store if you want).
+
+
+
+
+

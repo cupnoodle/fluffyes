@@ -381,7 +381,7 @@ This can become tedious when you need to use this variable often and you know th
 weak var userProfileURLString: String! 
 
 /* This will declare userProfileURLString as optional, but it will auto use 'userProfileURLString!' when you call 'userProfileURLString' like this 
-let url = URL(string: userProfileURL)
+let url = URL(string: userProfileURLString)
 */
 ```
 

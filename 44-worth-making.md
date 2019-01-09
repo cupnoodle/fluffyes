@@ -39,5 +39,16 @@ Ignoring existing competition in the App Store, would you learn something new fr
 
 
 
+When I was developing [Komuter](https://Komuter.app), I wanted to learn how to implement In-app purchase. There are already two competitors doing the same app, and their apps are free (supported with advertisement). I worried a lot on "Will people use my app if my competitors are giving their app away for free?" during the development, and still proceed to finish it and submit to the App Store anyway because my aim was to **learn** how to implement In-app purchase that time, I didn't expect to earn any profit from the app. This experience helped me to get my second iOS dev job, which required experience in handling in-app purchase and validation check since the company's app is dealing with in-app subscription.
 
 
+
+If you can learn something new from making this app, be it technical skill or complementary skill (eg: design, copywriting, marketing etc), why not?
+
+
+
+## But what if I want to earn money from it? Do I stand a chance?
+
+Now we're talkin'. Making money on App Store is an entire field of study of its own, there's business model (paid app, in-app purchase, subscription, ads), pricing, marketing, App Store search result optimization etc.
+
+Before worrying on marketing, ask yourself that **does your app solves a genuine problem**? What is the app's target audience ('everyone' is too general), would using your app make their day better? Would you use your own app one month from now?

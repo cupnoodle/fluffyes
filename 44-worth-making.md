@@ -88,7 +88,7 @@ Once you are confident that your app can solve their problems and have a way to 
 
 
 
-You might ask "hey! there's many people doing X kind of app, surely it is profitable right? else why would they do it?" , hah, I have worked in a startup which their app offered coupon redemption (exactly the same as Groupon), and around that time there were at least 5 other startup doing the same thing, and my manager always said the same phrase "hey! there's so many company doing X kind of app, surely it is profitable!" , I bet the manager at the other startup probably said the same thing too. If there exist many apps with similar functionality, it might or might not be an indicator that it's profitable. The only way to know if it is profitable is to either do it yourself or read their Profit/Loss statement (if you can get access to it).
+You might ask "hey! there's many people doing X kind of app, surely it is profitable right? else why would they do it?" . Hah, I have worked in a startup which their app offered coupon redemption (exactly the same as Groupon), and around that time there were at least 5 other startup doing the same thing, and my manager always said the same phrase "hey! there's so many company doing X kind of app, surely it is profitable!" , I bet the manager at the other startup probably said the same thing too. If there exist many apps with similar functionality, it might or might not be an indicator that it's profitable. The only way to know if it is profitable is to either do it yourself or read their Profit/Loss statement (if you can get access to it).
 
 
 

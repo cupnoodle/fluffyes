@@ -9,6 +9,9 @@ Last month, I added a show nearby train station feature to my train app [Rapidly
 We will use CLLocationManager (the 'CL' stands for Core Location) to handle location stuff. Here's the initialization code we'll be using : 
 
 ```swift
+// ViewController.swift
+
+import UIKit
 import CoreLocation
 
 class ViewController: UIViewController {
@@ -162,6 +165,7 @@ extension ViewController : CLLocationManagerDelegate {
 We can check the current authorization status using **CLLocationManager.authorizationStatus()** :
 
 ```swift
+// when user tap on a button to get location
 @IBAction func getCurrentLocationTapped(_ sender: Any) {
     retriveCurrentLocation()
 }
@@ -206,7 +210,94 @@ After ensuring the location services is enabled and the authorization status is 
 
 
 
-Both of these methods will instruct the iOS device to retrieve its current location data, and once the location data is retrieved, the delegate method **didUpdateLocations locations:** will be called. The difference is that .requestLocation() will only call the `didUpdateLocations locations:` once , whereas .startUpdatingLocation() will keep on calling `didUpdateLocations locations:` every few seconds / whenever there's location change of the device until you stop it by calling locationManager.stopUpdatingLocation.
+Both of these methods will instruct the iOS device to retrieve its current location data, and once the location data is retrieved, the delegate method **didUpdateLocations locations:** will be called. The difference is that .requestLocation() will only call the `didUpdateLocations locations:` once , whereas .startUpdatingLocation() will keep on calling `didUpdateLocations locations:` every few seconds or whenever there's location change until you stop it by calling locationManager.stopUpdatingLocation.
+
+
+
+### .requestLocation() flow
+
+![request Location](https://iosimage.s3.amazonaws.com/2019/45-current-location/requestLocation.png)
+
+`didUpdateLocations locations:` is called only once when we use .requestLocation.
+
+
+
+.requestLocation() will only pass one location to the didUpdateLocations **locations** array. 
+
+```swift
+extension ViewController : CLLocationManagerDelegate {
+    func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
+        // .requestLocation will only pass one location to the locations array
+        // hence we can access it by taking the first element of the array
+        if let location = locations.first {
+            self.latitudeLabel.text = "\(location.coordinate.latitude)"
+            self.longitudeLabel.text = "\(location.coordinate.longitude)"
+        }
+    }
+}
+```
+
+<br>
+
+
+
+### .startUpdatingLocation() flow
+
+![start updating location flow](https://iosimage.s3.amazonaws.com/2019/45-current-location/updateLocation.png)
+
+`didUpdateLocations locations:` is called whenever there is update to location / every few seconds until we call locationManager.stopUpdatingLocation.
+
+
+
+.startUpdatingLocation() might pass more than one location to the didUpdateLocations **locations** array. 
+
+
+```swift
+extension ViewController : CLLocationManagerDelegate {
+    func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
+        // .startUpdatingLocation might pass more than one location to the locations array
+      for location in locations {
+        // do stuff with each location data
+      }
+    }
+}
+```
+
+<br>
+
+
+
+## Handling Error
+
+There might be a possibility that the app failed to retrieve location data (after calling .requestLocation or .startUpdatingLocation), when this happen, the **didFailWithError error:** will be called.
+
+```swift
+func locationManager(_ manager: CLLocationManager, didFailWithError error: Error) {
+    // might be that user didn't enable location service on the device
+    // or there might be no GPS signal inside a building
+  
+    // might be a good idea to show an alert to user to ask them to walk to a place with GPS signal
+}
+```
+
+<br>
+
+
+
+## 'didUpdateLocation' didn't get called even after I have set delegate! What happened?
+
+I saw this question asked a lot in Apple developers forum, and I noticed most of them requested location data right after requesting permission like this :
+
+```swift
+locationManager.requestWhenInUseAuthorization()
+locationManager.requestLocation()
+```
+
+<br>
+
+
+
+The problem with this is that
 
 
 
@@ -222,18 +313,55 @@ Both of these methods will instruct the iOS device to retrieve its current locat
 
 
 
+// Remember asynchronous, it takes quite some time for the phone to retrieve the location data, hence it will continue executing code below first.
+
+// don't do
+
+```swift
+override func viewDidLoad() {
+    super.viewDidLoad()
+    locationManager.delegate = self
+  
+		locationManager.requestWhenInUseAuthorization()
+    // after showing the permission dialog, the program will continue executing the next line before the user has tap 'Allow' or 'Disallow'
+    
+    // when the requestLocation() function is called, the status is still .undetermined, hence iOS won't start requesting location
+    locationManager.requestLocation()
+}
+
+```
+
+
+
+// do
+
+```swift
+override func viewDidLoad() {
+    super.viewDidLoad()
+    locationManager.delegate = self
+  
+		locationManager.requestWhenInUseAuthorization()
+    // after showing the permission dialog, the program will continue executing the next line before the user has tap 'Allow' or 'Disallow'
+    
+    // if previously user has allowed the location permission, then request location
+    if(CLLocationManager.authorizationStatus() == .authorizedWhenInUse || CLLocationManager.authorizationStatus() == .authorizedAlways){
+        locationManager.requestLocation()
+    }
+}
+
+// After user tap on 'Allow' or 'Disallow' on the dialog
+func locationManager(_ manager: CLLocationManager, didChangeAuthorization status: CLAuthorizationStatus) {
+  if(status == .authorizedWhenInUse || status == .authorizedAlways){
+    manager.requestLocation()
+  }
+}
+```
 
 
 
 
 
-
-
-
-
-
-
-// Remember asynchronous, it takes quite some time for the phone to retrieve the location data, hence it will continue executing code below first
+// remember to test on real device, as simulator will use simulated location data and return it almost instantly. Real device can take few seconds to retrieve location data.
 
 
 
@@ -242,6 +370,10 @@ Both of these methods will instruct the iOS device to retrieve its current locat
 
 
 // higher accuracy location data requires longer time to retrieve, use the least accuracy you need to save time
+
+
+
+// steps to enable retrieving location data when the app is in background
 
 
 

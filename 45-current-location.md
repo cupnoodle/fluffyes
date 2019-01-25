@@ -34,6 +34,8 @@ Here's the overall flow of retrieving user location :
 
 
 
+## Requesting location permission from user
+
 Before requesting location data of the user, we will need to request permission to use location service from the user.
 
 
@@ -182,7 +184,11 @@ func retriveCurrentLocation(){
     }
     
     // at this point the authorization status is authorized
+    // request location data once
     locationManager.requestLocation()
+  
+    // start monitoring location data and get notified whenever there is change in location data / every few seconds, until stopUpdatingLocation() is called
+    // locationManager.startUpdatingLocation()
 }
 ```
 
@@ -194,7 +200,13 @@ We will also have to check if the location services is enabled on the user phone
 
 
 
-After ensuring the location services is enabled and the authorization status is authorized, we can start to request location by calling **locationManager.requestLocation()** (one-time delivery of location data), 
+## Retrieving user current location
+
+After ensuring the location services is enabled and the authorization status is authorized, we can start to request location by calling **locationManager.requestLocation()** (one-time delivery of location data), or have an ongoing stream of location updates using **locationManager.startUpdatingLocation()**. 
+
+
+
+Both of these methods will instruct the iOS device to retrieve its current location data, and once the location data is retrieved, the delegate method **didUpdateLocations locations:** will be called. The difference is that .requestLocation() will only call the `didUpdateLocations locations:` once , whereas .startUpdatingLocation() will keep on calling `didUpdateLocations locations:` every few seconds / whenever there's location change of the device until you stop it by calling locationManager.stopUpdatingLocation.
 
 
 

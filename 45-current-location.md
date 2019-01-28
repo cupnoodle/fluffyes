@@ -349,39 +349,68 @@ func locationManager(_ manager: CLLocationManager, didChangeAuthorization status
 
 
 
+## Remember to test CoreLocation function on real device
+
+If you test CoreLocation functions in simulator, simulator will use simulated location data and return it almost instantly, as your Mac doesn't have GPS functionality.
+
+![simulator gif](https://iosimage.s3.amazonaws.com/2019/45-current-location/simulatorInstant.gif)
 
 
 
+You can change the location coordinate for the simulator using **Debug** > **Custom Location** .
+
+![location simulator](https://iosimage.s3.amazonaws.com/2019/45-current-location/locationData.png)
 
 
 
+If you test it in real device, it might take up to 10 seconds, depending on the accuracy you have set for the CLLocationManager.
 
 
 
+## requestLocation() might take longer to retrieve location data
 
-// Remember asynchronous, it takes quite some time for the phone to retrieve the location data, hence it will continue executing code below first.
-
-
-
-
-
-// do
+As mentioned in this [WWDC video about CoreLocation](https://developer.apple.com/videos/play/wwdc2017/713/) (at around 11:55), **requestLocation()** is a convenient method provided by Apple which under the hood will run **startUpdatingLocation()** , retrieve multiple location data, and select the most accurate one to pass to delegate, and call **stopUpdatingLocation()**. This process can take up to 10 seconds (which is around the timeout limit) if it can't decide which location data is the best.
 
 
 
+If speed of retrieval is crucial for your app and you are willing to handle the start/stopping of location data retrieval and filtering of location data, use **startUpdatingLocation()** instead.
 
 
 
+## Accuracy 
 
-// remember to test on real device, as simulator will use simulated location data and return it almost instantly. Real device can take few seconds to retrieve location data.
-
-
-
-// requestLocationDataOnce takes more time than the start / stop requesting location data delegate
+You can specify how accurate you want the location data to be by specifying the **desiredAccuracy** property for the CLLocationManager before requesting location data.
 
 
 
-// higher accuracy location data requires longer time to retrieve, use the least accuracy you need to save time
+```swift
+// location data accurate until hundred meters
+locationManager.desiredAccuracy = kCLLocationAccuracyHundredMeters
+```
+
+<br>
+
+Here's a list of accuracy type : 
+
+![Accuracy type](https://iosimage.s3.amazonaws.com/2019/45-current-location/accuracyType.png)
+
+
+
+From [Apple's documentation on desiredAccuracy](For iOS and macOS, the default value of this property is `kCLLocationAccuracyBest`. For watchOS, the default value is `kCLLocationAccuracyHundredMeters`.), if you didn't set the desiredAccuracy, the default values are as follow : 
+
+> For iOS and macOS, the default value of this property is `kCLLocationAccuracyBest`. For watchOS, the default value is `kCLLocationAccuracyHundredMeters`.
+
+
+
+One thing to note is that higher accuracy will require longer time to retrieve location data. Using **kCLLocationAccuracyHundredMeters** to call requestLocation() took 1 second on my phone, whereas **kCLLocationAccuracyBest** took 10 seconds.
+
+
+
+I suggest to use the least accurate accuracy your app need (hundred meters is usually good enough unless your app is like Waze / Google Maps / Emergency app), this can save time on retrieving location.
+
+
+
+## Retrieving location data when the app is in the background
 
 
 

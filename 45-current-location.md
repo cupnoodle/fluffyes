@@ -286,7 +286,7 @@ func locationManager(_ manager: CLLocationManager, didFailWithError error: Error
 
 ## 'didUpdateLocation' didn't get called even after I have set delegate! What happened?
 
-I saw this question asked a lot in Apple developers forum, and I noticed most of them requested location data right after requesting permission like this :
+I saw this question asked a lot in Apple developers forum, and noticed most of them requested location data right after requesting permission like this :
 
 ```swift
 locationManager.requestWhenInUseAuthorization()
@@ -297,25 +297,11 @@ locationManager.requestLocation()
 
 
 
-The problem with this is that
+The problem with this is that **.requestWhenInUseAuthorization()** is asynchronous, meaning after the permission alert is shown, the next line of code will be executed **before** user has tap on the alert.
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-// Remember asynchronous, it takes quite some time for the phone to retrieve the location data, hence it will continue executing code below first.
-
-// don't do
+Don't do this :
 
 ```swift
 override func viewDidLoad() {
@@ -331,9 +317,11 @@ override func viewDidLoad() {
 
 ```
 
+<br>
 
 
-// do
+
+Instead, do it like this : 
 
 ```swift
 override func viewDidLoad() {
@@ -356,6 +344,30 @@ func locationManager(_ manager: CLLocationManager, didChangeAuthorization status
   }
 }
 ```
+
+<br>
+
+
+
+
+
+
+
+
+
+
+
+
+
+// Remember asynchronous, it takes quite some time for the phone to retrieve the location data, hence it will continue executing code below first.
+
+
+
+
+
+// do
+
+
 
 
 

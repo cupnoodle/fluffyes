@@ -412,9 +412,35 @@ I suggest to use the least accurate accuracy your app need (hundred meters is us
 
 ## Retrieving location data when the app is in the background
 
+To enable your app to retrieve location data while in background, you'll need to :
+
+1. Select your project > Capabilities > turn on Background modes and check 'Location updates'
+
+![background mode](https://iosimage.s3.amazonaws.com/2019/45-current-location/backgroundModes.png)
 
 
-// steps to enable retrieving location data when the app is in background
+
+2. Request always authorization for the CoreLocation manager
+
+   ```swift
+   locationManager.requestAlwaysAuthorization()
+   ```
+
+   <br>
+
+   The user would need to tap 'Always allow' when prompted permission , and the authorization status need to be **.authorizedAlways**
+
+   
+
+3. Start update location and that's it!
+
+   ```swift
+   locationManager.startUpdatingLocation()
+   ```
+
+
+
+
 
 
 

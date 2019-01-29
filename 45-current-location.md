@@ -35,7 +35,22 @@ Here's the overall flow of retrieving user location :
 
 ![Location flow](https://iosimage.s3.amazonaws.com/2019/45-current-location/locationFlow.png)
 
+Table of contents
 
+1. [Requesting location permission from user](#permission)
+2. [Retrieving user current location](#retrieving)
+3. [Handling Error](#error)
+4. ['didUpdateLocation' didn't get called even after I have set delegate! What happened?](#wtf)
+5. [Remember to test CoreLocation function on real device](#realdevice)
+6. [requestLocation() might take longer to retrieve location data](#longer)
+7. [Accuracy](#accuracy)
+8. [Retrieving location data when the app is in the background](#background)
+
+
+
+
+
+<span id="permission"></span>
 
 ## Requesting location permission from user
 
@@ -204,6 +219,8 @@ We will also have to check if the location services is enabled on the user phone
 
 
 
+<span id="retrieving"></span>
+
 ## Retrieving user current location
 
 After ensuring the location services is enabled and the authorization status is authorized, we can start to request location by calling **locationManager.requestLocation()** (one-time delivery of location data), or have an ongoing stream of location updates using **locationManager.startUpdatingLocation()**. 
@@ -268,6 +285,8 @@ extension ViewController : CLLocationManagerDelegate {
 
 
 
+<span id="error"></span>
+
 ## Handling Error
 
 There might be a possibility that the app failed to retrieve location data (after calling .requestLocation or .startUpdatingLocation), when this happen, the **didFailWithError error:** will be called.
@@ -284,6 +303,8 @@ func locationManager(_ manager: CLLocationManager, didFailWithError error: Error
 <br>
 
 
+
+<span id="wtf"></span>
 
 ## 'didUpdateLocation' didn't get called even after I have set delegate! What happened?
 
@@ -350,6 +371,8 @@ func locationManager(_ manager: CLLocationManager, didChangeAuthorization status
 
 
 
+<span id="realdevice"></span>
+
 ## Remember to test CoreLocation function on real device
 
 If you test CoreLocation functions in simulator, simulator will use simulated location data and return it almost instantly, as your Mac doesn't have GPS functionality.
@@ -368,6 +391,8 @@ If you test it in real device, it might take up to 10 seconds, depending on the 
 
 
 
+<span id="longer"></span>
+
 ## requestLocation() might take longer to retrieve location data
 
 As mentioned in this [WWDC video about CoreLocation](https://developer.apple.com/videos/play/wwdc2017/713/) (at around 11:55), **requestLocation()** is a convenient method provided by Apple which under the hood will run **startUpdatingLocation()** , retrieve multiple location data, and select the most accurate one to pass to delegate, and call **stopUpdatingLocation()**. This process can take up to 10 seconds (which is around the timeout limit) if it can't decide which location data is the best.
@@ -377,6 +402,8 @@ As mentioned in this [WWDC video about CoreLocation](https://developer.apple.com
 If speed of retrieval is crucial for your app and you are willing to handle the start/stopping of location data retrieval and filtering of location data, use **startUpdatingLocation()** instead.
 
 
+
+<span id="accuracy"></span>
 
 ## Accuracy 
 
@@ -411,6 +438,8 @@ I suggest to use the least accurate accuracy your app need (hundred meters is us
 
 
 
+<span id="background"></span>
+
 ## Retrieving location data when the app is in the background
 
 To enable your app to retrieve location data while in background, you'll need to :
@@ -438,10 +467,5 @@ To enable your app to retrieve location data while in background, you'll need to
    ```swift
    locationManager.startUpdatingLocation()
    ```
-
-
-
-
-
 
 

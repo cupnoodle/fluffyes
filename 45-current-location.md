@@ -2,7 +2,7 @@
 
 
 
-Last month, I added a show nearby train station feature to my train app [Rapidly](https://rapidkl.app) . I've stumbled across few issues while following some tutorials online on how to implement Core Location, in this post we will look into how to retrieve current location of user using Core Location and some common pitfalls of it.
+Last month, I added a show nearby train station feature to my train app [Rapidly](https://rapidkl.app) . I've stumbled across few issues while following some tutorials online on how to implement Core Location, in this post we will look into how to retrieve current location of user using Core Location and troubleshoot some common issues.
 
 
 
@@ -258,6 +258,7 @@ extension ViewController : CLLocationManagerDelegate {
         // .startUpdatingLocation might pass more than one location to the locations array
       for location in locations {
         // do stuff with each location data
+        // the last element is the most recent location data
       }
     }
 }

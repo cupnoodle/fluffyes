@@ -245,18 +245,23 @@ There is a [shadowPath](https://developer.apple.com/documentation/quartzcore/cal
 We can set the shadow path to follow the path of the rounded container view :
 
 ```swift
-containerView.layer.shadowPath = UIBezierPath(roundedRect: imageView.frame, cornerRadius: cornerRadius).cgPath
+// create a path following the rounded corner image
+containerView.layer.shadowPath = UIBezierPath(roundedRect: imageView.bounds, cornerRadius: cornerRadius).cgPath
 ```
 
 <br>
 
 
 
-The **UIBezierPath(roundedRect: imageView.frame, cornerRadius: cornerRadius).cgPath** will create a path like this : 
+The **UIBezierPath(roundedRect: imageView.bounds, cornerRadius: cornerRadius).cgPath** will create a path like this : 
+
+![shadow path](https://iosimage.s3.amazonaws.com/2019/46-rounded-shadow/shadowPath2.png)
 
 
 
 
+
+As for cornerRadius, there's many article on the internet saying you should avoid it as much as possible. Personally I haven't experienced a dealbreaker performance issue using cornerRadius on a recent device (iPhone 6 and newer), one remedy for reducing the performance impact on using cornerRadius would be to [mask the image into a rounded image using CoreGraphics](https://rbnsn.me/improving-scrolling-performance-of-circles-on-ios) first and thus achieving rounded corner image without needing to use cornerRadius.
 
 
 

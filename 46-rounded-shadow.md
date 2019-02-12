@@ -100,7 +100,7 @@ Now the image view is rounded, 🙌!
 
 
 
-## Implementing rounded corner with shadow
+## Issue with implementing rounded corner with shadow
 
 Since we now know how to implement rounded corner and shadow, let's combine them and we shall get the App Store card-like UI .
 
@@ -128,9 +128,25 @@ Wait... where did the shadow go? Why combining rounded corner and shadow makes t
 
 
 
-Remember the **bounds** and **clipsToBounds = true** we mentioned earlier? When we set clipsToBounds = true, the content (image) will be confined inside the rounded bounds. As the shadow is outside the bounds, it is clipped out :
+Remember the **bounds** and **clipsToBounds = true** we mentioned earlier? When we set clipsToBounds = true, the content (image) will be confined inside the rounded bounds. As the shadow is outside the bounds, it got clipped out :
 
 
+
+![clipsToBounds](https://iosimage.s3.amazonaws.com/2019/46-rounded-shadow/clipsToBounds.png)
+
+Notice the shadow got clipped after setting clipsToBounds = true.
+
+
+
+As we need clipsToBounds = true to make the image become rounded, how can we achieve both rounded corner and shadow effect for the image? 🤔
+
+
+
+There's many solutions (some require drawing custom layer ) to this, one of the straightforward solution would be using multiple views (1 view for shadow, 1 view for rounded corner) to achieve the same effect. We will look into this method in the next section.
+
+
+
+## Implementing rounded corner with shadow 
 
 
 

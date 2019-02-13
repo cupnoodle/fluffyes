@@ -261,10 +261,25 @@ The **UIBezierPath(roundedRect: imageView.bounds, cornerRadius: cornerRadius).cg
 
 
 
-As for cornerRadius, there's many article on the internet saying you should avoid it as much as possible. Personally I haven't experienced a dealbreaker performance issue using cornerRadius on a recent device (iPhone 6 and newer), one remedy for reducing the performance impact on using cornerRadius would be to [mask the image into a rounded image using CoreGraphics](https://rbnsn.me/improving-scrolling-performance-of-circles-on-ios) first and thus achieving rounded corner image without needing to use cornerRadius.
+As for cornerRadius, there's many article on the internet saying you should avoid it as much as possible. Personally I haven't experienced a dealbreaker performance issue using cornerRadius on a recent device (iPhone 6 and newer), one remedy for reducing the performance impact on using cornerRadius would be to [mask the image into a rounded image using CoreGraphics](https://rbnsn.me/improving-scrolling-performance-of-circles-on-ios) first and thus achieving rounded corner image without needing to use cornerRadius. I would advise not to spend too much time preoptimizing performance until you have experienced a noticeable performance impact on your app.
 
 
 
 
 
 Lego brick photo by [Iker Urteaga](https://unsplash.com/photos/TL5Vy1IM-uA?utm_source=unsplash&utm_medium=referral&utm_content=creditCopyText) on [Unsplash](https://unsplash.com/search/photos/game?utm_source=unsplash&utm_medium=referral&utm_content=creditCopyText)
+
+
+
+## Putting it into a table view cell
+
+Chances are, you want to put the card UI into a table view so user can scroll through multiple cards.
+
+How to start implementing this? How to add spacing between each cards? 🤔
+Wait, how come the shadow doesn't appear correctly even though shadowPath has been set?! 😱
+
+I have make a demo project containing table view which contain App Store card cell UI which addresses issues mentioned above, you can get it below and play with it: 
+
+
+
+// convert kit form here

@@ -1,4 +1,13 @@
-# Send user to App settings using Settings URL
+# Open settings app using openSettingsURLString
+
+<s>TL;DR</s>  [Executive summary](https://twitter.com/patio11/status/1087154089467600897) : 
+
+```swift
+// open the app permission in Settings app
+UIApplication.shared.open(URL(string: UIApplication.openSettingsURLString)!, options: [:], completionHandler: nil)
+```
+
+
 
 
 
@@ -14,15 +23,53 @@ Chances are, the user might decline it on the first run. The bad news is that af
 
 
 
-The only way a user can grant location access (or camera, microphone etc) to an app after declining the first prompt is to go to the Settings app and manually allow permission there.
+The only way a user can grant location access (or camera, microphone, push notification etc) to an app after declining the first prompt is to go to the Settings app and manually allow permission there.
 
 ![manually go to Settings](https://iosimage.s3.amazonaws.com/2019/47-app-settings/settingsManual.gif)
 
 
 
-This would require user to open Settings app, scroll down the long list to your app and tap multiple times to allow permission, which can cause annoyance to user. To reduce the cognitive load on the user, we can show an alert with button that links to the app permission section directly using **SettingsURL** when the app detect that the permission has not been granted.
+This would require user to open Settings app, scroll down the long list to your app and tap multiple times to allow permission, which can cause annoyance to user. To reduce the cognitive load on the user, we can show an alert with button that links to the app permission section directly using **URL(string: UIApplication.openSettingsURLString)!** .
 
 
 
-// show code that shows alert and move user to settings url
+```swift
+// called when the authorization status is changed for the core location permission
+func locationManager(_ manager: CLLocationManager, didChangeAuthorization status: CLAuthorizationStatus) {
+    print("location manager authorization status changed")
+
+    if(status == .denied){
+        let alert = UIAlertController(title: "Location access required to get your current location", message: "Please allow location access", preferredStyle: .alert)
+        let settingsAction = UIAlertAction(title: "Settings", style: .default, handler: {action in
+
+            // open the app permission in Settings app
+            UIApplication.shared.open(URL(string: UIApplication.openSettingsURLString)!, options: [:], completionHandler: nil)
+        })
+
+        let cancelAction = UIAlertAction(title: "Cancel", style: .default, handler: nil)
+
+        alert.addAction(settingsAction)
+        alert.addAction(cancelAction)
+      
+        alert.preferredAction = settingsAction
+
+        self.present(alert, animated: true, completion: nil)
+    }
+}
+```
+
+<br>
+
+
+
+This would result the following output : 
+
+
+![Settings Jump](https://iosimage.s3.amazonaws.com/2019/47-app-settings/settingsJump.gif)
+
+
+
+<br>
+
+<script async data-uid="5b0c2b4f98" src="https://f.convertkit.com/5b0c2b4f98/8324d183a4.js"></script>
 

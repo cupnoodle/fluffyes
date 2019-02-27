@@ -4,9 +4,13 @@ There might be occassion that your app got launched by user tapping push notific
 
 
 
-You might run into issue like API is not being called when the app is launched from push notification, no problem we can put a few **print()** statements inside the function and see what went wrong…. oh wait how do we attach a debugger immediately when the app is being launched from push notification?! 😱
+You might run into issue like API is not being called when the app is launched from push notification, no problem we can put a few **print()** statements inside the function and see what went wrong…. oh wait how do we attach a debugger / console immediately when the app is being launched from push notification?! 😱
 
 
 
-Normally when we want to debug an app, we will open Xcode, build and run the app and attach a debugger to it. But in this case we want to attach a debugger to the app in phone immediately 
+Normally when we want to debug an app, we will open Xcode, build and run the app and attach a debugger to it. But in this case we want to attach a debugger to the app in phone immediately after the app is launched by tapping notification.
+
+
+
+Fortunately, we can actually configure Xcode to attach the debugger right after the app is launched by user on the phone.
 

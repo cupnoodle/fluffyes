@@ -33,7 +33,7 @@ In the above demo, the code that was executed when the "Freeze!" button is tappe
 
 ## Core, Thread and Queue
 
-To understand the phrase "main thread is blocked", we need to first understand the concept of thread and concurrency. 
+To understand the phrase "main thread is blocked", we first need to understand the concept of thread and concurrency. 
 
 
 
@@ -215,7 +215,7 @@ As you might have guessed, if we run a non-UI task that takes a long time on the
 
 In this case, the UI stops responding when the zip file download starts and only starts responding after the zip file download has finished. One of the way to solve this is to move the download zip file task into another thread. As Apple encourage us to use queue instead of managing thread directly, we can wrap the download zip file code with a **global queue** like this :
 
-<span id="globalqueue"></span>
+
 
 ```swift
 @IBAction func freezeButtonTapped(_ sender: UIButton) {
@@ -246,7 +246,7 @@ There's multiple background threads but only one main thread. One thing to note 
 
 Now that we have moved the zip file download task to background thread using global queue : 
 
-
+<span id="globalqueue"></span>
 
 ```swift
 @IBAction func freezeButtonTapped(_ sender: UIButton) {
@@ -282,13 +282,40 @@ What if we want to update a label text using the data we have downloaded? If we 
 
 
 
+[Apple's official documentation](https://developer.apple.com/documentation/code_diagnostics/main_thread_checker) mentioned that updating UI on a thread other than the main thread can result in missed UI updates, visual defects, data corruptions, and crashes.
 
 
 
+To fix this issue, we can use wrap the UI element inside main queue (inside the global queue) like this : 
+
+```swift
+@IBAction func freezeButtonTapped(_ sender: UIButton) {
+  // send the code to global queue, this will be dispatched to one of the background threads
+  DispatchQueue.global().async {
+    let data = try? Data(contentsOf: URL(string: "https://github.com/fluffyes/AppStoreCard/archive/master.zip")!)
+    
+    // jump back to main thread to update the UI
+    // you can use the data downloaded here
+    DispatchQueue.main().async {
+      self.nameLabel.text = "Zip file downloaded"
+    }
+  }
+}
+```
+
+<br>
 
 
 
-// go back to main thread to update UI
+One of the key to making performant app is to move as much non-UI related heavy processing to background thread as possible so that user won't experience lag / freeze on the UI.
+
+
+
+## Further Reading
+
+[Dispatch Queues (Concurrency programming guide)](https://developer.apple.com/library/archive/documentation/General/Conceptual/ConcurrencyProgrammingGuide/OperationQueues/OperationQueues.html)
+
+
 
 
 

@@ -215,6 +215,37 @@ As you might have guessed, if we run a non-UI task that takes a long time on the
 
 In this case, the UI stops responding when the zip file download starts and only starts responding after the zip file download has finished. One of the way to solve this is to move the download zip file task into another thread. As Apple encourage us to use queue instead of managing thread directly, we can wrap the download zip file code with a **global queue** like this :
 
+<span id="globalqueue"></span>
+
+```swift
+@IBAction func freezeButtonTapped(_ sender: UIButton) {
+  // send the code to global queue, this will be dispatched to one of the background threads instead of main thread
+  DispatchQueue.global().async {
+    let data = try? Data(contentsOf: URL(string: "https://github.com/fluffyes/AppStoreCard/archive/master.zip")!)
+  }
+}
+```
+
+<br>
+
+
+
+For DispatchQueue, other than creating our own serial / concurrent queue, we can also access the **Main Queue** and **Global Queue** using `DispatchQueue.main()` and `DispatchQueue.global()` . The code placed inside main queue will be passed to the main / UI thread, whereas the code placed inside global queue will be passed to different background threads depending on their priority. 
+
+
+
+There's multiple background threads but only one main thread. One thing to note is that main queue is a serial queue, where task will execute following order from top to bottom, whereas global queue is a concurrent queue where multiple tasks might be dispatched to different threads at the same time.
+
+![global and main queue](https://iosimage.s3.amazonaws.com/2019/49-help-my-app-freeze/mainglobalqueue.png)
+
+
+
+
+
+## UI updates should happen in Main thread
+
+Now that we have moved the zip file download task to background thread using global queue : 
+
 
 
 ```swift
@@ -227,6 +258,31 @@ In this case, the UI stops responding when the zip file download starts and only
 ```
 
 <br>
+
+
+
+What if we want to update a label text using the data we have downloaded? If we update any UI element inside a non-main thread, Xcode will show us a runtime warning like this : 
+
+```swift
+@IBAction func freezeButtonTapped(_ sender: UIButton) {
+  // send the code to global queue, this will be dispatched to one of the background threads instead of main thread
+  DispatchQueue.global().async {
+    let data = try? Data(contentsOf: URL(string: "https://github.com/fluffyes/AppStoreCard/archive/master.zip")!)
+    
+    // update UI label, I know its not using the downloaded data
+    // its just for demonstration
+    self.nameLabel.text = "Zip file downloaded"
+  }
+}
+```
+
+<br><br>
+
+![warning on updating UI in non-main thread](https://iosimage.s3.amazonaws.com/2019/49-help-my-app-freeze/mustBeUsedOnMainThread.png)
+
+
+
+
 
 
 

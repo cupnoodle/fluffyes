@@ -29,8 +29,17 @@ In the above demo, the code that was executed when the "Freeze!" button is tappe
 
 `Data(contentsOf: URL)` will attempt to download the data from the URL we provided, as this run on main thread, the main thread is occupied (blocked) with this download task and can't handle our UI interaction hence we feel that the app 'freezes'.
 
+Just want to jump to the code answer? [Click here](#tldr)
+
+Table of contents: 
+1. [Core, Thread and Queue](#core-thread-queue)
+2. [Main Thread and Queue](#main)
+3. [UI updates should happen in Main thread](#ui-main)
+4. [Further Reading](#further)
+5. [Playground project demo of queue](#cta)
 
 
+<span id="core-thread-queue"></span>
 ## Core, Thread and Queue
 
 To understand the phrase "main thread is blocked", we first need to understand the concept of thread and concurrency. 
@@ -153,7 +162,7 @@ Instead of creating a thread to handle task concurrently and managing them, Appl
 ![queue](https://iosimage.s3.amazonaws.com/2019/49-help-my-app-freeze/queue.png)
 
 
-
+<span id="main"></span>
 ## Main Thread and Queue
 
 Remember the default thread we mentioned earlier? If we didn't explicitly define a new thread, the code will be executed on the default thread. In iOS, the default thread is also called as **Main thread** or **UI thread**, this is because the user interface (UIKit) of the app runs on the default thread as well, this includes handling button tap, updating label values, scrolling table views, etc..
@@ -216,6 +225,7 @@ As you might have guessed, if we run a non-UI task that takes a long time on the
 In this case, the UI stops responding when the zip file download starts and only starts responding after the zip file download has finished. One of the way to solve this is to move the download zip file task into another thread. As Apple encourage us to use queue instead of managing thread directly, we can wrap the download zip file code with a **global queue** like this :
 
 
+<span id="tldr"></span>
 
 ```swift
 @IBAction func freezeButtonTapped(_ sender: UIButton) {
@@ -240,7 +250,7 @@ There's multiple background threads but only one main thread. One thing to note 
 
 
 
-
+<span id="ui-main"></span>
 
 ## UI updates should happen in Main thread
 
@@ -310,24 +320,14 @@ To fix this issue, we can use wrap the UI element inside main queue (inside the 
 One of the key to making performant app is to move as much non-UI related heavy processing to background thread as possible so that user won't experience lag / freeze on the UI.
 
 
-
+<span id="further"></span>
 ## Further Reading
 
 [Dispatch Queues (Concurrency programming guide)](https://developer.apple.com/library/archive/documentation/General/Conceptual/ConcurrencyProgrammingGuide/OperationQueues/OperationQueues.html)
 
 
 
+<span id="cta"></span>
 
-
-// CTA, cheatsheet of dispatch queue and priorities list
-
-
-
-
-
-
-
-
-
-
+<script async data-uid="644df95883" src="https://f.convertkit.com/644df95883/d3af8370a8.js"></script>
 

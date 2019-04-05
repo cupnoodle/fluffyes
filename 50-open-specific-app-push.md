@@ -4,6 +4,10 @@ Say you have an app and want to redirect user to a specific view when a push not
 
 
 
+[In a rush and just want the code solution? Click here](#tldr)
+
+
+
 ![tapAndMove](https://iosimage.s3.amazonaws.com/2019/50-open-specific-app-push/tapAndMove.gif)
 
 
@@ -87,3 +91,100 @@ There's a **rootViewController** property for the window object, which access th
 
 In storyboard, the flow looks like this: 
 
+![storyboard](https://iosimage.s3.amazonaws.com/2019/50-open-specific-app-push/storyboard.png)
+
+
+
+The root view controller is our entry point to access view controllers from AppDelegate. One naive approach would be changing the root view controller to the view controller we want when the user tap on the push notification.
+
+
+
+Say we want to show the ConversationViewController when user tap on push notification : 
+
+![CVC Storyboard ID](https://iosimage.s3.amazonaws.com/2019/50-open-specific-app-push/storyboardIDVC.png)
+
+
+
+We can change the root view controller like this :
+
+
+
+```swift
+func userNotificationCenter(_ center: UNUserNotificationCenter, didReceive response: UNNotificationResponse, withCompletionHandler completionHandler: @escaping () -> Void) {
+      
+    let storyboard = UIStoryboard(name: "Main", bundle: nil)
+
+    // instantiate the view controller from storyboard
+    if  let conversationVC = storyboard.instantiateViewController(withIdentifier: "ConversationViewController") as? ConversationViewController {
+
+        // set the view controller as root
+        self.window?.rootViewController = conversationVC
+    }
+}
+```
+
+<br>
+
+
+
+![dont worry gif](https://iosimage.s3.amazonaws.com/2019/50-open-specific-app-push/dontworry.gif)
+
+
+
+The problem with this approach is that by replacing the root view controller with the new view controller, we have removed the whole current stack including tab bar controllers and also the navigation controlles, making the user unable to go back to the previous view controller! 😱
+
+
+
+## Pushing new view controller into the current navigation controller
+
+A better approach would be pushing the new view controller to the existing navigation controller.
+
+This section assume that your app uses a **navigation controller** to move around view controllers. All tabs in the tab bar controller contain a navigation controller.
+
+
+
+![storyboard](https://iosimage.s3.amazonaws.com/2019/50-open-specific-app-push/storyboard.png)
+
+
+
+As the tab bar controller is the root view controller, we can traverse to the navigation controller, and push the new view controller into it like this : 
+
+<span id="tldr"></span>
+
+```swift
+func userNotificationCenter(_ center: UNUserNotificationCenter, didReceive response: UNNotificationResponse, withCompletionHandler completionHandler: @escaping () -> Void) {
+        
+    let storyboard = UIStoryboard(name: "Main", bundle: nil)
+
+    // instantiate the view controller from storyboard
+    // root view controller is tab bar controller
+    // the selected tab is a navigation controller
+    // then we push the new view controller to it
+    if  let conversationVC = storyboard.instantiateViewController(withIdentifier: "ConversationViewController") as? ConversationViewController,
+        let tabBarController = self.window?.rootViewController as? UITabBarController,
+        let navController = tabBarController.selectedViewController as? UINavigationController {
+
+            // we can modify variable of the new view controller using notification data
+            // (eg: title of notification)
+            conversationVC.senderDisplayName = response.notification.request.content.title
+
+            navController.pushViewController(conversationVC, animated: true)
+    }
+}
+```
+
+<br>
+
+
+
+This code will produce the following result : 
+
+![tapAndMove](https://iosimage.s3.amazonaws.com/2019/50-open-specific-app-push/tapAndMove.gif)
+
+
+
+What if the current showing view controller of your app isn't contained inside a navigation controller? You can choose to present it modally (remember to check if there is any other view controller is being presented before presenting it), but you would have to traverse from the root view controller to the current showing view controller manually in AppDelegate, and then call **.present()** on the current view controller.
+
+
+
+show CTA

@@ -131,7 +131,7 @@ func userNotificationCenter(_ center: UNUserNotificationCenter, didReceive respo
 
 
 
-The problem with this approach is that by replacing the root view controller with the new view controller, we have removed the whole current stack including tab bar controllers and also the navigation controlles, making the user unable to go back to the previous view controller! 😱
+The problem with this approach is that by replacing the root view controller with the new view controller, we have removed the whole current stack including tab bar controller and also the navigation controller, making the user unable to go back to the previous view controller! 😱
 
 
 
@@ -183,8 +183,22 @@ This code will produce the following result :
 
 
 
+## Presenting view controller modally
+
 What if the current showing view controller of your app isn't contained inside a navigation controller? You can choose to present it modally (remember to check if there is any other view controller is being presented before presenting it), but you would have to traverse from the root view controller to the current showing view controller manually in AppDelegate, and then call **.present()** on the current view controller.
 
 
 
-show CTA
+```swift
+if  let conversationVC = storyboard.instantiateViewController(withIdentifier: "ConversationViewController") as? ConversationViewController,
+    let tabBarVC = self.window?.rootViewController as? UITabBarController {
+    
+    tabBarVC.selectedViewController.present(conversationVC, animated: true, completion: nil)
+}
+```
+
+<br>
+
+
+
+<script async data-uid="82f4a0256c" src="https://f.convertkit.com/82f4a0256c/b60b8439b5.js"></script>

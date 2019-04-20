@@ -1,4 +1,4 @@
-# Introduction to supporting Dynamic Type
+# Introduction to Dynamic Type support (tutorial)
 
 Apple introduced dynamic type in iOS 7 to allow users to specify their preferred text size in the Settings app. App that supports dynamic type will be able to adjust text size based on the user preferred text size.
 
@@ -70,18 +70,6 @@ And the font size will auto adjust with the Settings text size without needing t
 
 
 
-One thing to note is that even for the same text styles (eg: Large Title) with the same text size selected (eg: the default middle text size) in Settings app, the text size displayed in app will still be different across different devices, 
-
-
-
-![different devices](https://iosimage.s3.amazonaws.com/2019/51-dynamic-type/differentSizes.png)
-
-
-
-Notice that the Large Title text size is smaller in iPhone SE compared to iPhone 8 Plus although both of them have used the same default (middle) text size in the Settings app.
-
-
-
 Not a fan of using Storyboard / Interface builder? To support dynamic type programmatically, we can use the **preferredFont(forTextStyle:)** method of UIFont.
 
 ```swift
@@ -113,6 +101,39 @@ It can be quite tedious to keep switching between Settings app and your app to a
 In the accessibility inspector, select the simulator / device you are using, then click the settings icon, and  you can adjust the text size easily by dragging the font size slider (default size is 4th tick from left).
 
 ![inspector font size](https://iosimage.s3.amazonaws.com/2019/51-dynamic-type/fontSizeInspector.png)
+
+
+
+## Scaling custom fonts
+
+As the preset text styles use System Font, what if we want to use a custom font, say Avenir Next and support dynamic type at the same time?
+
+
+
+In iOS 11, Apple has introduced [UIFontMetrics](https://developer.apple.com/documentation/uikit/uifontmetrics) class to let us support dynamic type on custom font easily.
+
+
+
+To support dynamic type on custom font, we can use the UIFontMetrics to bind a certain text style for a label font like this : 
+
+```swift
+// Yes, I know using force unwrapping is bad
+
+let font = UIFont(name: "AvenirNext-Regular", size: 18.0)!
+label.font = UIFontMetrics(forTextStyle: .body).scaledFont(for: customFont)
+```
+
+<br>
+
+
+
+This will make the label's font scale accordingly to the **percentage increase** of the **body** text style. If the body text style point size increases 35% (eg: 17pt to 23pt) when user switch from the default text size to the largest text size, UIFontMetrics will return the AvenirNext font with 35% larger size, ie. 18 * 1.35 = 24pt.
+
+
+
+Even though UIFontMetrics has done most of the work for us, we still need to decide what font (and size) to use for each of the text style on the default text size (eg: AvenirNext Regular size 18.0 for the default text size of body text style). To simplify this process, I recommend following [Keith Harrison's Plist approach](https://useyourloaf.com/blog/using-a-custom-font-with-dynamic-type/) on storing different fonts for different text styles.
+
+
 
 
 

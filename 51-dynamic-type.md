@@ -104,3 +104,15 @@ label.adjustsFontForContentSizeCategory = true
 
 ## Use Accessbility Inspector to speed up testing different text size
 
+It can be quite tedious to keep switching between Settings app and your app to adjust for different text size and test. To speed up this process, we can use the **Accessbility Inspector** in the Xcode developer tools section.
+
+![open accessibility inspector](https://iosimage.s3.amazonaws.com/2019/51-dynamic-type/menuAccessbilityInspector.png)
+
+
+
+In the accessibility inspector, select the simulator / device you are using, then click the settings icon, and  you can adjust the text size easily by dragging the font size slider (default size is 4th tick from left).
+
+![inspector font size](https://iosimage.s3.amazonaws.com/2019/51-dynamic-type/fontSizeInspector.png)
+
+
+

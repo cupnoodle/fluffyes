@@ -1,5 +1,20 @@
 # Introduction to Dynamic Type support (tutorial)
 
+Table of contents :
+
+1. [Default dynamic type text styles](#default)
+2. [Use Accessbility Inspector to speed up testing different text size](#inspector)
+3. [Scaling custom fonts](#custom)
+4. [Adapting label to larger font size](#adapt)
+5. [Detecting text size changes](#detect)
+6. [Content Size Category (List of different text sizes)](#category)
+7. [Adjusting other UI elements on text size changes](#other)
+8. [Further Reading](#further)
+
+
+
+
+
 Apple introduced dynamic type in iOS 7 to allow users to specify their preferred text size in the Settings app. App that supports dynamic type will be able to adjust text size based on the user preferred text size.
 
 
@@ -17,6 +32,8 @@ This accessibility feature help users with visual impairment , or weakend vision
 According to [a report by PDF Viewer app team](https://pspdfkit.com/blog/2018/improving-dynamic-type-support/), around 27 percent of their users have specified a non-default text size, which is quite significant! If your app doesn't support dynamic type, there might be a quarter of users who might be struggling to use your app due to vision problems!
 
 
+
+<span id="default"></span>
 
 ## Default dynamic type text styles
 
@@ -90,6 +107,8 @@ label.adjustsFontForContentSizeCategory = true
 
 
 
+<span id="inspector"></span>
+
 ## Use Accessbility Inspector to speed up testing different text size
 
 It can be quite tedious to keep switching between Settings app and your app to adjust for different text size and test. To speed up this process, we can use the **Accessbility Inspector** in the Xcode developer tools section.
@@ -107,6 +126,8 @@ In the accessibility inspector, select the simulator / device you are using, the
 Remember to check the "**Automatically Adjusts Font**" checkbox or set **adjustsFontForContentSizeCategory** to true for this to work.
 
 
+
+<span id="custom"></span>
 
 ## Scaling custom fonts
 
@@ -139,6 +160,8 @@ Even though UIFontMetrics has done most of the work for us, we still need to dec
 
 
 
+<span id="adapt"></span>
+
 ## Adapting label to larger font size
 
 You might used to only set the top and leading constraints for a label like this : 
@@ -167,15 +190,107 @@ After adding trailing constraint and setting number of lines to 0 , it looks goo
 
 
 
+<span id="detect"></span>
+
+## Detecting text size changes
+
+Sometimes we might want to perform certain action when user adjusted the text size in the Settings app, we can do so by implementing the **traitCollectionDidChange(_ previousTraitCollection:)** method. This method will be called when user return back to our app after changing text size.
+
+```swift
+// YourViewController.swift
+
+class YourViewController : UIViewController {
+  override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
+    // perform action here
+  }
+}
+```
+
+<br>
+
+
+
+<span id="category"></span>
+
+## Content Size Category (List of different text sizes)
+
+We can get the current selected text size by using the UIViewController.traitCollection.**preferredContentSizeCategory** property . This property will return the current text size (UIContentSizeCategory), with the default text size being **.large** (ie. the middle option in the text size slider) .
+
+
+
+```swift
+// YourViewController.swift
+
+class YourViewController : UIViewController {
+  override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
+    // perform action here when user changes the text size
+    
+    if self.traitCollection.preferredContentSizeCategory == .extraExtraExtraLarge {
+      // perform action here when user changes the text size to the largest (non-accessbility)
+    }
+  }
+}
+```
+
+<br>
+
+
+
+Here's some UIContentSizeCategory values relative to the text size slider : 
+
+![regular sizes](https://iosimage.s3.amazonaws.com/2019/51-dynamic-type/regularTextSizes.png)
+
+
+
+![accessibility text sizes](https://iosimage.s3.amazonaws.com/2019/51-dynamic-type/accessibilityTextSizes.png)
+
+
+
+You can view the full range of [UIContentSizeCategory in Apple's documentation](https://developer.apple.com/documentation/uikit/uicontentsizecategory).
+
+
+
+<span id="other"></span>
+
 ## Adjusting other UI elements on text size changes
 
-// traitCollectionDidChange
+Often, there will be a mix of images and labels in a layout, sometimes we might want an image to grow in size following the text size increase. Similar to custom fonts, we can use the **UIFontMetrics** class, but this time with the method **.scaledValue(for:)** to scale the image size according to the percentage increase of the text size.
 
 
 
-// scaledSize UIFontMetrics
+Say we want to bind the image height to the headline text style, and the default value for image height is 75.0, we can bind it like this : 
+
+```swift
+// YourViewController.swift
+
+// the height constraint for the avatar image view
+@IBOutlet weak var avatarHeightConstraint: NSLayoutConstraint!
+
+override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
+  // if the headline text size increase by 35%, the avatar height will increase by 35% too.
+  let adjustedHeight = UIFontMetrics(forTextStyle: .headline).scaledValue(for: 75.0)
+  avatarHeightConstraint.constant = adjustedHeight
+}
+
+```
+
+<br>
 
 
+
+Here's the example result : 
+
+
+
+![adaptiveImage](https://iosimage.s3.amazonaws.com/2019/51-dynamic-type/adaptiveImage.gif)
+
+
+
+// CTA sample Xcode project for the demo used in this post
+
+
+
+<span id="further"></span>
 
 ## Further Reading
 

@@ -104,6 +104,10 @@ In the accessibility inspector, select the simulator / device you are using, the
 
 
 
+Remember to check the "**Automatically Adjusts Font**" checkbox or set **adjustsFontForContentSizeCategory** to true for this to work.
+
+
+
 ## Scaling custom fonts
 
 As the preset text styles use System Font, what if we want to use a custom font, say Avenir Next and support dynamic type at the same time?
@@ -135,5 +139,52 @@ Even though UIFontMetrics has done most of the work for us, we still need to dec
 
 
 
+## Adapting label to larger font size
+
+You might used to only set the top and leading constraints for a label like this : 
+
+![leading and top constraints](https://iosimage.s3.amazonaws.com/2019/51-dynamic-type/leadingTopOnly.png)
 
 
+
+As the label doesn't have a trailing constraint, it might expand over the available screen size if user selects a larger text size, causing the user unable to see the full text : 
+
+![oops](https://iosimage.s3.amazonaws.com/2019/51-dynamic-type/oops.png)
+
+
+
+To solve this, we can add a trailing constraint to the label to ensure it won't expand beyond the screen, and set its **Lines** properties to **0** so that it can wrap the text to next line when there is not enough space in the current line.
+
+![label solution](https://iosimage.s3.amazonaws.com/2019/51-dynamic-type/labelSolution.png)
+
+
+
+After adding trailing constraint and setting number of lines to 0 , it looks good on larger text size like this : 
+
+
+
+![looks better](https://iosimage.s3.amazonaws.com/2019/51-dynamic-type/looksBetter.png)
+
+
+
+## Adjusting other UI elements on text size changes
+
+// traitCollectionDidChange
+
+
+
+// scaledSize UIFontMetrics
+
+
+
+## Further Reading
+
+You can check all the point size for different text styles at different system text size on [Apple Human Interface Guideline's typography page](https://developer.apple.com/design/human-interface-guidelines/ios/visual-design/typography/).
+
+
+
+[Detailed tutorial on supporting dynamic type for custom fonts](https://useyourloaf.com/blog/using-a-custom-font-with-dynamic-type/) by Keith Harrison.
+
+
+
+[Building Apps with Dynamic Type -  WWDC 2017](https://developer.apple.com/videos/play/wwdc2017/245/)

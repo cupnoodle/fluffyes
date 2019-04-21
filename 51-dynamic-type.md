@@ -33,6 +33,10 @@ According to [a report by PDF Viewer app team](https://pspdfkit.com/blog/2018/im
 
 
 
+<script async data-uid="ae935dabeb" src="https://f.convertkit.com/ae935dabeb/002181b9d1.js"></script>
+
+
+
 <span id="default"></span>
 
 ## Default dynamic type text styles
@@ -286,7 +290,7 @@ Here's the example result :
 
 
 
-// CTA sample Xcode project for the demo used in this post
+<script async data-uid="ae935dabeb" src="https://f.convertkit.com/ae935dabeb/002181b9d1.js"></script>
 
 
 

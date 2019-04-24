@@ -1,5 +1,9 @@
 # Setting background color on a Stack View
 
+In a hurry and just want jump to the code? [Click here](#tldr)
+
+
+
 You might have tried to set background color on a stack view before, be it using Interface builder or using code like `stackView.backgroundColor = UIColor.green` , but it doesn't work as setting background color have no effect on Stack view. 
 
 
@@ -42,11 +46,39 @@ For the **subviews** array, the view furthest in the back (background) has the i
 
 
 
-To set a background color on the stack view, we can add an UIView to the stack view's **subviews** (with index 0 , to serve as background so it won't block the views in arrangedSubviews), and then pin its edge to the stack view.
+To set a background color on the stack view, we can add an UIView to the stack view's **subviews** (with index 0 , to serve as background so it won't block other views in arrangedSubviews), set its background color, and then pin its edge to the stack view. (top, bottom, leading and trailing)
+
+<span id="tldr"></span>
+
+```swift
+let backgroundView = UIView()
+backgroundView.backgroundColor = UIColor.gray
+
+backgroundView.translatesAutoresizingMaskIntoConstraints = false
+
+// put background view as the most background subviews of stack view
+stackView.insertSubview(backgroundView, at: 0)
+
+// pin the background view edge to the stack view edge
+NSLayoutConstraint.activate([
+    backgroundView.leadingAnchor.constraint(equalTo: stackView.leadingAnchor),
+    backgroundView.trailingAnchor.constraint(equalTo: stackView.trailingAnchor),
+    backgroundView.topAnchor.constraint(equalTo: stackView.topAnchor),
+    backgroundView.bottomAnchor.constraint(equalTo: stackView.bottomAnchor)
+])
+```
+
+<br>
 
 
 
+Here's the resulting output : 
 
+![stack view background color](https://iosimage.s3.amazonaws.com/2019/52-stack-view-background-color/stackviewBG.png)
+
+
+
+Currently there's no way to do this in Storyboard as dropping a view inside stackview in Storyboard will automatically place it in **arrangedSubviews** instead of subviews.
 
 
 

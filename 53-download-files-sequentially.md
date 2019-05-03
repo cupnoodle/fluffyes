@@ -15,7 +15,7 @@ let urls = [
     URL(string: "https://github.com/fluffyes/telegrammy/archive/master.zip")!
 ]
 
-// call multiple urlsession downloadtask, this all will run at the same time!
+// call multiple urlsession downloadtask, these will all run at the same time!
 for url in urls {
     print("start fetching \(url.absoluteString)")
     URLSession.shared.downloadTask(with: url, completionHandler: { (tempURL, response, error) in
@@ -87,7 +87,7 @@ Say we have the following code :
 ```swift
 print("before URLSession downloadTask")
 URLSession.shared.downloadTask(with: url, completionHandler: { (tempURL, response, error) in
-    print("finished fetching \(url.absoluteString)")
+    print("finished downloadTask")
 }).resume()
 print("after URLSession downloadTask")
 ```
@@ -101,17 +101,36 @@ This will result on the following output :
 ```
 before URLSession downloadTask
 after URLSession downloadTask
-finished fetching https://github.com/fluffyes/AppStoreCard/archive/master.zip
+finished downloadTask
 ```
 
 <br>
 
 
 
-Your program will continue to execute the `print("after URLSession downloadTask")` right after calling **.resume()** without waiting the response to be retrieved.
+Your program will continue to execute the line **print("after URLSession downloadTask")** right after calling **.resume()** without waiting for the response to be retrieved.
 
 
 
-The way that block operation in queue works is that 
+Operation has 3 states (ready, executing, finish), the way block operation works is that right before the code inside the block is executed, it is in **ready** state, when the code inside the block is being executed, it is in **executed** state, and when the last line of the code inside the block has finished executing, its state become **finished** , and the operation queue will move on to another operation.
 
-// explain code in block operation, finish state
+
+
+![Ready executing finish](https://iosimage.s3.amazonaws.com/2019/53-download-files-sequentially/readyFinishedLine.png)
+
+
+
+As you have guessed, the operation state will become finished right after it execute the **print("after URLSession downloadTask")** line, even before the downloadTask has completed, and then the operation queue will move on to another block operation and repeat the same thing. Before the first downloadTask is completed, all other downloadTasks has been started (resumed) !
+
+
+
+This is why all the download tasks are being executed at (almost) the same time even though **maxConcurrentOperationCount** is set to 1.
+
+
+
+As BlockOperation will execute code from top to bottom and set the state to finish when the last line has been executed, we can't use BlockOperation to make sequential URLSession calls, we will need to create our own subclass of **Operation**. In this custom subclass, we will define when the operation is finished, which is **when the downloadTask has been completed**, instead of when it reach the last line of code.
+
+
+
+## Custom Operation Subclass
+

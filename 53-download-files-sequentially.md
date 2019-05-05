@@ -134,3 +134,32 @@ As BlockOperation will execute code from top to bottom and set the state to fini
 
 ## Custom Operation Subclass
 
+Let's create a custom operation subclass named **DownloadOperation** :
+
+```swift
+class DownloadOperation : Operation {
+  
+  // declare the download task as variable
+  // so we can call self.task?.resume() to start the download
+  // and also call self.task?.cancel() to cancel the download if needed
+  
+  var task : URLSessionDownloadTask?
+}
+```
+
+<br>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

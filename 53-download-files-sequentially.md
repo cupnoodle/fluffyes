@@ -140,10 +140,11 @@ Let's create a custom operation subclass named **DownloadOperation** :
 class DownloadOperation : Operation {
   
   // declare the download task as variable
-  // so we can call self.task?.resume() to start the download
-  // and also call self.task?.cancel() to cancel the download if needed
+  // so we can call self.task.resume() to start the download
+  // and also call self.task.cancel() to cancel the download if needed
+  // assume the task will never be nil since it will be created during init()
   
-  var task : URLSessionDownloadTask?
+  private var task : URLSessionDownloadTask!
 }
 ```
 
@@ -151,15 +152,245 @@ class DownloadOperation : Operation {
 
 
 
+Operation class has three boolean variables indicating the status of the operation :
+
+1. isReady
+2. isExecuting
+3. isFinished
 
 
 
+We will need to override the value of these three variables as we want to handle the state of the operation manually (instead of following the default ready -> executing -> finish state mentioned previously).
 
 
 
+To ease the management of state, we will create a custom enum **OperationState** with three possible value : ready, executing and finished. Next, we create another variable **state** with that enum type to keep track of the operation state. Then we override the Operation class variables **isReady** , **isExecuting** and **isFinished** .
 
 
 
+```swift
+class DownloadOperation : Operation {
+    
+    private var task : URLSessionDownloadTask!
+    
+    enum OperationState : Int {
+        case ready
+        case executing
+        case finished
+    }
+    
+    // default state is ready (when the operation is created)
+    private var state : OperationState = .ready {
+        willSet {
+            self.willChangeValue(forKey: "isExecuting")
+            self.willChangeValue(forKey: "isFinished")
+        }
+        
+        didSet {
+            self.didChangeValue(forKey: "isExecuting")
+            self.didChangeValue(forKey: "isFinished")
+        }
+    }
+    
+    override var isReady: Bool { return state == .ready }
+    override var isExecuting: Bool { return state == .executing }
+    override var isFinished: Bool { return state == .finished }
+}
+```
+
+<br>
+
+
+
+You might notice that there is additional code inside the **state** variable declaration, the **willChangeValue()** and **didChangeValue()** methods inside the willSet and didSet blocks. The code inside **willSet** block will be called right before the variable value is updated (eg: `state = .finished`). The code inside **didSet** block will be called right after the variable value is updated.
+
+
+
+The way OperationQueue works is that the queue will observe the value of **isExecuting** and **isFinished** variables of the operation, the queue will move on to process the next operation once the current operation notifies the queue that it has finished executing. The **willChangeValue** and **didChangeValue** methods are used to notify the queue that the value of the variable (the forKey refers to the variable name) has changed, once the queue receive this notification, the queue will check for the value of **isExecuting** and **isFinished** variables. If the value of **isFinished** is true, then the queue will move on to the next operation.
+
+
+
+![key value observing graph](https://iosimage.s3.amazonaws.com/2019/53-download-files-sequentially/kvo.png)
+
+
+
+This pattern of value observing and notification is known as Key-Value Observing (KVO), you can read more about it on Apple's [Key-Value Observing Programming Guide](https://developer.apple.com/library/archive/documentation/Cocoa/Conceptual/KeyValueObserving/Articles/KVOCompliance.html)
+
+
+
+Next, we will add a custom init method for the **DownloadOperation** class to allow us to pass an existing URLSession, URL  and an optional custom completion handler (the function you want to run after the download has completed) into it : 
+
+```swift
+class DownloadOperation : Operation {
+    
+    // ...
+		
+    init(session: URLSession, downloadTaskURL: URL, completionHandler: ((URL?, URLResponse?, Error?) -> Void)?) {
+        super.init()
+        
+        // use weak self to prevent retain cycle
+        task = session.downloadTask(with: downloadTaskURL, completionHandler: { [weak self] (localURL, response, error) in
+            
+            /* 
+            if there is a custom completionHandler defined, 
+            pass the result gotten in downloadTask's completionHandler to the 
+            custom completionHandler
+            */
+            if let completionHandler = completionHandler {
+                // localURL is the temporary URL the downloaded file is located
+                completionHandler(localURL, response, error)
+            }
+            
+           /* 
+             set the operation state to finished once 
+             the download task is completed or have error
+           */
+            self?.state = .finished
+        })
+    }
+}
+```
+
+<br>
+
+
+
+And finally we need to override the **start()** and **cancel()** methods of the operation, start() contains code that will be run when the queue perform the operation, and cancel() contains code that will be run when the operation gets cancelled while in the mid of executing.
+
+```swift
+class DownloadOperation : Operation {
+  
+    // ...
+  
+    override func start() {
+      /* 
+      if the operation or queue got cancelled even 
+      before the operation has started, set the 
+      operation state to finished and return
+      */
+      if(self.isCancelled) {
+          state = .finished
+          return
+      }
+      
+      // set the state to executing
+      state = .executing
+      
+      print("downloading \((self.task.originalRequest?.url?.absoluteString)")
+            
+      // start the downloading
+      self.task.resume()
+  }
+
+  override func cancel() {
+      super.cancel()
+    
+      // cancel the downloading
+      self.task.cancel()
+  }
+}
+```
+
+<br>
+
+
+
+According to [Apple's documentation](https://developer.apple.com/documentation/foundation/nsoperation?language=objc#1661262), you should never call **super.start()** inside the overrided start() function : 
+
+> At no time in your `start` method should you ever call `super`.
+
+
+
+and also that we need to check if the operation itself was cancelled before start :
+
+> Your `start` method should also check to see if the operation itself was cancelled before actually starting the task. 
+
+
+
+Combining all the code together, we will get the class like this : 
+
+```swift
+class DownloadOperation : Operation {
+    
+    private var task : URLSessionDownloadTask!
+    
+    enum OperationState : Int {
+        case ready
+        case executing
+        case finished
+    }
+    
+    // default state is ready (when the operation is created)
+    private var state : OperationState = .ready {
+        willSet {
+            self.willChangeValue(forKey: "isExecuting")
+            self.willChangeValue(forKey: "isFinished")
+        }
+        
+        didSet {
+            self.didChangeValue(forKey: "isExecuting")
+            self.didChangeValue(forKey: "isFinished")
+        }
+    }
+    
+    override var isReady: Bool { return state == .ready }
+    override var isExecuting: Bool { return state == .executing }
+    override var isFinished: Bool { return state == .finished }
+  
+    init(session: URLSession, downloadTaskURL: URL, completionHandler: ((URL?, URLResponse?, Error?) -> Void)?) {
+        super.init()
+        
+        // use weak self to prevent retain cycle
+        task = session.downloadTask(with: downloadTaskURL, completionHandler: { [weak self] (localURL, response, error) in
+            
+            /* 
+            if there is a custom completionHandler defined, 
+            pass the result gotten in downloadTask's completionHandler to the 
+            custom completionHandler
+            */
+            if let completionHandler = completionHandler {
+                // localURL is the temporary URL the downloaded file is located
+                completionHandler(localURL, response, error)
+            }
+            
+           /* 
+             set the operation state to finished once 
+             the download task is completed or have error
+           */
+            self?.state = .finished
+        })
+    }
+
+    override func start() {
+      /* 
+      if the operation or queue got cancelled even 
+      before the operation has started, set the 
+      operation state to finished and return
+      */
+      if(self.isCancelled) {
+          state = .finished
+          return
+      }
+      
+      // set the state to executing
+      state = .executing
+      
+      print("downloading \((self.task.originalRequest?.url?.absoluteString)")
+            
+      // start the downloading
+      self.task.resume()
+  }
+
+  override func cancel() {
+      super.cancel()
+    
+      // cancel the downloading
+      self.task.cancel()
+  }
+}
+```
+
+<br>
 
 
 

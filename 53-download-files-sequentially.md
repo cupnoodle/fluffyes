@@ -307,6 +307,8 @@ and also that we need to check if the operation itself was cancelled before star
 
 
 
+<span id="tldr"></span>
+
 Combining all the code together, we will get the class like this : 
 
 ```swift
@@ -375,7 +377,7 @@ class DownloadOperation : Operation {
       // set the state to executing
       state = .executing
       
-      print("downloading \((self.task.originalRequest?.url?.absoluteString)")
+      print("downloading \((self.task.originalRequest?.url?.absoluteString ?? "")")
             
       // start the downloading
       self.task.resume()
@@ -391,6 +393,64 @@ class DownloadOperation : Operation {
 ```
 
 <br>
+
+
+
+In the next section, we will discuss the usage of the DownloadOperation in a queue/
+
+
+
+## Using the custom operation in a queue
+
+Now that we have implemented the DownloadOperation, we can use it download multiple files sequentially in a queue like this : 
+
+```swift
+// remember to set maxConcurrent OperationCount to 1
+let queue = OperationQueue()
+queue.maxConcurrentOperationCount = 1
+
+let urls = [
+    URL(string: "https://github.com/fluffyes/AppStoreCard/archive/master.zip")!,
+    URL(string: "https://github.com/fluffyes/currentLocation/archive/master.zip")!,
+    URL(string: "https://github.com/fluffyes/DispatchQueue/archive/master.zip")!,
+    URL(string: "https://github.com/fluffyes/dynamicFont/archive/master.zip")!,
+    URL(string: "https://github.com/fluffyes/telegrammy/archive/master.zip")!
+]
+
+for url in urls {
+    let operation = DownloadOperation(session: URLSession.shared, downloadTaskURL: url, completionHandler: { (localURL, response, error) in
+        print("finished downloading \(url.absoluteString)")
+    })
+    
+    queue.addOperation(operation)
+}
+```
+
+<br>
+
+
+
+And we will get the result like this 🙌 : 
+
+![download one by one](https://iosimage.s3.amazonaws.com/2019/53-download-files-sequentially/downloadQueue.gif)
+
+
+
+// cancelling operation queue
+
+
+
+// CTA of Xcode project with the UI
+
+## 
+
+## Further Reading
+
+[Apple's Operation class documentation](https://developer.apple.com/documentation/foundation/operation)
+
+[Apple's OperationQueue class documentation](https://developer.apple.com/documentation/foundation/nsoperationqueue)
+
+[Apple's Key-Value Observing Programming Guide](https://developer.apple.com/library/archive/documentation/Cocoa/Conceptual/KeyValueObserving/KeyValueObserving.html#//apple_ref/doc/uid/10000177i)
 
 
 

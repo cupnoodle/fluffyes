@@ -436,7 +436,41 @@ And we will get the result like this 🙌 :
 
 
 
-// cancelling operation queue
+
+
+One advantage of using queue is that we can let user to cancel all the download tasks should they become impatient 😬 : 
+
+```swift
+@IBAction func cancelDownloadTapped(_ sender: UIButton) {
+    queue.cancelAllOperations()
+
+    self.progressLabel.text = "Download cancelled"
+}
+```
+
+<br>
+
+
+
+## Multicore Consideration
+
+In the [documentation of NSOperation](https://developer.apple.com/documentation/foundation/nsoperationqueue), Apple mentioned that if we implemented custom data accessor (ie. modifying value of a variable), we should make sure that these methods are thread-safe.
+
+
+
+> When you subclass `NSOperation`, you must make sure that any overridden methods remain safe to call from multiple threads. If you implement custom methods in your subclass, such as custom data accessors, you must also make sure those methods are thread-safe.
+
+
+
+There might be situation where the .state value is being read and write at the same time, causing the state read by the operation queue is not the latest value, or that multiple writes are performed on the .state value, causing it to be corrupt.
+
+
+
+One way to solve it is to use a dispatch queue for the read / write operation, to ensure that no concurrent write ever happens, and also allow multiple read to happen at the same time (since read won't alter the value).
+
+
+
+As explaining how to solve the reader writer problem is out of the scope of this article, I recommend referring [this Stack Overflow answer](https://stackoverflow.com/questions/43561169/trying-to-understand-asynchronous-operation-subclass).
 
 
 

@@ -1,5 +1,11 @@
 # Download files sequentially using URLSession inside OperationQueue
 
+
+
+[TL;DR : Just want the code? Click here](#tldr)
+
+
+
 There might be scenario where your app have to download external resource files from the internet, as URLSession is asynchronous, if we call multiple dataTask or downloadTask in the code, they might all run together and make multiple requests to the server at the same time. 
 
 
@@ -377,7 +383,7 @@ class DownloadOperation : Operation {
       // set the state to executing
       state = .executing
       
-      print("downloading \((self.task.originalRequest?.url?.absoluteString ?? "")")
+      print("downloading \(self.task.originalRequest?.url?.absoluteString ?? "")")
             
       // start the downloading
       self.task.resume()
@@ -396,7 +402,7 @@ class DownloadOperation : Operation {
 
 
 
-In the next section, we will discuss the usage of the DownloadOperation in a queue/
+In the next section, we will discuss the usage of the DownloadOperation in a queue.
 
 
 
@@ -474,9 +480,11 @@ As explaining how to solve the reader writer problem is out of the scope of this
 
 
 
-// CTA of Xcode project with the UI
+<div class="post-subscribe">
+  <script async data-uid="b2a4fdeb97" src="https://f.convertkit.com/b2a4fdeb97/dfc2d7458f.js"></script>
+</div>
 
-## 
+
 
 ## Further Reading
 

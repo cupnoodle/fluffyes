@@ -72,5 +72,35 @@ There will be a password dialog, if you don't want to set a password for the .p1
 
 ## Converting .p12 into .pem file
 
+Some push provider might require a .pem certificate file to send push notification, we can convert a .p12 file into .pem file using OpenSSL in terminal.
+
+
+
+In terminal, navigate to the location of the .p12 certificate, then type in the following command to convert : 
+
+```bash
+openssl pkcs12 -nodes -clcerts -in yourcert.p12 -out <filename>.pem
+```
+
+<br>
+
+
+
+If you want to add a passphrase to the output pem file for extra security : 
+
+```bash
+openssl pkcs12 -clcerts -in yourcert.p12 -out <filename>.pem
+```
+
+<br>
+
+
+
+
+
+With the production push certificate, now you should be able to send push notification to app in Testflight or App Store. Note that the device tokens will be different than development ones, and remember to send the push payload to the production Apple Push Notification Server (https://api.push.apple.com), instead of the development ones.
+
+
+
 
 

@@ -38,5 +38,39 @@ Then create the production certificate for push notification :
 
 
 
-Then follow the instruction from Apple to create a Certificate Signing Request (CSR) file, and generate the production push notification certificate. 
+Then follow the instruction from Apple to create a Certificate Signing Request (CSR) file, and generate the production push notification certificate. Click **Download**, and **double click the downloaded .cer file** to save it to your local Keychain.
+
+ 
+
+![download](https://iosimage.s3.amazonaws.com/2019/54-remote-push-testflight/downloadProd.png)
+
+
+
+## Generating .p12 certificate file for push provider
+
+Open Keychain Access, select '**My Certificates**' on the left bottom side bar
+
+![my certificates](https://iosimage.s3.amazonaws.com/2019/54-remote-push-testflight/myCerts.png)
+
+Find the production push certificate you have downloaded earlier (Apple Push Services, without 'development'). Expand the certificate, then select both the certificate and key (hold 'shift' key to select multiple). Then right click and select "Export 2 items"
+
+
+
+![export 2 items](https://iosimage.s3.amazonaws.com/2019/54-remote-push-testflight/export2.png)
+
+
+
+Make sure ".p12" is selected, then click 'Save'.
+
+![save as p12](https://iosimage.s3.amazonaws.com/2019/54-remote-push-testflight/saveP12.png)
+
+
+
+There will be a password dialog, if you don't want to set a password for the .p12 certificate, leave it blank and press 'OK'.
+
+
+
+## Converting .p12 into .pem file
+
+
 

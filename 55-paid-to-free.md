@@ -56,3 +56,23 @@ You can enter any file name for this file, as we only want to trigger the Xcode 
 
 
 After creating the Objective-C file, Xcode will prompt "Would you like to configure an Objective-C bridging header", click "**Create Bridging Header**".
+
+
+
+A bridging header file will be created, inside the file, we will insert the following import statements :
+
+```c
+// yourAppName-Bridging-Header.h
+//
+//  Use this file to import your target's public headers that you would like to expose to Swift.
+//
+
+#import <openssl/pkcs7.h>
+#import <openssl/objects.h>
+```
+
+<br>
+
+
+
+By importing these header files (pkcs7.h, objects.h) , we can then use the functions in these files on our Swift project.

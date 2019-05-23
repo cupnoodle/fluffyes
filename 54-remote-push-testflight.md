@@ -18,6 +18,9 @@ If you have encountered the issue mentioned above, most likely you are using a d
 
 
 
+<div class="post-subscribe">
+  <script async data-uid="82f4a0256c" src="https://f.convertkit.com/82f4a0256c/b60b8439b5.js"></script>
+</div>
 
 
 ## Getting the production push certificate
@@ -101,6 +104,10 @@ openssl pkcs12 -clcerts -in yourcert.p12 -out <filename>.pem
 With the production push certificate, now you should be able to send push notification to app in Testflight or App Store. Note that the device tokens will be different than development ones, and remember to send the push payload to the production Apple Push Notification Server (https://api.push.apple.com), instead of the development ones.
 
 
+
+<div class="post-subscribe">
+  <script async data-uid="82f4a0256c" src="https://f.convertkit.com/82f4a0256c/b60b8439b5.js"></script>
+</div>
 
 
 

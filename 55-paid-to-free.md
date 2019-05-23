@@ -14,11 +14,7 @@ If you haven't install cocoapods yet, [follow this guide to install it](https://
 
 
 
-As the [default OpenSSL pod](https://github.com/FredericJacobs/OpenSSL-Pod) has not been updated for years, it didn't adapt to the new cocoapods-downloader behaviour and [will fail to install](https://github.com/FredericJacobs/OpenSSL-Pod/issues/49) if we have used it.
-
-
-
-We will be using a forked version of the OpenSSL pod which includes the fix for cocoapods-downloader, in your Podfile, type in this line : 
+We will be using the [OpenSSL-Universal](https://github.com/krzyzanowskim/OpenSSL) pod for installing the OpenSSL library.
 
 ```Podfile
 target 'receiptz' do
@@ -27,8 +23,7 @@ target 'receiptz' do
 
   # Pods for receiptz
   
-  # use charlesmchen's fork of OpenSSL pod
-  pod 'OpenSSL', :git => 'https://github.com/charlesmchen/OpenSSL-Pod.git'
+  pod 'OpenSSL-Universal'
 end
 
 ```
@@ -37,7 +32,7 @@ end
 
 
 
-Then type and run `pod install` in the terminal, it will install and compile OpenSSL for your project, this process takes about 10 minutes on my internet connection speed. (You will need to open the **.xcworkspace** file instead of .xcodeproj file next time)
+Then type and run `pod install` in the terminal, it will install and compile OpenSSL for your project. (You will need to open the **.xcworkspace** file instead of .xcodeproj file next time)
 
 
 
@@ -50,6 +45,8 @@ If you haven't create an Objective-C bridging header yet, it's easy to add one a
 
 
 Right-click on your project folder in Xcode, select **New File…** , then select "**Objective-C File**"  and click Next.
+
+
 
 You can enter any file name for this file, as we only want to trigger the Xcode auto bridging header generator with this, we will delete the objective-C file later.
 
@@ -69,10 +66,12 @@ A bridging header file will be created, inside the file, we will insert the foll
 
 #import <openssl/pkcs7.h>
 #import <openssl/objects.h>
+#import <openssl/sha.h>
+#import <openssl/x509.h>
 ```
 
 <br>
 
 
 
-By importing these header files (pkcs7.h, objects.h) , we can then use the functions in these files on our Swift project.
+By importing these header files (pkcs7.h, objects.h, etc) , we can then use the functions in these files on our Swift project. For the receipt validation, these functions will be used for decryption purpose.

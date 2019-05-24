@@ -1,6 +1,28 @@
 # How to change paid app to free app with in-app purchase, and grandfathering previous app customers using receipt
 
+App Store has since become a race to bottom for developers in term of pricing their app, it can be very hard to convince a user to pay for an app before they even download it. Most apps in the App Store now has switched into the business model of free with in-app purchase for additional feature, this allows the user to try out the basic app function before buying the premium feature, and also increases conversion rate.
 
+
+
+Say you already have a paid app in App Store and want to convert it into free with in-app purchase, but doing so might cause an upset of customers who have already bought it previously, as they will need to fork out money to buy the in-app purchase again. How can we check if an user has previously purchased and downloaded the paid app? and also unlock in-app purchase if the user has previously bought the app?
+
+
+
+We can check if an user has previously downloaded the app by checking the download receipt, there's a "original app version" property on the receipt which indicates the version number of the app that the user first downloaded using their Apple account.
+
+
+
+## App Store receipt
+
+When a user downloads app from the App Store, App Store will generate an app receipt and bundle it with the app.
+
+![app bundle with receipt](https://iosimage.s3.amazonaws.com/2019/55-paid-to-free/appdownload.png)
+
+
+
+We can access the receipt file using **Bundle.main.appStoreReceiptURL** ,
+
+// testflight / dev
 
 
 

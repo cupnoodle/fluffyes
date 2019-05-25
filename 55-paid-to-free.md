@@ -174,7 +174,7 @@ Before proceeding to extracting properties from the receipt, we will need to ins
 
 ## Installing OpenSSL Pod
 
-We will be using OpenSSL library to perform decryption of the receipt file, we will be using cocoapods to install the 'OpenSSL' pod.
+We will be using OpenSSL library to perform validation and also the data extraction of the receipt file, we will be using cocoapods to install the 'OpenSSL-Universal' pod.
 
 
 
@@ -243,3 +243,4 @@ A bridging header file will be created, inside the file, we will insert the foll
 
 
 By importing these header files (pkcs7.h, objects.h, etc) , we can then use the functions in these files on our Swift project. For the receipt validation, these functions will be used for decryption purpose.
+

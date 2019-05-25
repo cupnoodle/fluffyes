@@ -8,7 +8,17 @@ Say you already have a paid app in App Store and want to convert it into free wi
 
 
 
-We can check if an user has previously downloaded the app by checking the download receipt, there's a "original app version" property on the receipt which indicates the version number of the app that the user first downloaded using their Apple account.
+We can check if an user has previously downloaded the app by checking the download receipt, there's a [original application version](https://developer.apple.com/library/archive/releasenotes/General/ValidateAppStoreReceipt/Chapters/ReceiptFields.html#//apple_ref/doc/uid/TP40010573-CH106-SW_9) property on the receipt which indicates the **CFBundleVersion** number of the app that the user first downloaded using their Apple account.
+
+
+
+> This corresponds to the value of `CFBundleVersion` (in iOS) or `CFBundleShortVersionString` (in macOS) in the `Info.plist` file when the purchase was originally made.
+>
+> In the sandbox environment, the value of this field is always “1.0”
+
+
+
+We will look into how to retrieve the receipt and the property below.
 
 
 
@@ -20,9 +30,139 @@ When a user downloads app from the App Store, App Store will generate an app rec
 
 
 
-We can access the receipt file using **Bundle.main.appStoreReceiptURL** ,
+We can access the receipt file using **Bundle.main.appStoreReceiptURL** , the URL string might look like this : `YourAppPath/StoreKit/sandboxReceipt`. The receipt is a binary file which follow the structure of PKCS7 container, and the attributes are encoded in ASN1 format, as shown in the [Apple's Receipt Validation Guide](https://developer.apple.com/library/archive/releasenotes/General/ValidateAppStoreReceipt/Chapters/ValidateLocally.html) :
 
-// testflight / dev
+
+
+![pkcs7 container](https://iosimage.s3.amazonaws.com/2019/55-paid-to-free/pkcs7container.png)
+
+
+
+
+
+When we build the app using Xcode or download it using Testflight, usually the receipt is not included :
+
+![xcode no receipt](https://iosimage.s3.amazonaws.com/2019/55-paid-to-free/xcodeNoReceipt.png)
+
+
+
+In the Xcode / Testflight build, we can manually request a receipt from the sandbox App Store by calling **SKReceiptRefreshRequest.start()** . I suggest creating a custom **ReceiptFetcher** class for handling receipt refresh, and use it to refresh receipt in Biew controllers / AppDelegate.
+
+
+
+```swift
+//ReceiptFetcher.swift
+import StoreKit
+
+class ReceiptFetcher : NSObject, SKRequestDelegate {
+    let receiptRefreshRequest = SKReceiptRefreshRequest()
+    
+    override init() {
+        super.init()
+        // set delegate to self so when the receipt is retrieved,
+        // the delegate methods will be called
+        receiptRefreshRequest.delegate = self
+    }
+    
+    func fetchReceipt() {
+        guard let receiptUrl = Bundle.main.appStoreReceiptURL else {
+            print("unable to retrieve receipt url")
+            return
+        }
+        
+        do {
+            // if the receipt does not exist, start refreshing
+            let reachable = try receiptUrl.checkResourceIsReachable()
+            
+            // the receipt does not exist, start refreshing
+            if reachable == false {
+                receiptRefreshRequest.start()
+            }
+        } catch {
+            // the receipt does not exist, start refreshing
+            print("error: \(error.localizedDescription)")
+            /* 
+            error: The file “sandboxReceipt” couldn’t be opened because there is no such file
+            */
+            receiptRefreshRequest.start()
+        }
+    }
+    
+    // MARK: SKRequestDelegate methods
+    func requestDidFinish(_ request: SKRequest) {
+        print("request finished successfully")
+    }
+    
+    func request(_ request: SKRequest, didFailWithError error: Error) {
+        print("request failed with error \(error.localizedDescription)")
+    }
+}
+
+```
+
+<br>
+
+
+
+A note before proceeding to adding code on refreshing receipt, remember to log out your Apple account from the App Store app in your iOS device, and make sure that you have sandbox tester created as real apple account can't be used in sandbox App Store environment.
+
+
+
+In the App Store app, tap on the top right profile picture, then tap 'Log out'. **Don't log in to your sandbox account here**. 
+
+
+
+If you haven't create any sandbox tester account in App Store Connect yet, head over to [Users and Access](https://appstoreconnect.apple.com/access/testers), and create one.
+
+![create sandbox tester](https://iosimage.s3.amazonaws.com/2019/55-paid-to-free/addSandboxTester.png)
+
+Chances are, you app already have an App ID created in Developer centre and App created in App Store connect, if you haven't already, head over to [Apple developer center](https://developer.apple.com/account) to create an App ID : 
+
+![create App ID](https://iosimage.s3.amazonaws.com/2019/55-paid-to-free/registerAppID.png)
+
+
+
+and then head over to [App Store Connect](https://appstoreconnect.apple.com) to create an App using the App ID you have created earlier.
+
+![New App](https://iosimage.s3.amazonaws.com/2019/55-paid-to-free/newApp.png)
+
+
+
+The steps above are necessary as Sandbox App Store won't issue a receipt if your app is not created in App Store Connect. After creating sandbox tester and app in App Store Connect, now we can proceed to refresh receipt : 
+
+```swift
+// ViewController.swift
+class ViewController: UIViewController {
+    
+  // receiptFetcher is defined at the class scope
+  let receiptFetcher = ReceiptFetcher()
+
+  override func viewDidLoad() {
+    super.viewDidLoad()
+    // Do any additional setup after loading the view, typically from a nib.
+
+    receiptFetcher.fetchReceipt()
+  }
+}
+```
+
+<br>
+
+The **receiptFetcher** instance is declared at the class level scope so that ViewController will have a reference to it as long as the ViewController exist in memory, this is required as the receipt refresh is async and takes some time to call its delegate method. If we declare receiptFetcher in viewDidLoad, it might get deallocated from memory once viewDidLoad function has finished executing, causing the delegate method not called.
+
+
+
+ Now build and run the app in your iOS device (refreshing receipt in Simulator will result in failure), you will be prompted to login, login with your sandbox tester account credential.
+
+
+
+![login prompt](https://iosimage.s3.amazonaws.com/2019/55-paid-to-free/loginPrompt.jpg)
+
+
+
+After logging in, the app will download the receipt from sandbox App Store.
+
+
 
 
 

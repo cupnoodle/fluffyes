@@ -18,7 +18,7 @@ We can check if an user has previously downloaded the app by checking the downlo
 
 
 
-We will look into how to retrieve the receipt and the property below.
+We will look into how to retrieve the receipt and the property below. As receipt validation is a huge topic on its own, this post **will not cover** the detail of validating receipt, and will just use the [SwiftyLocalReceiptValidator](https://github.com/andrewcbancroft/SwiftyLocalReceiptValidator) library written by Andrew to validate and extract data from the receipt, he has written [a series of awesome articles](https://www.andrewcbancroft.com/blog/ios-development/iap/preparing-to-test-receipt-validation-for-ios/) on how to validate in-app purchase receipt, check it out!
 
 
 
@@ -162,7 +162,13 @@ The **receiptFetcher** instance is declared at the class level scope so that Vie
 
 After logging in, the app will download the receipt from sandbox App Store.
 
+![receipt refresh](https://iosimage.s3.amazonaws.com/2019/55-paid-to-free/receiptRefresh.png)
 
+If the receipt is retrieved successfully, the SKRequestDelegate method **requestDidFinish()** will be called. Once we got the receipt file, we can proceed to extract out properties from it.
+
+
+
+Before proceeding to extracting properties from the receipt, we will need to install a few library so that we can decode the receipt into readable form, as the receipt is in binary format. Below we will install OpenSSL library needed to validate the authenticity of the receipt and also extract data out of the receipt.
 
 
 

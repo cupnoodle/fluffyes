@@ -24,7 +24,14 @@ We will look into how to retrieve the receipt and the property below. As receipt
 
 Table of contents :
 
+1. [App Store receipt](#appstorereceipt)
+2. [Installing OpenSSL](#installssl)
+3. [Installing Apple Root Certificate for verification purpose](#installappleroot)
+4. [Comparing original_app_version value](#compare)
 
+
+
+<span id="appstorereceipt"></span>
 
 ## App Store receipt
 
@@ -176,7 +183,9 @@ Before proceeding to extracting properties from the receipt, we will need to ins
 
 
 
-## Installing OpenSSL Pod
+<span id="installssl"></span>
+
+## Installing OpenSSL
 
 We will be using OpenSSL library to perform validation and also the data extraction of the receipt file, we will be using cocoapods to install the 'OpenSSL-Universal' pod.
 
@@ -250,6 +259,8 @@ By importing these header files (pkcs7.h, objects.h, etc) , we can then use the 
 
 
 
+<span id="installappleroot"></span>
+
 # Installing Apple Root Certificate for verification purpose
 
 One of the step of receipt verification includes using Apple Root Certificate to check if the receipt is actually signed by Apple (using their own private key).
@@ -272,7 +283,7 @@ Once you have downloaded the certificate (AppleIncRootCertificate.cer file), add
 
 
 
-
+<span id="installlibrary"></span>
 
 ## Installing SwiftyLocalReceiptValidator library
 
@@ -294,9 +305,32 @@ Download them and add it to your project, remember to check 'Copy items if neede
 
 
 
+Before moving on to the next step, let's add the `pkcs7_union_accessors.h` file into the bridging header file so the SwiftyLocalReceiptValidator library can access it.
+
+
+
+```swift
+// yourAppName-Bridging-Header.h
+//
+//  Use this file to import your target's public headers that you would like to expose to Swift.
+//
+
+#include "pkcs7_union_accessors.h"
+#import <openssl/pkcs7.h>
+#import <openssl/objects.h>
+#import <openssl/sha.h>
+#import <openssl/x509.h>
+```
+
+<br>
+
+
+
 Next, we will use this library to get the "original_app_version" property value from the receipt. 
 
 
+
+<span id="compare"></span>
 
 ## Comparing original_app_version value
 
@@ -454,6 +488,8 @@ func grantPremiumToPreviousUser(receipt: ParsedReceipt) {
 
 
 Now we have successfully granted previous paid app customers premium features! 
+
+
 
 
 

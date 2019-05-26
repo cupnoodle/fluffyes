@@ -1,4 +1,4 @@
-# How to change paid app to free app with in-app purchase, and grandfathering previous app customers using receipt
+# Migrating paid app to free app with In-App Purchase
 
 App Store has since become a race to bottom for developers in term of pricing their app, it can be very hard to convince a user to pay for an app before they even download it. Most apps in the App Store now has switched into the business model of free with in-app purchase for additional feature, this allows the user to try out the basic app function before buying the premium feature, and also increases conversion rate.
 
@@ -19,6 +19,10 @@ We can check if an user has previously downloaded the app by checking the downlo
 
 
 We will look into how to retrieve the receipt and the property below. As receipt validation is a huge topic on its own, this post **will not cover** the detail of validating receipt, and will just use the [SwiftyLocalReceiptValidator](https://github.com/andrewcbancroft/SwiftyLocalReceiptValidator) library written by Andrew to validate and extract data from the receipt, he has written [a series of awesome articles](https://www.andrewcbancroft.com/blog/ios-development/iap/preparing-to-test-receipt-validation-for-ios/) on how to validate in-app purchase receipt, check it out!
+
+
+
+Table of contents :
 
 
 
@@ -243,4 +247,217 @@ A bridging header file will be created, inside the file, we will insert the foll
 
 
 By importing these header files (pkcs7.h, objects.h, etc) , we can then use the functions in these files on our Swift project. For the receipt validation, these functions will be used for decryption purpose.
+
+
+
+# Installing Apple Root Certificate for verification purpose
+
+One of the step of receipt verification includes using Apple Root Certificate to check if the receipt is actually signed by Apple (using their own private key).
+
+
+
+To perform this step, we would first need to download Apple Root Certificate (the public key) from Apple website here :  [https://www.apple.com/certificateauthority/](https://www.apple.com/certificateauthority/) . Select the certificate named "Apple Inc. Root Certificate".
+
+![download root cert](https://iosimage.s3.amazonaws.com/2019/55-paid-to-free/downloadRootCert.png)
+
+Once you have downloaded the certificate (AppleIncRootCertificate.cer file), add it into your project bundle, and check ' Copy items if needed' and select your app as target.
+
+
+
+![drag root cert to project](https://iosimage.s3.amazonaws.com/2019/55-paid-to-free/dragRootCert.png)
+
+
+
+![root cert target](https://iosimage.s3.amazonaws.com/2019/55-paid-to-free/rootCertTarget.png)
+
+
+
+
+
+## Installing SwiftyLocalReceiptValidator library
+
+Next, we will be installing the [https://github.com/andrewcbancroft/SwiftyLocalReceiptValidator](SwiftyLocalReceiptValidator) library. Head over to the repository demo folder, and grab the following files :
+
+
+
+1. [SwiftLocalReceiptValidator.swift](https://github.com/andrewcbancroft/SwiftyLocalReceiptValidator/blob/master/Demo/SwiftyLocalReceiptValidatorDemo/SwiftyLocalReceiptValidator.swift)
+2. [pkcs7_union_accessors.c](https://github.com/andrewcbancroft/SwiftyLocalReceiptValidator/blob/master/Demo/SwiftyLocalReceiptValidatorDemo/pkcs7_union_accessors.c)
+3. [pkcs7_union_accessors.h](https://github.com/andrewcbancroft/SwiftyLocalReceiptValidator/blob/master/Demo/SwiftyLocalReceiptValidatorDemo/pkcs7_union_accessors.h)
+
+
+
+Download them and add it to your project, remember to check 'Copy items if needed' and select your app as target.
+
+
+
+![library install](https://iosimage.s3.amazonaws.com/2019/55-paid-to-free/libraryInstall.png)
+
+
+
+Next, we will use this library to get the "original_app_version" property value from the receipt. 
+
+
+
+## Comparing original_app_version value
+
+After installing OpenSSL library, Apple root certificate and the SwiftyLocalReceiptValidator library, now we can access the **original_app_version** property like this : 
+
+```swift
+class ViewController: UIViewController {
+    
+  // receiptFetcher is defined at the class scope
+  let receiptFetcher = ReceiptFetcher()
+
+  override func viewDidLoad() {
+    super.viewDidLoad()
+    // Do any additional setup after loading the view, typically from a nib.
+
+    // fetch receipt if receipt file doesn't exist yet
+    receiptFetcher.fetchReceipt()
+
+    // validage receipt
+    let receiptValidator = ReceiptValidator()
+    let validationResult = receiptValidator.validateReceipt()
+
+    switch validationResult {
+    case .success(let receipt):
+        // receipt validation success
+        // Work with parsed receipt data.
+        print("original app version is \(receipt.originalAppVersion ?? "n/a")")
+    case .error(let error):
+        // receipt validation failed, refer to enum ReceiptValidationError
+        print("error is \(error.localizedDescription)")
+    }
+
+  }
+}
+```
+
+<br>
+
+
+
+In case of successful receipt validation, we get the **receipt** object (ParsedReceipt struct), and can access the **originalAppVersion** property, its an optional string. It is nil if the receipt doesn't contain original app version property, which almost doesn't happen.
+
+
+
+Before comparing the value, take note that from Apple documentation, 
+
+> This corresponds to the value of `CFBundleVersion` (in iOS) or `CFBundleShortVersionString` (in macOS) in the `Info.plist` file when the purchase was originally made.
+>
+> In the sandbox environment, the value of this field is always “1.0”
+
+
+
+For iOS app, originalAppVersion uses the value of **CFBundleVersion**, which is actually the **build number**! (not the version number) 
+
+
+
+![CFBundleVersion](https://iosimage.s3.amazonaws.com/2019/55-paid-to-free/CFBundleVersion.png)
+
+
+
+![build number](https://iosimage.s3.amazonaws.com/2019/55-paid-to-free/buildNumber.png)
+
+
+
+When you are comparing the original app version, you need to use the last build number which the app is still a paid app.         
+
+
+
+```swift
+// ViewController.swift
+
+class ViewController: UIViewController {
+    
+    // receiptFetcher is defined at the class scope
+    let receiptFetcher = ReceiptFetcher()
+    
+    override func viewDidLoad() {
+        super.viewDidLoad()
+        // Do any additional setup after loading the view, typically from a nib.
+        
+        // fetch receipt if receipt file doesn't exist yet
+        receiptFetcher.fetchReceipt()
+        
+        // validage receipt
+        let receiptValidator = ReceiptValidator()
+        let validationResult = receiptValidator.validateReceipt()
+
+        
+        switch validationResult {
+        case .success(let receipt):
+            // receipt validation success
+            // Work with parsed receipt data.
+          
+            grantPremiumToPreviousUser(receipt: receipt)
+            print("original app version is \(receipt.originalAppVersion ?? "n/a")")
+        case .error(let error):
+            // receipt validation failed, refer to enum ReceiptValidationError
+            print("error is \(error.localizedDescription)")
+        }
+        
+    }
+
+    func grantPremiumToPreviousUser(receipt: ParsedReceipt) {
+        // cast the string into integer (build number)
+        guard let originalAppVersionString = receipt.originalAppVersion,
+              let originalBuildNumber = Int(originalAppVersionString) else {
+            return
+        }
+        
+        // the last build number that the app is still a paid app
+        if originalBuildNumber < 37 {
+            // grant user premium feature here
+            print("premium granted")
+        }
+    }
+}
+
+```
+
+<br>
+
+
+
+In production environment (app downloaded from App Store), the originalAppVersion will be the build number (Integer) of the app where the user first downloaded it. However in sandbox environment, Apple has set it to always return 1.0 (Double) : 
+
+
+
+> In the sandbox environment, the value of this field is always “1.0”
+
+
+
+This can be confusing for developers who didn't read the documentation thoroughly (yes I didn't read it carefully and spent days troubleshooting it). If we cast "1.0" into integer using Int("1.0"), we will get a nil, one of the workaround to cater to both production and sandbox environment is to cast the original app version number to a Double and compare it.
+
+
+
+```swift
+func grantPremiumToPreviousUser(receipt: ParsedReceipt) {
+    // cast to Double to handle the "1.0" default value returned from sandbox
+    // this also works with build number integer from production, eg: "37"
+    guard let originalAppVersionString = receipt.originalAppVersion,
+          let originalBuildNumber = Double(originalAppVersionString) else {
+        return
+    }
+
+    // the last build number that the app is still a paid app
+    if originalBuildNumber < 37 {
+        // grant user premium feature here
+        print("premium granted")
+    }
+}
+```
+
+<br>
+
+
+
+Now we have successfully granted previous paid app customers premium features! 
+
+
+
+
+
+
 

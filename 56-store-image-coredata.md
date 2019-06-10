@@ -152,15 +152,31 @@ What this checkbox does is as described below from Apple's documentation:
 
 
 
-In short, after checking this box, CoreData will decide when it will save the image binary data directly to the column, or save the image binary data in the file system and save the path to the image to the column. The decision is largely based on the size of the binary data (if it is quite small, then it will be saved into the column directly).
+In short, after checking this box, CoreData will automatically decide when it will save the image binary data directly to the column, or save the image binary data in the file system and save the path to the image to the column. The decision is largely based on the size of the binary data (if it is quite small, then it will be saved into the column directly).
 
 
 
-// show that after checking the box, image saved separately
+After checking the box, large image file will be stored separately, and the column stores binary data that reference the path to the image.
 
 
 
-// CTA of NSPredicate Core Data form
+The column stores the reference file name to the image (the red square) :
+
+![binary reference path](https://iosimage.s3.amazonaws.com/2019/56-store-image-coredata/binaryPath.png)
+
+
+
+In the Application Support folder, press <kbd>Command</kbd> + <kbd>Shift</kbd> + <kbd>.</kbd> (Period) to reveal hidden file / folder. We will see that theres a hidden **.CoreDataImage_SUPPORT** folder. Open it and we will find another folder named '_EXTERNAL_DATA', the image is stored inside this folder.
+
+
+
+![external image data](https://iosimage.s3.amazonaws.com/2019/56-store-image-coredata/imageDataa.png)
+
+
+
+<div class="post-subscribe">
+    <script async data-uid="444e484e10" src="https://f.convertkit.com/444e484e10/75994f2863.js"></script>
+</div>
 
 
 

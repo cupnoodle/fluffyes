@@ -57,11 +57,64 @@ If you also got surprised by the actual output, you might not have a good grasp 
 
 ## Memory Address
 
-Before going into explaining the difference between reference and value type, I think it's crucial to know the concept of Memory Address.
+Before going into explaining the difference between reference and value type, I think it is crucial to know the concept of Memory Address.
 
 
 
 Your computer and iOS devices has a component named RAM (Random Access Memory), which is used to store working data when you are using the device. For example, when you are playing a game, there will be a loading screen to load the graphic assets and audio needed in the level into the memory (RAM), then when you are playing that level, the game will access the graphic / audio / character information from the RAM.
+
+
+
+For your Mac, the RAM refer to the 'Memory' section.
+
+![memory size](https://iosimage.s3.amazonaws.com/2019/61-reference-value-type/memorySize.png)
+
+
+
+For most modern computers, RAM / Memory segments its space (eg: 8GB space) into discrete chunks (multiple 1-byte space), and each chunk has an unique memory address. Below is a diagram showing different chunk (with different memory address) holding different text data : 
+
+![ram address](https://iosimage.s3.amazonaws.com/2019/61-reference-value-type/ramaddress.png)
+
+
+
+Memory address usually is a hexadecimal string (eg: 0x12345) in most computer system, when the CPU need to get a data from a certain chunk of memory, it will reference the memory address.
+
+
+
+When we declare variables in Swift / Objective-C , the operating system will allocate a (few) chunk of memory (with memory address) to store them.
+
+
+
+## Value types
+
+Some examples of value type include primitive types such as Int, Double, String ( in Swift) , tuples, enum and struct. Value type instances (ie. `var myMoney: Int = 500`) create a new copy of the value assigned instead of storing a reference to the value.
+
+
+
+```swift
+var yourMoney : Int = 500
+var myMoney : Int = yourMoney
+
+// you lost 50 dollar
+yourMoney = yourMoney - 50
+
+print("yourMoney is \(yourMoney)") // 450
+print("myMoney is \(myMoney)") // 500
+```
+
+
+
+![value type demo](https://iosimage.s3.amazonaws.com/2019/61-reference-value-type/valueTypeDemo.png)
+
+
+
+Despite the myMoney value is assigned from yourMoney value, *myMoney** 's value remain unchanged even though yourMoney has decreased. This is because during the assignment `myMoney = yourMoney` , the value '500' is copied over.
+
+
+
+## Reference types
+
+ 
 
 
 

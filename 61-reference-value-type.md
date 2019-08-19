@@ -77,7 +77,7 @@ For most modern computers, RAM / Memory segments its space (eg: 8GB space) into 
 
 
 
-Memory address usually is a hexadecimal string (eg: 0x12345) in most computer system, when the CPU need to get a data from a certain chunk of memory, it will reference the memory address.
+Memory address usually is a hexadecimal string (eg: 0x12345) in most computer system, when the CPU need to get a data from a certain chunk of memory, it will reference the memory address. This concept is also known as [Pointer](https://en.wikipedia.org/wiki/Pointer_(computer_programming)) in Computer Science.
 
 
 
@@ -114,7 +114,43 @@ Despite the myMoney value is assigned from yourMoney value, *myMoney** 's value 
 
 ## Reference types
 
- 
+Class, Closure and Functions are reference type. When a reference type variable is declared (eg: `var dog : Dog = Dog()`), the system will allocate a chunk of memory space in RAM, and store the memory address of the Dog object to the variable. **The variable is actually storing the memory address** of the Dog data, not the Dog data itself. When another class object is assigned to an existing class object, the memory address is copied over, not the data.
+
+
+
+```swift
+class Dog {
+    var name : String
+  
+    init(name: String) {
+      self.name = name
+    }
+}
+
+var labrador = Dog(name: "labrador")
+print("dog name is \(labrador.name)") // "dog name is labrador"
+
+var schnauzer = labrador
+print("schnauzer name is \(schnauzer.name)") // "schnauzer name is labrador"
+
+schanuzer.name = "schnauzer"
+
+print("dog name is \(labrador.name)") // dog name is schnauzer
+```
+
+
+
+![reference type diagram](https://iosimage.s3.amazonaws.com/2019/61-reference-value-type/reference.png)
+
+
+
+// show how to print out memory address
+
+// show screenshot proof that they have the same memory address
+
+
+
+
 
 
 

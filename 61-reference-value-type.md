@@ -157,6 +157,10 @@ print("memory address of schnauzer is \(Unmanaged.passUnretained(schnauzer).toOp
 
 
 
+// in objective-C, print memory address
+
+
+
 Here's the output if we execute the code above in Playground :
 
 ![memory address output](https://iosimage.s3.amazonaws.com/2019/61-reference-value-type/memoryAddressProof.png)

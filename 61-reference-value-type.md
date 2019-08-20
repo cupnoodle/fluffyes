@@ -51,7 +51,7 @@ member ID is Optional(5)
 
 
 
-If you also got surprised by the actual output, you might not have a good grasp of reference type in Swift, which this article will cover below, read on!
+If you also got surprised by the actual output, you might not have a good grasp of reference type in Swift, which this article will cover below, read on! The explanation for this code behaviour is at the bottom of this article.
 
 
 
@@ -157,7 +157,12 @@ print("memory address of schnauzer is \(Unmanaged.passUnretained(schnauzer).toOp
 
 
 
-// in objective-C, print memory address
+In Objective-C, we can use **NSLog(@"%p", variable)** to print out the memory address, the "%p" is a [pointer formatter in C](https://stackoverflow.com/questions/2369541/where-is-p-useful-with-printf).
+
+```objective-c
+NSLog(@"memory address of labrador is %p", labrador);
+NSLog(@"memory address of schnauzer is %p", schnauzer);
+```
 
 
 
@@ -171,25 +176,61 @@ Notice that the memory address of labrador and schnauzer is exactly same! (0x000
 
 
 
-Next time if you find yourself confused about how reference type work or why a class object variable output value isn't as you expected, just remember that reference type copies memory address and modify the same chunk of data.
+Next time if you find yourself confused about how reference type work or why a class object variable output value isn't as you expected, just **remember that reference type copies memory address and modify the data in that address**, hence other variable that share the same memory address will be affected as well.
 
 
 
-None of the article about Swift value/reference type I found online has explained about the memory address aspect
+I searched for articles about Swift value / reference type online and none of them explained about the memory address (pointer) aspect of a reference type. I think it would be easier to grasp the concept of reference type with understanding of memory address.
 
 
 
-
-
-// show the solution to the question at top
-
+<script async data-uid="5b0c2b4f98" src="https://f.convertkit.com/5b0c2b4f98/8324d183a4.js"></script>
 
 
 
+## Explanation for the code issue
+
+Now that we understand how reference type works, let's take a look at the code at top again :
 
 
 
+```swift
+class Member {
+    var memberID: Int? = nil
+}
 
+// Array of "Member" class
+var members = [Member]()
+
+// temporary variable for member
+var memberHolder = Member()
+
+for i in 1...5 {
+    memberHolder.memberID = i
+    members.append(memberHolder)
+}
+
+for m in members {
+    print("member ID is \(m.memberID)")
+}
+```
+
+
+
+And here's how the code works :
+
+![explanation](https://iosimage.s3.amazonaws.com/2019/61-reference-value-type/explanation.png)
+
+
+
+As the **memberHolder** points to the same memory address and the **members** array append the memberHolder 5 times,  **members** array now hold 5 memberHolder objects that point to the same memory address, which the memberID is 5 after the latest iteration (when i=5).
+
+
+So when all member in members array are printed, they all print the same memberID (5) !
+
+
+
+<script async data-uid="5b0c2b4f98" src="https://f.convertkit.com/5b0c2b4f98/8324d183a4.js"></script>
 
 
 

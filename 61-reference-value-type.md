@@ -108,7 +108,7 @@ print("myMoney is \(myMoney)") // 500
 
 
 
-Despite the myMoney value is assigned from yourMoney value, *myMoney** 's value remain unchanged even though yourMoney has decreased. This is because during the assignment `myMoney = yourMoney` , the value '500' is copied over.
+Despite the myMoney value is assigned from yourMoney value, **myMoney** 's value remain unchanged even though yourMoney has decreased. This is because during the assignment `myMoney = yourMoney` , the value '500' is copied over.
 
 
 
@@ -133,7 +133,7 @@ print("dog name is \(labrador.name)") // "dog name is labrador"
 var schnauzer = labrador
 print("schnauzer name is \(schnauzer.name)") // "schnauzer name is labrador"
 
-schanuzer.name = "schnauzer"
+schnauzer.name = "schnauzer"
 
 print("dog name is \(labrador.name)") // dog name is schnauzer
 ```
@@ -144,9 +144,44 @@ print("dog name is \(labrador.name)") // dog name is schnauzer
 
 
 
-// show how to print out memory address
+The diagram above shows how reference types work, as both "labrador" and "schnauzer" variables point to the same memory address, modifying the **.name** on either one of them will affect the same name data stored on the memory address.
 
-// show screenshot proof that they have the same memory address
+
+
+In Swift, we can [print out the memory address of reference-type variables](https://stackoverflow.com/a/41666807/1901264) using **Unmanaged.passUnretained(variable).toOpaque()**  like this : 
+
+```swift
+print("memory address of labrador is \(Unmanaged.passUnretained(labrador).toOpaque())")
+print("memory address of schnauzer is \(Unmanaged.passUnretained(schnauzer).toOpaque())")
+```
+
+
+
+Here's the output if we execute the code above in Playground :
+
+![memory address output](https://iosimage.s3.amazonaws.com/2019/61-reference-value-type/memoryAddressProof.png)
+
+
+
+Notice that the memory address of labrador and schnauzer is exactly same! (0x00007fa409f3cb30)
+
+
+
+Next time if you find yourself confused about how reference type work or why a class object variable output value isn't as you expected, just remember that reference type copies memory address and modify the same chunk of data.
+
+
+
+None of the article about Swift value/reference type I found online has explained about the memory address aspect
+
+
+
+
+
+// show the solution to the question at top
+
+
+
+
 
 
 

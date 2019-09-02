@@ -1,4 +1,4 @@
-# Replicating Facebook's Draggable Bottom Card using Auto Layout
+# Replicating Facebook's Draggable Bottom Card using Auto Layout - Part 1/2
 
 There's a popular trend in recent iOS apps which when user tap a button, a card-like modal will appear from the bottom and user can drag to expand, contract, or dismiss it. Facebook and Slack app uses this UI design :
 
@@ -81,3 +81,89 @@ For the bottom modal card, we will create a view controller for it. Here's the b
 7. Add the handle view on top of the card view and also any additional content on the card as you like!
 
 ![step 7](https://iosimage.s3.amazonaws.com/2019/62-bottom-card/step7.png)
+
+
+
+There's all to it! Most of the complex coding is on step 6 (manipulating the top constraint constant value based on the pan gesture).
+
+
+
+Without further ado, let's start the tutorial!
+
+
+
+## Create ReactionViewController with backing Image View and gray dimmer View
+
+Open the starter project, create a new ViewController file , and name it as "**ReactionViewController**". Next, open the Main.storyboard, drag a new view controller into the storyboard, set its class to ReactionViewController and set its Storyboard ID to 'ReactionViewController' (same name as the class).
+
+
+
+![drag a new VC](https://iosimage.s3.amazonaws.com/2019/62-bottom-card/dragNewVC.png)
+
+
+
+Next, open "StatusViewController.swift", find the function **@IBAction func reactionListButtonTapped()**. This function is fired when the "Tim Cook and 10 others" reaction button on the status view is tapped.
+
+
+
+We want to present the ReactionViewController modally when this button is tapped, add the following code inside the function : 
+
+```swift
+@IBAction func reactionListButtonTapped(_ sender: UIButton) {
+  guard let reactionVC = storyboard?.instantiateViewController(withIdentifier: "ReactionViewController") 
+  as? ReactionViewController else {
+      assertionFailure("No view controller ID ReactionViewController in storyboard")
+      return
+  }
+
+  // present the view controller modally without animation
+  self.present(reactionVC, animated: false, completion: nil)
+}
+```
+
+<br>
+
+If we present a view controller modally with **animated** set to true, iOS will use a default animation of moving the new controller from the bottom edge to the top. We don't want this animation as we are going to replace it with our own card modal animation.
+
+
+
+Build and run the project, when you tap on the button, you will see a blank view controller appear immediately like this : 
+
+![present blank VC](https://iosimage.s3.amazonaws.com/2019/62-bottom-card/presentBlankVC.gif)
+
+
+
+As the blank view controller looks very different than the previous view controller, this might give user a sudden shock. To smoothen the transition, we will take a snapshot of the previous view controller, and put the snapshot image as the background of the new view controller (ReactionViewController), so that user won't notice that there is a transition of view controllers.
+
+
+
+To capture an image snapshot of a view, we will use **UIGraphicsImageRenderer** class provided by Apple to render the UIView as an image. Create a new Swift file, name it as "UIView+Snapshot.swift", then add an extension to the UIView class like this :
+
+```swift
+// UIView+Snapshot.swift
+
+import UIKit
+
+extension UIView  {
+    // render the view within the view's bounds, then capture it as image
+  func asImage() -> UIImage {
+    let renderer = UIGraphicsImageRenderer(bounds: bounds)
+    return renderer.image({ rendererContext in
+        layer.render(in: rendererContext.cgContext)
+    })
+  }
+}
+```
+
+<br>
+
+
+
+Next, we will place an UIImageView on the ReactionViewController, this image view will use the image snapshot we captured earlier on.
+
+
+
+
+
+
+

@@ -159,9 +159,174 @@ extension UIView  {
 
 
 
-Next, we will place an UIImageView on the ReactionViewController, this image view will use the image snapshot we captured earlier on.
+Next, we will place an UIImageView on the ReactionViewController, this image view will use the image snapshot we captured earlier on. Drag an UIImageView into ReactionViewController, then set top, bottom, leading and trailing constraint to 0 like this :
+
+ 
+
+![constraints](https://iosimage.s3.amazonaws.com/2019/62-bottom-card/imageviewConstraints.png)
 
 
+
+By default Xcode will set the top and bottom constraint to the Safe Area (the rectangular area not hidden by the notch and rounded corner of the phone screen). We want the image view to cover the whole screen including the rounded corner of the phone screen, to do this, open the Size inspector tab to list all constraints for the image view.
+
+
+
+Double click the Top constraint:
+
+![top constraint](https://iosimage.s3.amazonaws.com/2019/62-bottom-card/imageViewTopConstraint.png)
+
+
+
+In the First Item or Second Item, change the **SafeArea.Top** to **SuperView.Top**, and after changing, set the constant to **0**.
+
+![superview top](https://iosimage.s3.amazonaws.com/2019/62-bottom-card/superviewTop.png)
+
+
+
+Do the same for the bottom constraint, change the **SafeArea.Bottom** to **SuperView.Bottom**, and set the constant to **0**.
+
+
+
+![superview bottom](https://iosimage.s3.amazonaws.com/2019/62-bottom-card/superviewBottom.png)
+
+
+
+After setting both top and bottom constraint to compare against superview, the UIImageView should look like this in the view controller : 
+
+
+
+![image view whole](https://iosimage.s3.amazonaws.com/2019/62-bottom-card/imageViewWhole.png)
+
+
+
+Next, create an IBOutlet for this image view, an declare an UIImage variable to store the snapshot image, in ReactionViewController.swift : 
+
+```swift
+// ReactionViewController.swift
+
+class ReactionViewController: UIViewController {
+
+  @IBOutlet weak var backingImageView: UIImageView!
+    
+  // to store backing (snapshot) image
+  var backingImage: UIImage?
+  
+  override func viewDidLoad() {
+    super.viewDidLoad()
+
+    // update the backing image view
+    backingImageView.image = backingImage
+  }  
+}
+```
+
+Don't forget to update the imageview's image in viewDidLoad as well.
+
+
+
+Now in the StatusViewController, we can capture the snapshot of its view right when the button is tapped, instantiate the ReactionViewController, and pass the snapshot image to the **backingImage** variable.
+
+
+
+```swift
+// StatusViewController.swift
+
+@IBAction func reactionListButtonTapped(_ sender: UIButton) {
+  guard let reactionVC = storyboard?.instantiateViewController(withIdentifier: "ReactionViewController")
+    as? ReactionViewController else {
+      
+    assertionFailure("No view controller ID ReactionViewController in storyboard")
+    return
+  }
+
+  // take a snapshot of current view and set it as backingImage
+  reactionVC.backingImage = self.view.asImage()
+
+  // present the view controller modally without animation
+  self.present(reactionVC, animated: false, completion: nil)
+}
+```
+
+<br>
+
+
+
+Build and run the project, tap the button and you will see that nothing has changed after tapping button, it means that the snapshot image is being shown correctly! The ReactionViewController has presented modally and its backing image view is using the snapshot captured on StatusViewController.
+
+
+
+Upon closer inspection, the snapshotted image didn't have tab bar?! 😱
+
+![where's tab bar](https://iosimage.s3.amazonaws.com/2019/62-bottom-card/wheresTabBar.png)
+
+
+
+The snapshot from **self.view.asImage()** in **StatusViewController** doesn't contain tab bar, this is because StatusViewController is embedded inside Tab Bar Controller, hence calling capture on itself doesn't capture UI outside of its bounds. To fix this, we should call **self.tabBarController?.view.asImage()** instead, to capture the whole view including tab bar.
+
+
+
+```swift
+// StatusViewController.swift
+@IBAction func reactionListButtonTapped(_ sender: UIButton) {
+  guard let reactionVC = storyboard?.instantiateViewController(withIdentifier: "ReactionViewController") as? ReactionViewController else {
+    assertionFailure("No view controller ID ReactionViewController in storyboard")
+    return
+  }
+  
+  // capture the whole view including tab bar
+  reactionVC.backingImage = self.tabBarController?.view.asImage()
+  self.present(reactionVC, animated: false, completion: nil)
+}
+```
+
+<br>
+
+
+
+Build and run the project again, this time the tab bar is there after pressing the button! But wait, the button seems faded out?
+
+
+
+![faded out button](https://iosimage.s3.amazonaws.com/2019/62-bottom-card/buttonFadedOut.png)
+
+
+
+On default UIKit setting, when a button is being tapped, it will fade out for a while before restoring back the original opacity. As the snapshot is captured immediately right after user tap the button, the button is still in its faded out state during the capture. 
+
+
+
+One of the way to solve this is to delay the capture of the snapshot and subsequently the modal presentation, we can use DispatchQueue to delay the execution of screen capture like this : 
+
+```swift
+// StatusViewController.swift
+
+@IBAction func reactionListButtonTapped(_ sender: UIButton) {
+  guard let reactionVC = storyboard?.instantiateViewController(withIdentifier: "ReactionViewController")
+    as? ReactionViewController else {
+      assertionFailure("No view controller ID ReactionViewController in storyboard")
+      return
+  }
+  
+  // Delay the capture of snapshot by 0.1 seconds
+  DispatchQueue.main.asyncAfter(deadline: .now() + 0.1 , execute: {
+    // take a snapshot of current view and set it as backingImage
+    reactionVC.backingImage = self.tabBarController?.view.asImage()
+    
+    // present the view controller modally without animation
+    self.present(reactionVC, animated: false, completion: nil)
+  })
+}
+```
+
+<br>
+
+
+
+Build and run the project, now we have implemented an illusion which user feel like they are still on the same view controller despite ReactionViewController has been presented modally!
+
+
+
+Next, we will put a dimmer view on top of the backing image view in ReactionViewController.
 
 
 

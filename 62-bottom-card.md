@@ -441,7 +441,17 @@ Now build and run the project, tap the button, you will see the card view presen
 
 
 
-Before proceeding to the code, let's take a look at the card view. There's two state for the card, I will name them as **.normal** and .**expanded** .
+Before proceeding to the code, let's take a look at the card view. There's two state for the card, I will name them as **.normal** and .**expanded**. Here's the top constraint value for when the card is expanded, normal and hidden (it is placed below the screen area before moving up) : 
+
+
+
+![card state](https://iosimage.s3.amazonaws.com/2019/62-bottom-card/cardState.png)
+
+
+
+When user tap on the button, the card should be hidden at bottom at first, then slowly move up. Let's move the card to below the screen like this : 
+
+
 
 
 

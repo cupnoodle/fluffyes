@@ -326,7 +326,126 @@ Build and run the project, now we have implemented an illusion which user feel l
 
 
 
-Next, we will put a dimmer view on top of the backing image view in ReactionViewController.
+Next, we will put a dimmer view on top of the backing image view in ReactionViewController. Apply the same top, bottom (to superview instead of safe area), leading and trailing constraints for the dimmer view as well. 
+
+
+
+Set the background color of the dimmer view to **Dark Gray** (or any other darker color you want), then set the alpha to **0.7** . Your storyboard should look like this now :
+
+![dimmer view prop](https://iosimage.s3.amazonaws.com/2019/62-bottom-card/dimmerViewProp.png)
+
+
+
+Next, create an IBOutlet for this dimmer view in ReactionViewController, we can name it as **dimmerView** .
+
+```swift
+// ReactionViewController.swift
+
+class ReactionViewController: UIViewController {
+
+  @IBOutlet weak var backingImageView: UIImageView!
+  @IBOutlet weak var dimmerView: UIView!
+
+  // to store backing (snapshot) image
+  var backingImage: UIImage?
+  
+  // ...
+}
+```
+
+
+
+Now we have the dimmer view, it's time to put the actual card view on the ReactionViewController. Drag a new UIView onto the view controller, place it on top of the dimmer view, then add the constraints like this : 
+
+![card view constraints](https://iosimage.s3.amazonaws.com/2019/62-bottom-card/cardViewConstraints.png)
+
+
+
+The bottom constraint of the card view should be relative to the **Superview bottom** (same as previous dimmer view), but the **top constraint** of the card view should be relative to the **SafeArea top**, and with a constant number (I have set it to 30) : 
+
+
+
+![cardview constraint list](https://iosimage.s3.amazonaws.com/2019/62-bottom-card/cardViewConstraintList.png)
+
+
+
+ Next, create an IBOutlet for the card view and the top constraint of the card view, you can name the IBOutlet for the card view as **cardView**. 
+
+
+
+To create an IBOutlet for the top constraint, double click the top constraint in the constraint list, then Xcode will highlight the constraint on the Document Outline, then press and hold **Control** and drag it to the view controller's code.
+
+
+
+![double click top constraint](https://iosimage.s3.amazonaws.com/2019/62-bottom-card/doubleClickTopConstraint.png)
+
+
+
+![top constraint IBOutlet](https://iosimage.s3.amazonaws.com/2019/62-bottom-card/topconstraintIBOutlet.png)
+
+
+
+
+
+I have named the top constraint IBOutlet as **cardViewTopConstraint** . Your ReactionViewController.swift file should look like this now :
+
+
+
+```swift
+// ReactionViewController
+class ReactionViewController: UIViewController {
+
+    @IBOutlet weak var backingImageView: UIImageView!
+    @IBOutlet weak var dimmerView: UIView!
+    @IBOutlet weak var cardView: UIView!
+    
+    @IBOutlet weak var cardViewTopConstraint: NSLayoutConstraint!
+    
+    // to store backing (snapshot) image
+    var backingImage: UIImage?
+    
+    override func viewDidLoad() {
+        super.viewDidLoad()
+        
+        // update the backing image view
+        backingImageView.image = backingImage
+    }
+}
+```
+
+<br>
+
+
+
+As the top left and top right corner of the card view is rounded, we can round them like this : 
+
+```swift
+// ReactionViewController.swift
+
+override func viewDidLoad() {
+  super.viewDidLoad()
+
+  // update the backing image view
+  backingImageView.image = backingImage
+
+  // round the top left and top right corner of card view
+  cardView.clipsToBounds = true
+  cardView.layer.cornerRadius = 10.0
+  cardView.layer.maskedCorners = [.layerMinXMinYCorner, .layerMaxXMinYCorner]
+}
+```
+
+
+
+Now build and run the project, tap the button, you will see the card view presented suddenly with dimmer view. Next, we want the card view to appear from the bottom smoothly and the dimmer view slowly become darker when the button is tapped.
+
+
+
+Before proceeding to the code, let's take a look at the card view. There's two state for the card, I will name them as **.normal** and .**expanded** .
+
+
+
+
 
 
 

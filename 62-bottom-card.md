@@ -449,9 +449,75 @@ Before proceeding to the code, let's take a look at the card view. There's two s
 
 
 
-When user tap on the button, the card should be hidden at bottom at first, then slowly move up. Let's move the card to below the screen like this : 
+When user tap on the button, the card should be hidden at bottom at first, then slowly move up. Same goes to the dimmer view, the view should slowly transition from transparent to gray dim.
 
 
+
+ Let's move the card to below the screen and set the dimmer view to transparent like this : 
+
+```swift
+// ReactionViewController.swift
+
+override func viewDidLoad() {
+  super.viewDidLoad()
+
+  // update the backing image view
+  backingImageView.image = backingImage
+
+  // round the top left and top right corner of card view
+  cardView.clipsToBounds = true
+  cardView.layer.cornerRadius = 10.0
+  cardView.layer.maskedCorners = [.layerMinXMinYCorner, .layerMaxXMinYCorner]
+
+  // hide the card view at the bottom when the View first load
+  if let safeAreaHeight = UIApplication.shared.keyWindow?.safeAreaLayoutGuide.layoutFrame.size.height,
+    let bottomPadding = UIApplication.shared.keyWindow?.safeAreaInsets.bottom {
+    cardViewTopConstraint.constant = safeAreaHeight + bottomPadding
+  }
+  
+  // set dimmerview to transparent
+  dimmerView.alpha = 0.0
+}
+```
+
+<br>
+
+
+
+We make the top constraint constant value of the card view to equal to safe area height + bottom insets of safe area, so that the card will be hidden below.
+
+
+
+
+
+Next, we are going to implement the animation where the card move up from the bottom to the **.normal** state, and the dimmer view become dim (gray, alpha = 1.0) from transparent. This animation is shown when the ReactionViewController's view appears, hence we will put the animation code in viewDidAppear().
+
+
+
+```swift
+// ReactionViewController.swift
+
+override func viewDidAppear(_ animated: Bool) {
+  super.viewDidAppear(animated)
+
+  showCard()
+}
+
+//MARK: Animations
+private func showCard() {
+  // move card up from bottom
+
+  // show dimmer view
+}
+```
+
+
+
+<br>
+
+
+
+Next, we are going to implement the animations in showCard() function using [Property Animators](https://useyourloaf.com/blog/quick-guide-to-property-animators/) .
 
 
 

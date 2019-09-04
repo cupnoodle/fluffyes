@@ -521,6 +521,86 @@ Next, we are going to implement the animations in showCard() function using [Pro
 
 
 
+```swift
+// ReactionViewController.swift
+
+//MARK: Animations
+private func showCard() {
+   
+  // ensure there's no pending layout changes before animation runs
+  self.view.layoutIfNeeded()
+  
+  // set the new top constraint value for card view
+  // card view won't move up just yet, we need to call layoutIfNeeded()
+  // to tell the app to refresh the frame/position of card view
+  if let safeAreaHeight = UIApplication.shared.keyWindow?.safeAreaLayoutGuide.layoutFrame.size.height,
+    let bottomPadding = UIApplication.shared.keyWindow?.safeAreaInsets.bottom {
+    
+    // when card state is normal, its top distance to safe area is 
+    // (safe area height + bottom inset) / 2.0
+    cardViewTopConstraint.constant = (safeAreaHeight + bottomPadding) / 2.0
+  }
+  
+  // move card up from bottom by telling the app to refresh the frame/position of view
+  // create a new property animator
+  let showCard = UIViewPropertyAnimator(duration: 0.25, curve: .easeIn, animations: {
+    self.view.layoutIfNeeded()
+  })
+  
+  // show dimmer view
+  // this will animate the dimmerView alpha together with the card move up animation
+  showCard.addAnimations({
+    self.dimmerView.alpha = 0.7
+  })
+  
+  // run the animation
+  showCard.startAnimation()
+}
+
+```
+
+<br>
+
+
+
+Before animating the position change of card view, we first need to execute `self.view.layoutIfNeeded()` to implement any pending layout change (eg: view' s frame update due to constraint changes).
+
+
+
+Then we modify the card view top constraint constant value from safeAreaHeight + bottomPadding (hidden at the bottom) to  **(safeAreaHeight + bottomPadding) / 2.0** , which makes it occupies around half the height of the screen. 
+
+
+
+Changing the constraint value won't move the card view up immediately, we need to call **self.view.layoutIfNeeded()** to tell the app to update the frame / position of the card view (and any other views inside the view controller), we want the position change to be animated , hence we will create a **UIViewPropertyAnimator** object and place `layoutIfNeeded()` inside it.
+
+
+
+We also want to add the dimmer view alpha transition animation parallel to the card movement animation, to perform both of them at the same time, we will add the alpha animation to the **showCard** property animator using **addAnimations()**.
+
+
+
+Then at last, we run the animation by calling **startAnimation()**.
+
+
+
+Build and run the project, tap the button and you will see the card view appear from bottom + background dimming like this : 
+
+
+
+![show Card](https://iosimage.s3.amazonaws.com/2019/62-bottom-card/showCard.gif)
+
+
+
+
+
+Looks nifty , isn't it? But now we are stuck on this screen as there is no way to dismiss the card 😅, let's add a dismissing function to it.
+
+
+
+In Facebook app, we can dismiss the card view by tapping on the background (dimmer view). Let's replicate this by adding a tap gesture to the dimmer view, and dismiss **ReactionViewController** when it is being tapped.
+
+
+
 
 
 

@@ -601,6 +601,49 @@ In Facebook app, we can dismiss the card view by tapping on the background (dimm
 
 
 
+Let's start by adding a tap gesture recognizer to the dimmer view in **viewDidLoad()** : 
+
+```swift
+// ReactionViewController.swift
+
+override func viewDidLoad() {
+  super.viewDidLoad()
+  
+  // .....
+  
+  // dimmerViewTapped() will be called when user tap on the dimmer view
+  let dimmerTap = UITapGestureRecognizer(target: self, action: #selector(dimmerViewTapped(_:)))
+  dimmerView.addGestureRecognizer(dimmerTap)
+  dimmerView.isUserInteractionEnabled = true
+}
+
+// @IBAction is required in front of the function name due to how selector works
+@IBAction func dimmerViewTapped(_ tapRecognizer: UITapGestureRecognizer) {
+  hideCardAndGoBack()
+}
+
+//MARK: Animations
+private func showCard(){
+  //...
+}
+
+private func hideCardAndGoBack() {
+  // implement card moving downward animation
+  // implement dimmer view fade out animation
+  // dismiss current view controller
+}
+```
+
+<br>
+
+
+
+When the dimmer view is tapped, the **dimmerViewTapped()** function will be called and it will call **hideCardAndGoBack()**.
+
+
+
+Next, we will implement the card hiding animation.
+
 
 
 

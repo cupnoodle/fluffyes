@@ -18,7 +18,9 @@ The end result (with dimming and draggable bottom modal) will look like this :
 
 
 
-As the focus of this tutorial is implementing the bottom card modal view (not the Fake facebook status view shown above), I have created a starter project which contain the fake Facebook status view, you can [download the starter project here](https://fluffypublic.s3.amazonaws.com/starter_pack/bottomCard-starter.zip) .
+As the focus of this tutorial is implementing the bottom card modal view (not the Fake facebook status view shown above), I have created a starter project which contain the fake Facebook status view, you can get the starter project below :
+
+<script async data-uid="d9d1c1a613" src="https://fluffy-es.ck.page/d9d1c1a613/index.js"></script>
 
 
 
@@ -28,7 +30,7 @@ The starter project contains a fake Facebook Status View Controller (Status View
 
 
 
-You can use your own view / view controller if you don't want to use the facebook status view design, as long as it has a UIButton that can activate the modal view controller on tap.
+You can use your own view / view controller if you don't want to use the facebook status view design. As long as your own View Controller has a UIButton that can activate the modal view controller on tap, the tutorial steps can be applied.
 
 
 
@@ -644,9 +646,82 @@ When the dimmer view is tapped, the **dimmerViewTapped()** function will be call
 
 Next, we will implement the card hiding animation.
 
+```swift
+// ReactionViewController.swift
+private func hideCardAndGoBack() {
+    
+  // ensure there's no pending layout changes before animation runs
+  self.view.layoutIfNeeded()
+  
+  // set the new top constraint value for card view
+  // card view won't move down just yet, we need to call layoutIfNeeded()
+  // to tell the app to refresh the frame/position of card view
+  if let safeAreaHeight = UIApplication.shared.keyWindow?.safeAreaLayoutGuide.layoutFrame.size.height,
+    let bottomPadding = UIApplication.shared.keyWindow?.safeAreaInsets.bottom {
+    
+    // move the card view to bottom of screen
+    cardViewTopConstraint.constant = safeAreaHeight + bottomPadding
+  }
+  
+  // move card down to bottom
+  // create a new property animator
+  let hideCard = UIViewPropertyAnimator(duration: 0.25, curve: .easeIn, animations: {
+    self.view.layoutIfNeeded()
+  })
+  
+  // hide dimmer view
+  // this will animate the dimmerView alpha together with the card move down animation
+  hideCard.addAnimations {
+    self.dimmerView.alpha = 0.0
+  }
+  
+  // when the animation completes, (position == .end means the animation has ended)
+  // dismiss this view controller (if there is a presenting view controller)
+  hideCard.addCompletion({ position in
+    if position == .end {
+      if(self.presentingViewController != nil) {
+        self.dismiss(animated: false, completion: nil)
+      }
+    }
+  })
+  
+  // run the animation
+  hideCard.startAnimation()
+}
+```
+
+<br>
 
 
 
+The code is similar to the show card animation, except that this time we are changing the top constraint value of card view to **safeAreaHeight + bottomPadding**, to push the card view to the bottom of the screen.
+
+
+
+We also set and animate the dimmerView alpha to 0.0 (transparent) to hide it.
+
+
+
+We add a completion function to the animation, which tells it to dismiss the current view controller (if there is a presenting view controller, ie. the StatusViewController that presented the current ReactionViewController) after the animation has ended (position == .end).
+
+
+
+Build and run the app, now you can dismiss the card view (ReactionViewController) by tapping on the background (dimmer view)! It's starting to look good! 🌟
+
+
+![hide card](https://iosimage.s3.amazonaws.com/2019/62-bottom-card/showHideCard.gif)
+
+
+
+Phew, this is a long post to write, and also give yourself a pat on the back for following until this step! In the next part, we will implement the drag to expand / hide + swipe down quickly to hide mechanism, stay tuned!
+
+
+
+If you want to be notified when the next part of this tutorial has published, sign up to the newsletter below! (Also will send you useful iOS dev tips once a month ish)
+
+
+
+<script async data-uid="d9d1c1a613" src="https://fluffy-es.ck.page/d9d1c1a613/index.js"></script>
 
 
 

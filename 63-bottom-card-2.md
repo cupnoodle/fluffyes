@@ -132,11 +132,70 @@ self.cardViewTopConstraint.constant = self.cardPanStartingTopConstaint + transla
 
 <br>
 
-And we don't want the user to be able to drag the card view past 30pt away from Safe Area top : 
+And we don't want the user to be able to drag the card view lesser than 30pt (< 30 pt) away from Safe Area top : 
 
 ![limit](https://iosimage.s3.amazonaws.com/2019/63-bottom-card-2/maxDrag.png)
 
+Converting these into code :
 
+```swift
+// if the current drag distance + starting drag position is larger than 30 pt
+if self.cardPanStartingTopConstaint + translation.y > 30.0 {
+  // then only move the card
+  self.cardViewTopConstraint.constant = self.cardPanStartingTopConstaint + translation.y
+}
+```
+
+<br>
+
+
+
+And putting them together into the **viewPanned()** function : 
+
+```swift
+@IBAction func viewPanned(_ panRecognizer: UIPanGestureRecognizer) {
+  // how much has user dragged
+  let translation = panRecognizer.translation(in: self.view)
+  
+  switch panRecognizer.state {
+  case .began:
+    cardPanStartingTopConstraint = cardViewTopConstraint.constant
+  case .changed :
+    if self.cardPanStartingTopConstraint + translation.y > 30.0 {
+        self.cardViewTopConstraint.constant = self.cardPanStartingTopConstraint + translation.y
+    }
+  case .ended :
+    print("drag ended")
+    // we will do other stuff here later on
+  default:
+    break
+  }
+}
+```
+
+<br>
+
+<br>
+
+
+
+Now build and run the project, we should be able to drag the card view around now : 
+
+![drag around](https://iosimage.s3.amazonaws.com/2019/63-bottom-card-2/dragAroundDemo.gif)
+
+
+
+Looking good! But somehow something feels off, in the Facebook / Slack app, when we release the card view, it will snap to a certain position. Our current implementation doesn't have the "snap to" effect hence it feels a bit sloppy, we are going to add the "snap-to effect" next.
+
+
+
+As the card has two state, **.normal** and **.expanded** , we want the card to snap to different state (and size) depending on the height of the card when user stop dragging.
+
+
+
+Here's an example of what we can do : 
+
+// snap-to effect diagram
 
 
 

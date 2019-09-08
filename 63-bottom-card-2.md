@@ -193,13 +193,249 @@ As the card has two state, **.normal** and **.expanded** , we want the card to s
 
 
 
-Here's an example of what we can do : 
+Here's a diagram of what card state to snap to when user release the drag : 
 
-// snap-to effect diagram
+![snap to](https://iosimage.s3.amazonaws.com/2019/63-bottom-card-2/snapTo.png)
+
+When user release drag, the pan recognizer state is **.ended** . We can translate the above diagram into code like this :
+
+```swift
+@IBAction func viewPanned(_ panRecognizer: UIPanGestureRecognizer) {
+  // how much has user dragged
+  let translation = panRecognizer.translation(in: self.view)
+  
+  switch panRecognizer.state {
+  case .began:
+    cardPanStartingTopConstraint = cardViewTopConstraint.constant
+  case .changed :
+    if self.cardPanStartingTopConstraint + translation.y > 30.0 {
+        self.cardViewTopConstraint.constant = self.cardPanStartingTopConstraint + translation.y
+    }
+  case .ended :
+    if let safeAreaHeight = UIApplication.shared.keyWindow?.safeAreaLayoutGuide.layoutFrame.size.height,
+      let bottomPadding = UIApplication.shared.keyWindow?.safeAreaInsets.bottom {
+      
+      if self.cardViewTopConstraint.constant < (safeAreaHeight + bottomPadding) * 0.25 {
+        // show the card at expanded state
+        // we will modify showCard() function later
+      } else if self.cardViewTopConstraint.constant < (safeAreaHeight) - 70 {
+        // show the card at normal state
+        showCard()
+      } else {
+        // hide the card and dismiss current view controller
+        hideCardAndGoBack()
+      }
+    }
+  default:
+    break
+  }
+}
+```
+
+<br>
+
+
+
+Build and run the app, you should see that the card view will snap to "normal" state position or hide underneath when you release the drag, we're almost there! 🙌
+
+![half completed drag](https://iosimage.s3.amazonaws.com/2019/63-bottom-card-2/halfCompletedSnap.gif)
 
 
 
 
+
+Currently, our **showCard()** function will only animate the card to the middle position (.normal state). We can create another function to animate the card to the top position (.expanded state), but it would be a waste to not reuse the showCard() function as most of the animation code are same except for the card view top constraint value.
+
+
+
+Let's edit the **showCard()** function, update the function name to accept a parameter **atState: CardState**, so that it will animate to the specified card state (.normal or .expanded).
+
+
+
+```swift
+// default to show card at normal state, if showCard() is called without parameter
+private func showCard(atState: CardViewState = .normal) {
+   
+  // ensure there's no pending layout changes before animation runs
+  self.view.layoutIfNeeded()
+  
+  // set the new top constraint value for card view
+  // card view won't move up just yet, we need to call layoutIfNeeded()
+  // to tell the app to refresh the frame/position of card view
+  if let safeAreaHeight = UIApplication.shared.keyWindow?.safeAreaLayoutGuide.layoutFrame.size.height,
+    let bottomPadding = UIApplication.shared.keyWindow?.safeAreaInsets.bottom {
+    
+    if atState == .expanded {
+      // if state is expanded, top constraint is 30pt away from safe area top
+      cardViewTopConstraint.constant = 30.0
+    } else {
+      cardViewTopConstraint.constant = (safeAreaHeight + bottomPadding) / 2.0
+    }
+    
+    cardPanStartingTopConstraint = cardViewTopConstraint.constant
+  }
+  
+  // move card up from bottom
+  // create a new property animator
+  let showCard = UIViewPropertyAnimator(duration: 0.25, curve: .easeIn, animations: {
+    self.view.layoutIfNeeded()
+  })
+  
+  // show dimmer view
+  // this will animate the dimmerView alpha together with the card move up animation
+  showCard.addAnimations {
+    self.dimmerView.alpha = 0.7
+  }
+  
+  // run the animation
+  showCard.startAnimation()
+}
+```
+
+<br>
+
+
+
+Then we can now plug the modified **showCard(atState: .expanded)** to the viewPanned() function to snap to expanded state : 
+
+```swift
+@IBAction func viewPanned(_ panRecognizer: UIPanGestureRecognizer) {
+  // how much has user dragged
+  let translation = panRecognizer.translation(in: self.view)
+  
+  switch panRecognizer.state {
+  case .began:
+    cardPanStartingTopConstraint = cardViewTopConstraint.constant
+  case .changed :
+    if self.cardPanStartingTopConstraint + translation.y > 30.0 {
+        self.cardViewTopConstraint.constant = self.cardPanStartingTopConstraint + translation.y
+    }
+  case .ended :
+    if let safeAreaHeight = UIApplication.shared.keyWindow?.safeAreaLayoutGuide.layoutFrame.size.height,
+      let bottomPadding = UIApplication.shared.keyWindow?.safeAreaInsets.bottom {
+      
+      if self.cardViewTopConstraint.constant < (safeAreaHeight + bottomPadding) * 0.25 {
+        // show the card at expanded state
+        showCard(atState: .expanded)
+      } else if self.cardViewTopConstraint.constant < (safeAreaHeight) - 70 {
+        // show the card at normal state
+        showCard(atState: .normal)
+      } else {
+        // hide the card and dismiss current view controller
+        hideCardAndGoBack()
+      }
+    }
+  default:
+    break
+  }
+}
+```
+
+<br>
+
+
+
+Build and run the app, now when you release the drag near the top, the card will animate to the expanded state! 🙌
+
+
+
+Wait, there's one more thing! There's still one functionality to be implemented for the dragging. 😂
+If you have noticed, when you open the Reaction List card view from Facebook app, you can dismiss it by dragging it down to bottom or **swipe it down really fast**.
+
+
+
+So far we only implemented the dismiss (hideCardAndGoBack() ) when user drag the card view to the bottom, now we are going to implement the dismiss when user swipe it down really fast.
+
+
+
+To detect if user is dragging / swiping down really fast, we can use the **velocity** property from the pan gesture recognizer to check the speed of dragging :
+
+```swift
+panRecognizer.velocity(in: self.view)
+```
+
+<br>
+
+
+
+Similar to the **translation** property, if user drag upwards, the velocity will be in negative value, and if user drag downwards, the velocity will be in positive value. The faster the user drag it, the bigger the velocity is.
+
+
+
+You can use a print statement to record down the velocity of drag / swipe speed. I have experimented a bit and found the threshold for the speed of swiping down quickly is around **1500**.
+
+
+
+Putting it in code, the **viewPanned** function's **.ended** state : 
+
+```swift
+@IBAction func viewPanned(_ panRecognizer: UIPanGestureRecognizer) {
+  // how much has user dragged
+  let translation = panRecognizer.translation(in: self.view)
+  
+  // how fast the user drag
+  let velocity = panRecognizer.velocity(in: self.view)
+  
+  switch panRecognizer.state {
+  case .began:
+    cardPanStartingTopConstraint = cardViewTopConstraint.constant
+  case .changed :
+    if self.cardPanStartingTopConstraint + translation.y > 30.0 {
+      self.cardViewTopConstraint.constant = self.cardPanStartingTopConstraint + translation.y
+    }
+  case .ended :
+    // if user drag down with a very fast speed (ie. swipe)
+    if velocity.y > 1500.0 {
+      // hide the card and dismiss current view controller
+      hideCardAndGoBack()
+      return
+    }
+    
+    if let safeAreaHeight = UIApplication.shared.keyWindow?.safeAreaLayoutGuide.layoutFrame.size.height,
+      let bottomPadding = UIApplication.shared.keyWindow?.safeAreaInsets.bottom {
+      
+      if self.cardViewTopConstraint.constant < (safeAreaHeight + bottomPadding) * 0.25 {
+        // show the card at expanded state
+        showCard(atState: .expanded)
+      } else if self.cardViewTopConstraint.constant < (safeAreaHeight) - 70 {
+        // show the card at normal state
+        showCard()
+      } else {
+        // hide the card and dismiss current view controller
+        hideCardAndGoBack()
+      }
+    }
+  default:
+    break
+  }
+}
+```
+
+<br>
+
+
+
+And now we can swipe down quickly to dismiss the card view :
+
+![swipe down](https://iosimage.s3.amazonaws.com/2019/63-bottom-card-2/swipeDown.gif)
+
+
+
+
+
+Looking good! You could call this a day if you wanted to, but there's still a thing (okay I promise it is the last one) to nitpick of. When we drag on the card view, the alpha of the dimmer view should change depending on how far have we dragged the card view. The background should be darker when we drag upwards, and lighter when we drag downwards.
+
+
+
+Here's an example on Facebook card view, notice the background gets darker when we drag upward, but it doesn't get any more darker after the card reached the normal state distance :
+
+![drag dim](https://iosimage.s3.amazonaws.com/2019/63-bottom-card-2/dimDrag.gif)
+
+
+
+
+
+// darkness diagram depending on level of drag
 
 
 

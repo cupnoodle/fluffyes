@@ -22,7 +22,7 @@ Before we jump into implementing the card dragging animation, remember that ther
 
 ![card state](https://iosimage.s3.amazonaws.com/2019/63-bottom-card-2/cardstate.png)
 
-
+<br>
 
 We will create an enum for the card state and a variable to store the card state, so we can know whats the current card state and perform different animation depending on the current state (eg: an expanded card cannot be further expanded).
 
@@ -100,7 +100,7 @@ Build and run the app now, and drag the card view, you will the console log as f
 
 ![drag print console](https://iosimage.s3.amazonaws.com/2019/63-bottom-card-2/dragPrint.gif)
 
-
+<br>
 
 When user drag upward, the translation.y will be negative value, and when user drag downward, the translation.y will be positive value. We will add this translation.y value to the top constraint value of the card view to move it.
 
@@ -135,6 +135,8 @@ self.cardViewTopConstraint.constant = self.cardPanStartingTopConstaint + transla
 And we don't want the user to be able to drag the card view lesser than 30pt (< 30 pt) away from Safe Area top : 
 
 ![limit](https://iosimage.s3.amazonaws.com/2019/63-bottom-card-2/maxDrag.png)
+
+<br>
 
 Converting these into code :
 
@@ -185,9 +187,13 @@ Now build and run the project, we should be able to drag the card view around no
 
 
 
+<br>
+
 Looking good! But somehow something feels off, in the Facebook / Slack app, when we release the card view, it will snap to a certain position. Our current implementation doesn't have the "snap to" effect hence it feels a bit sloppy, we are going to add the "snap-to effect" next.
 
 
+
+## Adding a snap-to effect
 
 As the card has two state, **.normal** and **.expanded** , we want the card to snap to different state (and size) depending on the height of the card when user stop dragging.
 
@@ -196,6 +202,8 @@ As the card has two state, **.normal** and **.expanded** , we want the card to s
 Here's a diagram of what card state to snap to when user release the drag : 
 
 ![snap to](https://iosimage.s3.amazonaws.com/2019/63-bottom-card-2/snapTo.png)
+
+<br>
 
 When user release drag, the pan recognizer state is **.ended** . We can translate the above diagram into code like this :
 
@@ -240,7 +248,7 @@ Build and run the app, you should see that the card view will snap to "normal" s
 
 ![half completed drag](https://iosimage.s3.amazonaws.com/2019/63-bottom-card-2/halfCompletedSnap.gif)
 
-
+<br>
 
 
 
@@ -348,6 +356,8 @@ So far we only implemented the dismiss (hideCardAndGoBack() ) when user drag the
 
 
 
+## Swipe down to dismiss card view
+
 To detect if user is dragging / swiping down really fast, we can use the **velocity** property from the pan gesture recognizer to check the speed of dragging :
 
 ```swift
@@ -423,9 +433,11 @@ And now we can swipe down quickly to dismiss the card view :
 
 
 
-Looking good! You could call this a day if you wanted to, but there's still a thing (okay I promise it is the last one) to nitpick of. When we drag on the card view, the alpha of the dimmer view should change depending on how far have we dragged the card view. The background should be darker when we drag upwards, and lighter when we drag downwards.
+Looking good! You could call this a day if you wanted to, but there's still a thing (okay I promise this is the last one) to nitpick of. When we drag on the card view, the alpha of the dimmer view should change depending on how far have we dragged the card view. The background should be darker when we drag upwards, and lighter when we drag downwards.
 
 
+
+## Dimmer view alpha manipulation
 
 Here's an example on Facebook card view, notice the background gets darker when we drag upward, but it doesn't get any more darker after the card reached the normal state distance :
 
@@ -435,7 +447,133 @@ Here's an example on Facebook card view, notice the background gets darker when 
 
 
 
-// darkness diagram depending on level of drag
+Notice that the background doesn't get darker if we drag the card upwards from its normal state to expanded state. The alpha of the dimmer view only change when the card is between normal state and hidden (bottom of visible area).
+
+
+
+Here's an explanation on how the alpha of dimmer view changes : 
+
+![alpha calculation](https://iosimage.s3.amazonaws.com/2019/63-bottom-card-2/darkness.png)
+
+
+We can write a function that accepts a parameter, which is the current top constraint value of the card view, and use this parameter to calculate and return the alpha of the dimmer view.
+
+
+
+Let's call this function **dimAlphaWithCardTopConstraint(value: CGFloat) ** : 
+
+```swift
+// ReactionViewController.swift
+
+private func dimAlphaWithCardTopConstraint(value: CGFloat) -> CGFloat {
+  let fullDimAlpha : CGFloat = 0.7
+  
+  // ensure safe area height and safe area bottom padding is not nil
+  guard let safeAreaHeight = UIApplication.shared.keyWindow?.safeAreaLayoutGuide.layoutFrame.size.height,
+    let bottomPadding = UIApplication.shared.keyWindow?.safeAreaInsets.bottom else {
+    return fullDimAlpha
+  }
+  
+  // when card view top constraint value is equal to this,
+  // the dimmer view alpha is dimmest (0.7)
+  let fullDimPosition = (safeAreaHeight + bottomPadding) / 2.0
+  
+  // when card view top constraint value is equal to this,
+  // the dimmer view alpha is lightest (0.0)
+  let noDimPosition = safeAreaHeight + bottomPadding
+  
+  // if card view top constraint is lesser than fullDimPosition
+  // it is dimmest
+  if value < fullDimPosition {
+    return fullDimAlpha
+  }
+  
+  // if card view top constraint is more than noDimPosition
+  // it is dimmest
+  if value > noDimPosition {
+    return 0.0
+  }
+  
+  // else return an alpha value in between 0.0 and 0.7 based on the top constraint value
+  return fullDimAlpha * 1 - ((value - fullDimPosition) / fullDimPosition)
+}
+```
+
+<br>
+
+
+
+Then we can use this function in the **viewPanned()** function's **.changed** state like this : 
+
+```swift
+@IBAction func viewPanned(_ panRecognizer: UIPanGestureRecognizer) {
+  let velocity = panRecognizer.velocity(in: self.view)
+  let translation = panRecognizer.translation(in: self.view)
+  
+  switch panRecognizer.state {
+  case .began:
+    cardPanStartingTopConstraint = cardViewTopConstraint.constant
+    
+  case .changed:
+    if self.cardPanStartingTopConstraint + translation.y > 30.0 {
+      self.cardViewTopConstraint.constant = self.cardPanStartingTopConstraint + translation.y
+    }
+    
+    // change the dimmer view alpha based on how much user has dragged
+    dimmerView.alpha = dimAlphaWithCardTopConstraint(value: self.cardViewTopConstraint.constant)
+
+  case .ended:
+    if velocity.y > 1500.0 {
+      hideCardAndGoBack()
+      return
+    }
+    
+    if let safeAreaHeight = UIApplication.shared.keyWindow?.safeAreaLayoutGuide.layoutFrame.size.height,
+      let bottomPadding = UIApplication.shared.keyWindow?.safeAreaInsets.bottom {
+      
+      if self.cardViewTopConstraint.constant < (safeAreaHeight + bottomPadding) * 0.25 {
+        showCard(atState: .expanded)
+      } else if self.cardViewTopConstraint.constant < (safeAreaHeight) - 70 {
+        showCard(atState: .normal)
+      } else {
+        hideCardAndGoBack()
+      }
+    }
+  default:
+    break
+  }
+}
+```
+
+<br>
+
+
+
+Build and run the app, drag the card view and see the dimmer alpha changes! 🤘
+
+
+
+![darkness changes](https://iosimage.s3.amazonaws.com/2019/63-bottom-card-2/darknessChange.gif)
+
+
+
+
+
+Congratulations! You have managed to implement a draggable card modal view without using any library 😆🙌.
+
+
+
+The next step is optional but I think it would make a better experience of the user by placing a "handle" view as an indicator that the card view is draggable.
+
+
+
+## Adding handle view 
+
+
+
+
+
+
 
 
 

@@ -559,7 +559,7 @@ Build and run the app, drag the card view and see the dimmer alpha changes! 🤘
 
 
 
-Congratulations! You have managed to implement a draggable card modal view without using any library 😆🙌.
+Congratulations! You have managed to implement a draggable card modal view without using any library 😆🙌. (Remember, Cocoa developer, not Cocoapod developer, jk 😂)
 
 
 
@@ -568,6 +568,46 @@ The next step is optional but I think it would make a better experience of the u
 
 
 ## Adding handle view 
+
+Adding a handle view is quite straightforward. Open storyboard, drag a view and place it above the card view, set a gray background color for it, then set a width / height constraint for itself, horizontal to superview constraint, and a vertical spacing constraint to the card view.
+
+
+
+![handle view](https://iosimage.s3.amazonaws.com/2019/63-bottom-card-2/handleview.png)
+
+![handle view constraint](https://iosimage.s3.amazonaws.com/2019/63-bottom-card-2/handleViewConstraint.png)
+
+<br>
+
+Next, we are going to round its corner. To do this, create an IBOutlet (I named it as handleView) for the handle view, and round it in viewDidLoad.
+
+
+
+```swift
+// round the handle view
+handleView.clipsToBounds = true
+handleView.layer.cornerRadius = 3.0
+```
+
+<br>
+
+
+
+I have added UILabel and another separator view into the card view, you can add any additional content you want inside the card view.
+
+
+
+The end result looks like this : 
+
+![handle view full](https://iosimage.s3.amazonaws.com/2019/63-bottom-card-2/handleViewFull.png)
+
+
+
+
+
+<script async data-uid="5b0c2b4f98" src="https://fluffy-es.ck.page/5b0c2b4f98/index.js"></script>
+
+
 
 
 

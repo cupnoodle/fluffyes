@@ -141,7 +141,203 @@ If you used the same code to build for iOS 13, you might find that your large ti
 
 
 
-In iOS 13, Apple has introduced a new class, **UINavigationBarAppearance**, to replace the old UINavigationBar.appearance() approach.
+In iOS 13, Apple has introduced a new class, **UINavigationBarAppearance**, to replace the old UINavigationBar.appearance() approach. Here's an example : 
+
+
+
+```swift
+if #available(iOS 13, *) {
+  let appearance = UINavigationBarAppearance()
+
+  // title color
+  appearance.titleTextAttributes = [.foregroundColor: UIColor.white]
+
+  // large title color
+  appearance.largeTitleTextAttributes = [.foregroundColor: UIColor.white]
+
+  // background color
+  appearance.backgroundColor = .blue
+
+  // bar button styling
+  let barButtonItemApperance = UIBarButtonItemAppearance()
+  barButtonItemApperance.normal.titleTextAttributes = [.foregroundColor: UIColor.white]
+
+  appearance.backButtonAppearance = barButtonItemApperance
+
+  // set the navigation bar appearance to the color we have set above
+  UINavigationBar.appearance().standardAppearance = appearance
+
+  // when the navigation bar has a neighbouring scroll view item (eg: scroll view, table view etc)
+  // the "scrollEdgeAppearance" will be used
+  // by default, scrollEdgeAppearance will have a transparent background
+  UINavigationBar.appearance().scrollEdgeAppearance = appearance
+}
+
+// the back icon color
+UINavigationBar.appearance().tintColor = .white
+```
+
+<br>
+
+
+
+The new UINavigationBarAppearance has added in three mode of appearance, **standard**, **compact** and **scrollEdgeAppearance**. Each mode can have different styling / coloring.
+
+
+
+Standard appearance is the normal navigation bar we see on portrait iPhone / iPad, compact appearance is the shorter navigation bar we see on landscape iPhone (and some other scenario). Scroll edge appearance is the appearance when a large title navigation bar is used with a scroll view right below it, and when the user haven't scroll it yet. Once user scroll the scrollview, a standard appearance will be used.
+
+
+
+![navigation mode](https://iosimage.s3.amazonaws.com/2019/64-ios13-checklist/navigationMode.png)
+
+
+
+![navigation scroll](https://iosimage.s3.amazonaws.com/2019/64-ios13-checklist/navigationScroll.png)
+
+
+
+
+
+If you didn't specify an appearance for scrollEdgeAppearance, iOS by default will use a transparent background for it, so that you can see the content below scrolling through it. Hence you saw the blanked out navigation bar on iOS 13 earlier on.
+
+
+
+To change the appearance of bar button in navigation bar, we can use **UIBarButtonItemAppearance()**  object, then assign it to the navigation appearance like this : 
+
+
+
+```swift
+let appearance = UINavigationBarAppearance()
+
+let barButtonItemApperance = UIBarButtonItemAppearance()
+
+// ... do your styling here
+
+// appearance for both button
+appearance.buttonApperance
+
+// appearance for back button
+appearance.backButtonAppearance = barButtonItemApperance
+
+// appearance for done button
+appearance.doneButtonAppearance
+
+```
+
+<br>
+
+
+
+One thing to take notice is that even after setting back button appearance, the back arrow icon color doesn't get styled, only the "back" text on the back button get styled.
+
+
+
+![back arrow color problem](https://iosimage.s3.amazonaws.com/2019/64-ios13-checklist/arrowTintColor.png)
+
+
+
+So far the solution I have found for this is using the good 'ol **UINavigationBar.appearance().tintColor = .white** to change the color of the back button arrow.
+
+
+
+## Push notification
+
+### Sending push notification 
+According to Apple's [documentation](https://developer.apple.com/documentation/usernotifications/setting_up_a_remote_notification_server/sending_notification_requests_to_apns), the header **apns-push-type** is required for sending push notification (to Apple Push Server) for WatchOS 6 or later, and is recommended for iOS, macOS app as well.
+
+
+
+> (Required for watchOS 6 and later; recommended for macOS, iOS, tvOS, and iPadOS) The value of this header must accurately reflect the contents of your notification’s payload. If there is a mismatch, or if the header is missing on required systems, APNs may return an error, delay the delivery of the notification, or drop it altogether.
+
+
+
+**apns-push-type** has 6 valid values (as of 2 October 2019), which indicate the type of push :
+
+1. alert
+2. background
+3. voip
+4. complication
+5. fileprovider
+6. mdm
+
+
+
+
+
+### Push notification device token
+
+In your AppDelegate, if you are retrieving push notification device token string using the **.description** method like this : 
+
+```swift
+// ⚠️ Please don't do this
+func application(_ application: UIApplication, didRegisterForRemoteNotificationsWithDeviceToken deviceToken: Data) {
+  let tokenData = deviceToken as NSData
+  let token = tokenData.description
+
+  let token = "\(deviceToken)".replacingOccurrences(of: " ", with: "")
+                              .replacingOccurrences(of: "<", with: "")
+                              .replacingOccurrences(of: ">", with: "")
+  
+  // then send your token to server...
+}
+```
+
+<br>
+
+
+
+This will not work in iOS 13 as Apple has changed the output for the **.description** method for objects.
+
+```swift
+// iOS 12
+(deviceToken as NSData).description // "<789dc438 6d688f2c e2dd66d8 0d335454 5ce29f0f ed71234a f6b37ddb 8a504523>"
+
+// iOS 13
+(deviceToken as NSData).description // "{length = 32, bytes = 789dc438 6d688f2c ... f6b37ddb 8a504523 }"
+
+// the same regex method won't work on iOS 13
+```
+
+<br>
+
+
+
+The solution for this is to read each byte of DeviceToken (as it is a NSData object, it contains sequence of bytes) and combining all the bytes.
+
+```swift
+let deviceTokenString = deviceToken.map { String(format: "%02x", $0) }.joined()
+```
+
+<br>
+
+
+
+Matt from NSHipster has [written an excellent guide addressing this issue](https://nshipster.com/apns-device-tokens/), here's an excerpt on how the device token reading works : 
+
+> - The `map` method operates on each element of a sequence. Because `Data` is a sequence of bytes in Swift, the passed closure is evaluated for each byte in `deviceToken`.
+> - The [`String(format:)`](https://developer.apple.com/documentation/swift/string/3126742-init) initializer evaluates each byte in the data (represented by the anonymous parameter `$0`) using the [`%02x` format specifier](https://developer.apple.com/library/archive/documentation/Cocoa/Conceptual/Strings/Articles/formatSpecifiers.html), to produce a zero-padded, 2-digit hexadecimal representation of the byte / 8-bit integer.
+> - After collecting each byte representation created by the `map` method,`joined()` concatenates each element into a single string.
+
+
+
+If you are using external service for push notification (such as [OneSignal](https://onesignal.com/blog/ios-13-introduces-4-breaking-changes-to-notifications/) etc), it might be good idea to contact their support to check if their SDK code is using the **description** method for device token retrieval, if yes, then they would have to change it for iOS 13.
+
+
+
+## Opting out of Dark mode
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

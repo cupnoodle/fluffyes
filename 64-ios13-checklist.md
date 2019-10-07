@@ -28,13 +28,13 @@ However in iOS 13, the default behavior of presenting the modal view controller 
 
 ![card](https://iosimage.s3.amazonaws.com/2019/64-ios13-checklist/modal.png)
 
-
+<br>
 
 The card modal view in iOS 13 has shorter height than the full screen modal in iOS 12 (and previous iOS versions).
 
 ![shorter height](https://iosimage.s3.amazonaws.com/2019/64-ios13-checklist/modalComparison.png)
 
-
+<br>
 
 By default, user can swipe down the presented card modal view in iOS 13 to dismiss it. This may cause issue if your application flow is to dismiss the modal programmatically only after user has completed certain actions.
 
@@ -71,7 +71,7 @@ If you are doing the presentation using segue in Storyboard, select the segue, a
 
 ![storyboard modal full screen](https://iosimage.s3.amazonaws.com/2019/64-ios13-checklist/storyboardModal.png)
 
-
+<br>
 
 
 
@@ -91,17 +91,19 @@ if #available(iOS 13.0, *) {
 }
 ```
 
+<br><br>
+
 
 
 [Apple Documentation](https://developer.apple.com/documentation/uikit/uiviewcontroller/3229894-ismodalinpresentation) :
 
 > The default value of this property is [`false`](https://developer.apple.com/documentation/swift/false). When you set it to [`true`](https://developer.apple.com/documentation/swift/true), UIKit ignores events outside the view controller's bounds and prevents the interactive dismissal of the view controller while it is onscreen.
 
-
+<br>
 
 ![cant dismiss](https://iosimage.s3.amazonaws.com/2019/64-ios13-checklist/unableToDismiss.gif)
 
-
+<br>
 
 ### New delegate method for presentation controller
 
@@ -111,9 +113,11 @@ If you use the new modal presentation style and wants to execute code when user 
 
 ![presentation delegate](https://iosimage.s3.amazonaws.com/2019/64-ios13-checklist/presentationDelegate.png)
 
-
+<br><br>
 
 ![modal flow delegate methods](https://iosimage.s3.amazonaws.com/2019/64-ios13-checklist/modalFlow.png)
+
+<br>
 
 
 
@@ -151,7 +155,7 @@ If you used the same code to build for iOS 13, you might find that your large ti
 
 ![ios 13 navigation bar wtf](https://iosimage.s3.amazonaws.com/2019/64-ios13-checklist/navigationbar.png)
 
-
+<br>
 
 In iOS 13, Apple has introduced a new class, **UINavigationBarAppearance**, to replace the old UINavigationBar.appearance() approach. Here's an example : 
 
@@ -203,11 +207,11 @@ Standard appearance is the normal navigation bar we see on portrait iPhone / iPa
 
 ![navigation mode](https://iosimage.s3.amazonaws.com/2019/64-ios13-checklist/navigationMode.png)
 
-
+<br>
 
 ![navigation scroll](https://iosimage.s3.amazonaws.com/2019/64-ios13-checklist/navigationScroll.png)
 
-
+<br>
 
 
 
@@ -247,7 +251,7 @@ One thing to take notice is that even after setting back button appearance, the 
 
 ![back arrow color problem](https://iosimage.s3.amazonaws.com/2019/64-ios13-checklist/arrowTintColor.png)
 
-
+<br>
 
 So far the solution I have found for this is using the good 'ol **UINavigationBar.appearance().tintColor = .white** to change the color of the back button arrow.
 
@@ -264,7 +268,7 @@ According to Apple's [documentation](https://developer.apple.com/documentation/u
 
 > (Required for watchOS 6 and later; recommended for macOS, iOS, tvOS, and iPadOS) The value of this header must accurately reflect the contents of your notification’s payload. If there is a mismatch, or if the header is missing on required systems, APNs may return an error, delay the delivery of the notification, or drop it altogether.
 
-
+<br>
 
 **apns-push-type** has 6 valid values (as of 2 October 2019), which indicate the type of push :
 
@@ -333,7 +337,7 @@ Matt from NSHipster has [written an excellent guide addressing this issue](https
 > - The [`String(format:)`](https://developer.apple.com/documentation/swift/string/3126742-init) initializer evaluates each byte in the data (represented by the anonymous parameter `$0`) using the [`%02x` format specifier](https://developer.apple.com/library/archive/documentation/Cocoa/Conceptual/Strings/Articles/formatSpecifiers.html), to produce a zero-padded, 2-digit hexadecimal representation of the byte / 8-bit integer.
 > - After collecting each byte representation created by the `map` method,`joined()` concatenates each element into a single string.
 
-
+<br>
 
 If you are using external service for push notification (such as [OneSignal](https://onesignal.com/blog/ios-13-introduces-4-breaking-changes-to-notifications/) etc), it might be good idea to contact their support to check if their SDK code is using the **description** method for device token retrieval, if yes, then they would have to change it for iOS 13.
 
@@ -349,7 +353,7 @@ At the time of writing this article, one of my iOS app [Rapidly](https://rapidkl
 
 ![light dark mode comparison](https://iosimage.s3.amazonaws.com/2019/64-ios13-checklist/darkmode.png)
 
-
+<br>
 
 As you can see, the section on top showing "Minutes", "Stations", "Lines" and Fares become invisible (actually is the text color become white and the background remain unchanged as white). This happens because I used the default color for the label in Storyboard before iOS 13, and used a custom white color for the background color. The iOS 13 dark mode will change the default label color from black to white and the default background color from white to black, while other custom color (not using system or default) will stay the same.
 
@@ -363,7 +367,7 @@ If you are using Storyboard, one of the simplest way to adopt Dark mode is to tr
 
 ![System color](https://iosimage.s3.amazonaws.com/2019/64-ios13-checklist/systemColors.png)
 
-
+<br>
 
 Using system colors, iOS will auto adjust the color when dark mode is used. Say the "Label color" which appear black in normal / light mode, will appear as white in dark mode.
 
@@ -379,7 +383,7 @@ If you are using custom icon / image in your app, you might need to create anoth
 
 ![assets](https://iosimage.s3.amazonaws.com/2019/64-ios13-checklist/assets.png)
 
-
+<br>
 
 Select "Any, Dark" or "Any, Light, Dark" in the Appearances field, then Xcode will create another set of asset placeholder for the Dark appearance, you can then put your icon in lighter color scheme here.
 
@@ -434,7 +438,7 @@ To opt out, add a key "**User Interface Style**" with string value "**Light**" i
 
 
 
-
+<br>
 
 <span id="reading"></span>
 

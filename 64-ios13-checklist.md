@@ -1,8 +1,20 @@
 # Breaking changes checklist before building your app using iOS 13 SDK 
 
-iOS 13 does bring a lot of exciting feature like Dark mode, Multi-tasking, Sign in with Apple etc. Other than exciting feature, iOS 13 SDK does bring some breaking changes as well, overlooking these changes might cause your app to behave differently as expected 😅. This article will go through some breaking changes I have found and workaround for it.
+iOS 13 does bring a lot of exciting feature like Dark mode, Multi-tasking, Sign in with Apple etc. Other than exciting feature, iOS 13 SDK also bring some breaking changes as well, overlooking these changes might cause your app to behave differently as expected 😅. This article will go through some breaking changes I have found and workaround for it.
 
 
+
+Table of contents :
+
+1. [Modal presentation](#modal)
+2. [Large title navigation bar appearance](#navigation)
+3. [Push notification](#push)
+4. [Adapting or Opting out of Dark mode](#darkmode)
+5. [Further Reading](#reading)
+
+
+
+<span id="modal"></span>
 
 ## Modal presentation
 
@@ -109,7 +121,7 @@ Sarun has written an excellent guide on [explaining how to use these delegate fu
 
 
 
-
+<span id="navigation"></span>
 
 ## Large title navigation bar appearance
 
@@ -241,6 +253,8 @@ So far the solution I have found for this is using the good 'ol **UINavigationBa
 
 
 
+<span id="push"></span>
+
 ## Push notification
 
 ### Sending push notification 
@@ -325,7 +339,116 @@ If you are using external service for push notification (such as [OneSignal](htt
 
 
 
-## Opting out of Dark mode
+<span id="darkmode"></span>
+
+## Adapting or Opting out of Dark mode
+
+At the time of writing this article, one of my iOS app [Rapidly](https://rapidkl.app) , which was last updated in May 2019, looks like this in iOS 13 Dark mode : 
+
+
+
+![light dark mode comparison](https://iosimage.s3.amazonaws.com/2019/64-ios13-checklist/darkmode.png)
+
+
+
+As you can see, the section on top showing "Minutes", "Stations", "Lines" and Fares become invisible (actually is the text color become white and the background remain unchanged as white). This happens because I used the default color for the label in Storyboard before iOS 13, and used a custom white color for the background color. The iOS 13 dark mode will change the default label color from black to white and the default background color from white to black, while other custom color (not using system or default) will stay the same.
+
+
+
+Federico has written a fantastic article on [how to adopt to Dark Mode here](https://www.fivestars.blog/code/ios-dark-mode-how-to.html), I definitely recommend reading this!
+
+
+
+If you are using Storyboard, one of the simplest way to adopt Dark mode is to try to use as much System Color palette as possible.
+
+![System color](https://iosimage.s3.amazonaws.com/2019/64-ios13-checklist/systemColors.png)
+
+
+
+Using system colors, iOS will auto adjust the color when dark mode is used. Say the "Label color" which appear black in normal / light mode, will appear as white in dark mode.
+
+
+
+If you are using code, you can use UIColor.systemBlue, UIColor.systemGreen, UIColor.systemGray etc.
+
+
+
+### Assets
+
+If you are using custom icon / image in your app, you might need to create another set of icon/image with different color scheme in the assets folder.
+
+![assets](https://iosimage.s3.amazonaws.com/2019/64-ios13-checklist/assets.png)
+
+
+
+Select "Any, Dark" or "Any, Light, Dark" in the Appearances field, then Xcode will create another set of asset placeholder for the Dark appearance, you can then put your icon in lighter color scheme here.
+
+
+
+You can also use Named Color in Assets catalog (since iOS 11 and above), then you can select different color for different appearance easily.
+
+![new color set](https://iosimage.s3.amazonaws.com/2019/64-ios13-checklist/newColorSet.png)
+
+
+
+![color asset](https://iosimage.s3.amazonaws.com/2019/64-ios13-checklist/colorAsset.png)
+
+
+
+
+
+iOS will auto select the correct set of assets to use depending if Dark mode is activated or not.
+
+
+
+### Don't use dark mode for certain view / view controllers
+
+Sometimes it might not make sense to use a different color for a view, you can add some code to tell iOS to always display a view with light / dark mode using **.overrideUserInterfaceStyle** like this :
+
+
+
+```swift
+let lightView = UIView()
+lightView.overrideUserInterfaceStyle = .light
+
+// this view will always be in light mode
+```
+
+<br>
+
+
+
+UIViewController and UIWindow also has this property, setting it in view controller / window level will make their child views adapt this override value as well.
+
+
+
+### Opt out of dark mode altogether
+
+If it makes no sense to add dark mode to your app (or if you are just too lazy to support it 🙈), you can make your app opt out of dark mode entirely (meaning your app looks the same like in light mode when user has enabled dark mode in their phone).
+
+
+
+To opt out, add a key "**User Interface Style**" with string value "**Light**" in the **Info.plist** file.
+
+![plist opt out dark mode](https://iosimage.s3.amazonaws.com/2019/64-ios13-checklist/plistLight.png)
+
+
+
+
+
+<span id="reading"></span>
+
+## Further reading
+
+[Apple's WWDC video on modernizing app for iOS13](https://developer.apple.com/videos/play/wwdc2019/224/)
+
+[Sarun's article on Modality changes in iOS 13](https://sarunw.com/posts/modality-changes-in-ios13/)
+
+[Federico's article on adopting dark mode](https://www.fivestars.blog/code/ios-dark-mode-how-to.html)
+
+
+
+And also searching "ios 13" in StackOverflow will uncover more breaking changes you didn't knew previously 😂 (eg: like the link color in NSAttributedString)
 
 
 

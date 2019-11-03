@@ -1,6 +1,10 @@
-# Breaking changes checklist before building your app using iOS 13 SDK 
+# 5 breaking changes to check before building your app for iOS 13 
 
 iOS 13 does bring a lot of exciting feature like Dark mode, Multi-tasking, Sign in with Apple etc. Other than exciting feature, iOS 13 SDK also bring some breaking changes as well, overlooking these changes might cause your app to behave differently as expected 😅. This article will go through some breaking changes I have found and workaround for it.
+
+
+
+**Last updated on 3 November 2019, Added System Font**
 
 
 
@@ -10,7 +14,8 @@ Table of contents :
 2. [Large title navigation bar appearance](#navigation)
 3. [Push notification](#push)
 4. [Adapting or Opting out of Dark mode](#darkmode)
-5. [Further Reading](#reading)
+5. [System Font](#font)
+6. [Further Reading](#reading)
 
 
 
@@ -440,11 +445,89 @@ To opt out, add a key "**User Interface Style**" with string value "**Light**" i
 
 <br>
 
+<span id="font"></span>
+
+## System Font
+
+In the WWDC 2019 video [Font Management and Text Scaling](https://developer.apple.com/videos/play/wwdc2019/227/), Apple mentioned we should not instantiate system fonts using name (02:45).
+
+
+
+![system font](https://iosimage.s3.amazonaws.com/2019/64-ios13-checklist/systemFont.png)
+
+
+
+Say if you instantiate a UIFont with a font name that starts with a dot ("."),
+
+```swift
+// San Francisco system font
+let font = UIFont(name: ".SFUI-Regular", size: 24.0)
+
+label.font = font!
+// iPhone will show you a Times New Roman font, lol
+```
+
+<br>
+
+This will work in iOS 12 but not on iOS 13 (and onwards). You will get a strange Times New Roman font on your label if you do this.
+
+
+![Times new roman](https://iosimage.s3.amazonaws.com/2019/64-ios13-checklist/romantic.png)
+
+
+
+Even if you get the font name from a system font and initialize it using that name, you will still get the same result.
+
+```swift
+// even if you use the font name of San Francisco system font
+let font = UIFont(name: UIFont.systemFont(ofSize: 24.0).fontName, size: 24.0)
+
+label.font = font!
+// iPhone will still show you a Times New Roman font, lol
+```
+
+<br>
+
+
+
+The correct way to get system font from iOS 13 is to always use **UIFont.systemFont(ofSize: , weight: )** directly. 
+
+```swift
+let font = UIFont.systemFont(ofSize: 24.0)
+label.font = font
+
+// This will show a nice System font
+```
+
+<br>
+
+
+
+![system font](https://iosimage.s3.amazonaws.com/2019/64-ios13-checklist/niceFont.png)
+
+
+
+
+
+If you are using CTFont (for some low level use case), you can create a system font using **CTFontCreateWithFontDescriptor()** method, and pass in the system font like this : 
+
+```swift
+CTFontCreateWithFontDescriptor(UIFont.systemFont(ofSize: 18.0).fontDescriptor, 0, nil)
+```
+
+<br>
+
+Reddit source thread: [https://www.reddit.com/r/iOSProgramming/comments/d05r77/how_do_i_create_a_ctfont_object_for_the_san/](https://www.reddit.com/r/iOSProgramming/comments/d05r77/how_do_i_create_a_ctfont_object_for_the_san/)
+
+<br>
+
 <span id="reading"></span>
 
 ## Further reading
 
 [Apple's WWDC video on modernizing app for iOS13](https://developer.apple.com/videos/play/wwdc2019/224/)
+
+[Apple's WWDC video on Font management](https://developer.apple.com/videos/play/wwdc2019/227)
 
 [Sarun's article on Modality changes in iOS 13](https://sarunw.com/posts/modality-changes-in-ios13/)
 

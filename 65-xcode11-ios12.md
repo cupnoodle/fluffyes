@@ -53,3 +53,62 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
 
 ## @available out some methods in AppDelegate.swift
 
+Next, there are two new methods added in AppDelegate.swift, which only supports iOS 13 and above. We will add the same @available(iOS 13.0, *) on top of them as well : 
+
+
+
+```swift
+// AppDelegate.swift
+
+@available(iOS 13.0, *)
+func application(_ application: UIApplication, configurationForConnecting connectingSceneSession: UISceneSession, options: UIScene.ConnectionOptions) -> UISceneConfiguration {
+    // Called when a new scene session is being created.
+    // Use this method to select a configuration to create the new scene with.
+    return UISceneConfiguration(name: "Default Configuration", sessionRole: connectingSceneSession.role)
+}
+
+@available(iOS 13.0, *)
+func application(_ application: UIApplication, didDiscardSceneSessions sceneSessions: Set<UISceneSession>) {
+    // Called when the user discards a scene session.
+    // If any sessions were discarded while the application was not running, this will be called shortly after application:didFinishLaunchingWithOptions.
+    // Use this method to release any resources that were specific to the discarded scenes, as they will not return.
+}
+```
+
+<br>
+
+
+
+## Add back the window to AppDelegate
+
+If you build and run your app now, you will get a dark black screen 😱, because there's no UIWindow initialized.
+
+
+
+In iOS 12 and older, there's always a **var window: UIWindow?** variable located at the top of AppDelegate.swft. iOS 13 has moved this variable to SceneDelegate.swift, and now we are going to add back this variable to AppDelegate.
+
+```swift
+import UIKit
+
+@UIApplicationMain
+class AppDelegate: UIResponder, UIApplicationDelegate {
+     
+    var window: UIWindow?
+  
+    // ...
+}
+```
+
+<br>
+
+
+
+Now Build and run your app on an iOS 12 devices, and it works! 🥳
+
+
+
+I guess Apple really wants iOS developers to adopt and focus on iOS 13, to the extent that they don't mind breaking support for iOS 12 and older with default settings in Xcode.
+
+
+
+If you are lazy to do these step manually every time, you can also download [Xcode 10.3 in the Apple's developer download portal](https://developer.apple.com/download/more/) (require sign in with your Apple ID), create a new Xcode project using it, and then edit it using Xcode 11.

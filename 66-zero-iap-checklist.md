@@ -18,11 +18,47 @@ Here's a checklist (in order from top to bottom) you can check if there is no SK
 
 
 
+[1. You must have a paid Apple developer account](#step1)
+
+[2. Your free and paid apps agreements status are active](#step2)
+
+[3. You have added the necessary Tax information](#step3)
+
+[4. You have added Banking information](#step4)
+
+[5. You have created an explicit App ID for your app](#step5)
+
+[6. You have created an app in App Store Connect, with the correct App ID](#step6)
+
+[7. You have created the in-app purchase item in App Store Connect](#step7)
+
+[8. Your in-app purchase product status is 'Ready to Submit'](#step8)
+
+[9. Your app is using the correct signing Team / provisioning profile](#step9)
+
+[10. Your app's bundle ID in Xcode is the same as App Store Connect](#step10)
+
+[11. You have added In-App Purchase capability to your app's Xcode project](#step11)
+
+[12. You are using the correct product ID when calling SKProductsRequest](#step12)
+
+[13. You have waited at least 15 minutes after creating In-App Purchase item](#step13)
+
+
+
+
+
+
+
+<span id="step1"></span>
+
 ## 1. You must have a paid Apple developer account
 
-Yes, in order to test or implement in-app purchase, you must have a paid Apple developer account. There's no way around it, you can enroll it here if you haven't : https://developer.apple.com/programs/enroll/
+Yes, in order to test and implement in-app purchase, you must have a paid Apple developer account. There's no way around it, you can enroll it here if you haven't : https://developer.apple.com/programs/enroll/
 
 
+
+<span id="step2"></span>
 
 ## 2. Your free and paid apps agreements status are active
 
@@ -44,7 +80,7 @@ Occasionally Apple might update the agreement terms, which you need to click '**
 
 
 
-
+<span id="step3"></span>
 
 ## 3. You have added the necessary Tax information
 
@@ -65,6 +101,8 @@ At the bare minimum, you must add the tax information for United States as Apple
 
 
 
+<span id="step4"></span>
+
 ## 4. You have added Banking information
 
 In [App Store Connect](https://appstoreconnect.apple.com/), click on 'Agreements, Tax and Banking' , then click on the '**Banking**' tab above.
@@ -78,6 +116,8 @@ You must add at least one banking account, which Apple can transfer your apps ea
 ![banking](https://iosimage.s3.amazonaws.com/2019/66-zero-iap-checklist/Banking.png)
 
 
+
+<span id="step5"></span>
 
 ## 5. You have created an explicit App ID for your app
 
@@ -114,6 +154,8 @@ The "In app-purchase" capability in the App ID registration page should be check
 
 
 
+<span id="step6"></span>
+
 ## 6. You have created an app in App Store Connect, with the correct App ID
 
 To create in-app purchase for your app, you must create an app in [App Store Connect](https://appstoreconnect.apple.com/). If you haven't already , go to App Store Connect and select '**My Apps**'.
@@ -137,6 +179,8 @@ Fill in the details of your app. For the Bundle ID, select the bundle ID (of the
 Click 'Create', and you will see your app appear in App Store Connect.
 
 
+
+<span id="step7"></span>
 
 ## 7. You have created the in-app purchase item in App Store Connect
 
@@ -214,6 +258,12 @@ I suggest using iPhone 8 simulator to navigate to the purchase screen, then pres
 
 
 
+![iPhone 8](https://iosimage.s3.amazonaws.com/2019/66-zero-iap-checklist/iPhone8.png)
+
+
+
+
+
 In the review notes, describe how the user can access the purchase screen (eg: they need to press "X" button beside advertisement to activate the purchase screen). The App Store Reviewer will use this information to trigger the purchase screen, if the reviewer can't figure out how to buy the in-app purchase in your app, they might reject your app submission. 
 
 
@@ -223,6 +273,8 @@ After filling all the details, click '**Save**' on the top right corner. You sho
 ![ready to submit](https://iosimage.s3.amazonaws.com/2019/66-zero-iap-checklist/iapReadyToSubmit.png)
 
 
+
+<span id="step8"></span>
 
 ## 8. Your in-app purchase product status is 'Ready to Submit'
 
@@ -240,5 +292,89 @@ Make sure to fill up all the necessary information and include a screenshot for 
 
 
 
-## 9. Your app's bundle ID in Xcode is the same as App Store Connect
+<span id="step9"></span>
+
+## 9. Your app is using the correct signing Team / provisioning profile
+
+In your app's Xcode project's **Signing & Capabilities** tab, ensure the **Team** is correct (same as the company/ individual name you see in App Store Connect).
+
+
+
+If you are not using Automatic signing, you have to make sure you are using the correct provisioning profile for your app.
+
+
+
+![Xcode bundle identifier](https://iosimage.s3.amazonaws.com/2019/66-zero-iap-checklist/XcodeBID.png)
+
+
+
+![same Team](https://iosimage.s3.amazonaws.com/2019/66-zero-iap-checklist/sameTeam.png)
+
+
+
+
+
+<span id="step10"></span>
+
+## 10. Your app's bundle ID in Xcode is the same as App Store Connect
+
+In your app's Xcode project's **Signing & Capabilities** tab, ensure the **Bundle Identifier** is the same as the app you created in App Store Connect.
+
+
+![Xcode bundle identifier](https://iosimage.s3.amazonaws.com/2019/66-zero-iap-checklist/XcodeBID.png)
+
+
+
+![App Store Connect bundle ID](https://iosimage.s3.amazonaws.com/2019/66-zero-iap-checklist/ASCBID.png)
+
+
+
+<span id="step11"></span>
+
+## 11. You have added In-App Purchase capability to your app's Xcode project
+
+If you haven't already, navigate to the **Signing & Capabilities** tab in your Xcode project. Click the '**+ Capability**' button to add a capability, then select '**In-App Purchase**'.
+
+
+
+![add capability to project](https://iosimage.s3.amazonaws.com/2019/66-zero-iap-checklist/AddCapability.png)
+
+
+
+
+
+![Add in app purchase capability](https://iosimage.s3.amazonaws.com/2019/66-zero-iap-checklist/AddIAPCapability.png)
+
+
+
+
+
+<span id="step12"></span>
+
+## 12. You are using the correct product ID when calling SKProductsRequest
+
+This might be obvious, but just in case you have made a typo while typing out the product ID in your code, double check if the product identifier in your code is the same as the one displayed in App Store Connect.
+
+
+![IAP Product ID in App Store Connect](https://iosimage.s3.amazonaws.com/2019/66-zero-iap-checklist/IAPProductID.png)
+
+
+
+![Code Product ID](https://iosimage.s3.amazonaws.com/2019/66-zero-iap-checklist/CodeProductID.png)
+
+
+
+<span id="step13"></span>
+
+## 13. You have waited at least 15 minutes after creating In-App Purchase item
+
+Ah yes, sometimes Apple's server can be quite busy. After creating an In-App Purchase product in App Store Connect, you might need to have to wait a while before Apple update their server to include your product. My usual experience for this is that it won't take longer than 15 minutes for your product to appear in the Sandbox store after adding it.
+
+
+
+
+
+If you done all the above step, your in-app purchase product should appear in the **SKProductsResponse** object returned from the SKProductsRequest call.
+
+
 

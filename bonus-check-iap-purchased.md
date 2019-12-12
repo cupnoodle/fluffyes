@@ -50,6 +50,6 @@ Fortunately, there's many open source library in Github that help us handle the 
 
 The takeaway of this email is that : 
 
-1. Don't use UserDefaults to check if user has purchased product
-2. If possible, always opt to check receipt data directly for checking purchase histories.
+1. **Don't use UserDefaults** to check if user has purchased product
+2. If possible, **always opt to check receipt data** directly for checking purchase histories.
 

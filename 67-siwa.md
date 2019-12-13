@@ -184,13 +184,13 @@ To show this dialog, we need to supply **ASAuthorizationAppleIDRequest** to the 
     // pass the request to the initializer of the controller
     let authController = ASAuthorizationController(authorizationRequests: [request])
   
-    // delegate functions will be called when user data is
-    // successfully retrieved or error occured
-    authController.delegate = self
-  
     // similar to delegate, this will ask the view controller
     // which window to present the ASAuthorizationController
     authController.presentationContextProvider = self
+  
+  	// delegate functions will be called when user data is
+    // successfully retrieved or error occured
+    authController.delegate = self
     
     // show the Sign-in with Apple dialog
     authController.performRequests()
@@ -199,9 +199,155 @@ To show this dialog, we need to supply **ASAuthorizationAppleIDRequest** to the 
 
 <br>
 
+We are requesting **fullName** and **email** information of the user by specifying it on requestedScopes.
 
 
-If we build and run the app, we will get an error, because we haven't implemented the **delegate** and **presentationContextProvider** protocol yet.
+
+If we build and run the app, we will get an error, because we haven't implemented the **presentationContextProvider** and **delegate** protocol yet.
+
+
+
+**presentationContextProvider** (ASAuthorizationControllerPresentationContextProviding) asks for which window should the authorization dialog appear, this is in case for app that has multiple window on iPadOS. 
+
+![multiple windows](https://iosimage.s3.amazonaws.com/2019/67-siwa/twoWindow.png)
+
+
+
+Usually we will want to present the authorization dialog on the window where user press the "sign in with Apple" button, so we will return **self.view.window** for the context provider.
+
+
+
+**presentationContextProvider** protocol has only one function, presentationAnchor(for controller:), which returns a ASPresentationAnchor, which is actually UIWindow.
+
+![ASPresentationAnchor](https://iosimage.s3.amazonaws.com/2019/67-siwa/ASPresentationAnchor.png)
+
+
+
+We will implement this protocol like this : 
+
+```swift
+// ViewController.swift
+
+extension ViewController : ASAuthorizationControllerPresentationContextProviding {
+    func presentationAnchor(for controller: ASAuthorizationController) -> ASPresentationAnchor {
+        // return the current view window
+        return self.view.window!
+    }
+}
+```
+
+<br>
+
+
+
+Next, we will implement the **delegate** (ASAuthorizationControllerDelegate), which includes two methods that will be called when the sign in is successful (with user data) or failed (with error).
+
+```swift
+extension ViewController : ASAuthorizationControllerDelegate {
+    func authorizationController(controller: ASAuthorizationController, didCompleteWithError error: Error) {
+        print("authorization error")
+        guard let error = error as? ASAuthorizationError else {
+            return
+        }
+
+        switch error.code {
+        case .canceled:
+            // user press "cancel" during the login prompt
+            print("Canceled")
+        case .unknown:
+            // user didn't login their Apple ID on the device
+            print("Unknown")
+        case .invalidResponse:
+            // invalid response received from the login
+            print("Invalid Respone")
+        case .notHandled:
+            // authorization request not handled, maybe internet failure during login
+            print("Not handled")
+        case .failed:
+            // authorization failed
+            print("Failed")
+        @unknown default:
+            print("Default")
+        }
+    }
+    
+    func authorizationController(controller: ASAuthorizationController, didCompleteWithAuthorization authorization: ASAuthorization) {
+        
+        if let appleIDCredential = authorization.credential as? ASAuthorizationAppleIDCredential {
+            // use the user credential / data to do stuff here ...
+        }
+    }
+}
+```
+
+<br>
+
+
+
+If the sign in fails with error, **authorizationController(controller: ASAuthorizationController, didCompleteWithError error: Error)** will be called and you can handle error inside that function.
+
+
+
+If the sign in is successful, **authorizationController(controller: ASAuthorizationController, didCompleteWithAuthorization authorization: ASAuthorization)** will be called, with the user credential stored in **ASAuthorization**.
+
+
+
+The reason we used the code **if let appleIDCredential = authorization.credential as? ASAuthorizationAppleIDCredential** , is to cast the authorization credential as ASAuthorizationAppleIDCredential. There's other type of credentials such as Single-Sign-On for enterprise ([ASAuthorizationSingleSignOnCredential](https://developer.apple.com/documentation/authenticationservices/asauthorizationsinglesignoncredential)), or password based credential ([ASPasswordCredential](https://developer.apple.com/documentation/authenticationservices/aspasswordcredential)).
+
+
+
+Here's some few examples of user data you can use on the credential : 
+
+```swift
+func authorizationController(controller: ASAuthorizationController, didCompleteWithAuthorization authorization: ASAuthorization) {
+
+    if let appleIDCredential = authorization.credential as? ASAuthorizationAppleIDCredential {
+        // unique ID for each user
+        let userID = appleIDCredential.user
+
+        // optional, might be nil
+        let email = appleIDCredential.email
+
+        // optional, might be nil
+        let givenName = appleIDCredential.fullName?.givenName
+
+        // optional, might be nil
+        let familyName = appleIDCredential.fullName?.familyName
+
+        // optional, might be nil
+        let nickName = appleIDCredential.fullName?.nickname
+
+        /*
+            useful for server side, the app can send identityToken and authorizationCode
+            to server for verification purpose
+        */
+        var identityToken : String?
+        if let token = appleIDCredential.identityToken {
+            identityToken = String(bytes: token, encoding: .utf8)
+        }
+
+        var authorizationCode : String?
+        if let code = appleIDCredential.authorizationCode {
+            authorizationCode = String(bytes: code, encoding: .utf8)
+        }
+
+      // do what you want with the data here
+    }
+}
+```
+
+<br>
+
+
+
+
+
+
+
+
+
+
+
 
 
 

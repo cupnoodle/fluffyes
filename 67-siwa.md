@@ -404,6 +404,14 @@ And now we can retrieve the user's name and email again! You just need to go to 
 
 // don't want to show the login screen if user has already signed in
 
+If the user has already logged in previously, it would make sense to show user the main view instead of the log in view again. How can we check if the user has previously logged in using Apple ID?
+
+
+
+One simple way to do this is to save the userID retrieved from Apple Sign-in into UserDefaults when user first logged in with Apple ID : 
+
+
+
 
 
 // can use userdefault to save the UserID retrieved from Apple sign-in

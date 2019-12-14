@@ -302,7 +302,7 @@ Here's some few examples of user data you can use on the credential :
 func authorizationController(controller: ASAuthorizationController, didCompleteWithAuthorization authorization: ASAuthorization) {
 
     if let appleIDCredential = authorization.credential as? ASAuthorizationAppleIDCredential {
-        // unique ID for each user
+        // unique ID for each user, this uniqueID will always be returned
         let userID = appleIDCredential.user
 
         // optional, might be nil
@@ -319,7 +319,7 @@ func authorizationController(controller: ASAuthorizationController, didCompleteW
 
         /*
             useful for server side, the app can send identityToken and authorizationCode
-            to server for verification purpose
+            to the server for verification purpose
         */
         var identityToken : String?
         if let token = appleIDCredential.identityToken {
@@ -338,13 +338,79 @@ func authorizationController(controller: ASAuthorizationController, didCompleteW
 
 <br>
 
+![first time sign in data](https://iosimage.s3.amazonaws.com/2019/67-siwa/firstTimeData.jpg)
 
 
 
+The reason email and name might be nil is that user might decline to reveal these information during the Apple sign-in prompt, or the **user has already signed in** previously, which we will discuss in the next section.
 
 
 
+If user choose to hide their email, Apple will generate a private relay email address for them , which ends with **@privaterelay.apple.id.com** , you can send email to this email address and Apple will forward it to the actual user's email.
 
+
+
+## Subsequent sign in
+
+If a user has previously signed in to your app using Apple ID, and they tap on the "Sign in with Apple" button again, the dialog will look different : 
+
+
+
+![second sign in](https://iosimage.s3.amazonaws.com/2019/67-siwa/secondSignin.jpg)
+
+
+
+And when user sign in this time, **didCompleteWithAuthorization** will be called as expected, but the **email and name will be nil**, as Apple expects your app to have already store the user's name and email when user first logged in.
+
+
+
+This behaviour is confirmed by Apple staff in this disccusion : https://forums.developer.apple.com/thread/121496#379297
+
+
+
+> This behaves correctly, user info is only sent in the ASAuthorizationAppleIDCredential upon initial user sign up. Subsequent logins to your app using Sign In with Apple with the same account do not share any user info and will only return a user identifier in the ASAuthorizationAppleIDCredential. 
+>
+> --- Patrick
+
+
+
+![subsequent sign in](https://iosimage.s3.amazonaws.com/2019/67-siwa/subsequentData.jpg)
+
+
+
+If you are in the midst of developing your app's login system, it can be annoying to get nil name/email returned, and creating a new Apple ID each time you test the Sign-in with Apple feature is not practical. Even deleting the app and installing again won't make your app able to retrieve back the name and email attributes of user.
+
+
+
+Fortunately, we can reset this behaviour by revoking the Apple Sign-In permission in the Settings app.
+
+![revoke](https://iosimage.s3.amazonaws.com/2019/67-siwa/revokeLogin.png)
+
+
+
+After revoking the Apple ID login on the app, when we sign in again, it will show the authorization prompt we saw on first time login :
+
+
+
+![ASAuthorizationController](https://iosimage.s3.amazonaws.com/2019/67-siwa/ASAuthorizationController.png)
+
+
+
+And now we can retrieve the user's name and email again! You just need to go to Settings and revoke the app's Apple login permission to reset back the state.
+
+
+
+## Check if user has logged in before
+
+// don't want to show the login screen if user has already signed in
+
+
+
+// can use userdefault to save the UserID retrieved from Apple sign-in
+
+
+
+// but user can revoke the apple sign in permission in the Settings app, how can we check against that?
 
 
 

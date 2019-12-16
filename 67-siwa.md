@@ -21,9 +21,9 @@ And from [App Store review guideline](https://developer.apple.com/app-store/revi
 
 
 
+**Table of contents** 
 
 
-// table of contents
 
 
 
@@ -402,23 +402,127 @@ And now we can retrieve the user's name and email again! You just need to go to 
 
 ## Check if user has logged in before
 
-// don't want to show the login screen if user has already signed in
-
 If the user has already logged in previously, it would make sense to show user the main view instead of the log in view again. How can we check if the user has previously logged in using Apple ID?
 
 
 
 One simple way to do this is to save the userID retrieved from Apple Sign-in into UserDefaults when user first logged in with Apple ID : 
 
+```swift
+// successful login
+func authorizationController(controller: ASAuthorizationController, didCompleteWithAuthorization authorization: ASAuthorization) {
+        
+    if let appleIDCredential = authorization.credential as? ASAuthorizationAppleIDCredential  {
+        // unique ID for the user
+        let userID = appleIDCredential.user
+      
+        // save it to user defaults
+        UserDefaults.standard.set(appleIDCredential.user, forKey: "userID")
+    }
+}
+
+```
+
+<br><br>
+
+and when user open the app next time, do a check on the user defaults value. If there is already a userID set, move to the main view : 
+
+```swift
+// on the initial view controller or somewhere else, check the userdefaults
+if let userID = UserDefaults.standard.string(forKey: "userID") {
+		// move to main view
+    performSegue(withIdentifier: "LoginToMainViewSegue", sender: user) 
+}
+```
+
+<br>
+
+
+
+Wait, remember in previous section, we can revoke the Apple Sign-in permission in the Settings app? What if user goes to the Settings app and revoke their login, but we already saved the userID in UserDefaults? 😬
+
+
+
+Fortunately, Apple has provided us a function to check the Apple Sign-in status, **ASAuthorizationAppleIDProvider().getCredentialState(forUserID: )** . We can check the sign in status for a user using the userID retrieved earlier.
+
+
+
+```swift
+ if let userID = UserDefaults.standard.string(forKey: "userID") {
+            
+    // get the login status of Apple sign in for the app
+    // asynchronous
+    ASAuthorizationAppleIDProvider().getCredentialState(forUserID: userID, completion: {
+        credentialState, error in
+
+        switch(credentialState){
+        case .authorized:
+            print("user remain logged in, proceed to another view")
+            self.performSegue(withIdentifier: "LoginToUserSegue", sender: nil)
+        case .revoked:
+            print("user logged in before but revoked")
+        case .notFound:
+            print("user haven't log in before")
+        default:
+            print("unknown state")
+        }
+    })
+}
+```
+
+<br>
+
+You can do this check before the login view is presented, perhaps AppDelegate.
+
+
+
+## Apple ID sign in status changes notification
+
+This scenario is highly unlikely but still possible, what if in the midst of using your app, the user go to the Settings app and revoke the Apple sign-in for your app and return to your app? How can your app notice the status changes?
+
+
+
+Your app can observe notification with name **ASAuthorizationAppleIDProvider.credentialRevokedNotification** in NotificationCenter to check if user has revoked the sign-in status.
+
+
+
+```swift
+// in your view controller or app delegate 
+override func viewDidLoad() {
+    super.viewDidLoad()
+
+    // call the function appleIDStateRevoked if user revoke the sign in in Settings app
+    NotificationCenter.default.addObserver(self, selector: #selector(appleIDStateRevoked), name: ASAuthorizationAppleIDProvider.credentialRevokedNotification, object: nil)
+}
+```
+
+<br>
+
+<br>
+
+```swift
+@objc func appleIDStateRevoked() {
+    // log out user, change UI etc
+}
+```
 
 
 
 
-// can use userdefault to save the UserID retrieved from Apple sign-in
+
+## Further Reading
+
+[Apple's official sample project of Sign in with Apple](https://developer.apple.com/documentation/authenticationservices/adding_the_sign_in_with_apple_flow_to_your_app)
 
 
 
-// but user can revoke the apple sign in permission in the Settings app, how can we check against that?
+[WWDC 2019 video - Introducing Sign in with Apple](https://developer.apple.com/videos/play/wwdc19/706/)
+
+
+
+
+
+
 
 
 

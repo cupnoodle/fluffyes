@@ -1,4 +1,4 @@
-# Sign in With Apple button implementation tutorial
+# Sign in With Apple implementation tutorial
 
 In WWDC 2019, Apple has announced a new privacy-focused mechanism for user to sign in on third party app, named "**Sign in with Apple**" (SiwA). If your app currently allows user to sign in with third party providers such as Facebook, Google, Twitter etc, you will also need to add a "Sign in with Apple" option for user, failure to comply might result in rejection during App Review.
 

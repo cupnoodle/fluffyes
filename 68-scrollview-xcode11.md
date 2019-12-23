@@ -1,5 +1,15 @@
 # How to use scroll view in Interface Builder / Storyboard (Xcode 11)
 
+
+
+Before moving on to how to use a scrollview in storyboard / XIB, I think it's crucial to discuss the structure of scroll view to prevent getting "ambiguous scrollable content width / height" error message in Interface Builder.
+
+![scrollview ambiguity](https://iosimage.s3.amazonaws.com/2019/68-scrollview-xcode11/scrollviewAmbiguity.png)
+
+
+
+
+
 ## Structure of scrollview
 
 Scrollview works by having a scrollable content area, like this:  
@@ -21,6 +31,12 @@ Xcode will show you the error "ambiguous scrollable content width / height" if A
 In Xcode 11, Apple has introduced **Content Layout Guide** and **Frame Layout Guide** for Scroll View in Interface Builder, which makes it easier to design UI inside Scroll View. This is enabled by default.
 
 
+
+![content layout guide checkbox](https://iosimage.s3.amazonaws.com/2019/68-scrollview-xcode11/contentLayoutGuideCheckbox.png)
+
+
+
+And here is a visual explanation of the guides : 
 
 ![scrollViewLayoutGuide](https://iosimage.s3.amazonaws.com/2019/68-scrollview-xcode11/contentLayoutGuide.png)
 
@@ -46,6 +62,10 @@ The **Content Layout guide** relates to the size of the scrollable content area 
 ![content layout guide](https://iosimage.s3.amazonaws.com/2019/68-scrollview-xcode11/contentLayoutGuide.png)
 
 
+
+
+
+The challenging part is to define enough constraints to let Auto Layout calculate the scrollable content area (Content Layout) width and height, which we will go into in the next section.
 
 
 

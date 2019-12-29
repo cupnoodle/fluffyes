@@ -71,3 +71,16 @@ The challenging part is to define enough constraints to let Auto Layout calculat
 
 
 
+## Placing Scroll view in Interface Builder
+
+First, place a scroll view into the view controller, and set some constraints for it so [Auto Layout can know how to position and size it](https://fluffy.es/how-auto-layout-calculates-view-position-and-size/).
+
+
+
+Usually I will pin it to the edges (top, leading, trailing and bottom) of the safe area like this : 
+
+![scroll view constraints](https://iosimage.s3.amazonaws.com/2019/68-scrollview-xcode11/scrollViewConstraints.png)
+
+
+
+// you will see there's red line, no worries.

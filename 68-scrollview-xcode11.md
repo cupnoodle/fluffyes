@@ -169,7 +169,7 @@ Let's set the height for the content view (the view inside scrollview) to 1000 :
 
 
 
-Now we have set the width and height for the view, and Auto Layout can calculate the scrollable content area size, yay! (we will remove the height constraint after finish adding UI elements). 
+Now we have set the width and height for the view, and Auto Layout can calculate the scrollable content area size, yay! We will remove the explicit height constraint (1000 pt) after finish adding UI elements. 
 
 
 
@@ -203,4 +203,40 @@ We will go into detail on how to create constraints from top to bottom inside th
 
 
 ## Step 3: Placing UI Elements inside Content view
+
+Here's how it looks like after placing labels and image inside the content view in scrollview:  
+
+![scroll view interface builder](https://iosimage.s3.amazonaws.com/2019/68-scrollview-xcode11/scrollViewInterfaceBuilder.png)
+
+
+
+You can start placing elements inside the content view like label, images ,etc. Then add constraints for them so that Auto Layout can calculate their X position, Y position, width and height (can skip width and height if they have [intrinsic content size](https://fluffy.es/what-is-intrinsic-content-size/)). Remember that the constraints should be between each UI elements and the content view (ie. the view inside scrollview), not with the scrollview.
+
+
+
+Your constraints might look like this:  
+
+![constraints](https://iosimage.s3.amazonaws.com/2019/68-scrollview-xcode11/constraints.png)
+
+
+
+Remember to set enough constraints so that Auto Layout can calculate the scrollable content height after removing the explicit height.
+
+![constraint explanation](https://iosimage.s3.amazonaws.com/2019/68-scrollview-xcode11/constraintExplanation.png)
+
+
+
+The important note is that the **vertical constraints must be connected from the top edge of content view to the bottom edge of content view**, this is to ensure Auto Layout can calculate the scrollable content area height.
+
+
+
+Now remove the explicit height constraint set on the content view, you should get all blue lines if you have set the constraints correctly. 
+
+
+
+After setting up constraints, you can create outlet for the labels and set the text value to the JSON value gotten from web API. Your scrollable content area height will expand based on the intrinsic content size of the labels.
+
+
+
+
 

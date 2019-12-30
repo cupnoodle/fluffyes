@@ -14,7 +14,7 @@ Before moving on to how to use a scrollview in storyboard / XIB, I think it's cr
 
 Scrollview works by having a scrollable content area, like this:  
 
-![scrollviewStructure](/Users/soulchild/Repository/autolayout/images/8/scrollviewStructure.png)
+![scroll view structure](https://iosimage.s3.amazonaws.com/2019/68-scrollview-xcode11/scrollviewStructure.png)
 
 
 
@@ -235,6 +235,14 @@ Now remove the explicit height constraint set on the content view, you should ge
 
 
 After setting up constraints, you can create outlet for the labels and set the text value to the JSON value gotten from web API. Your scrollable content area height will expand based on the intrinsic content size of the labels.
+
+
+
+This article is an excerpt from the book [Making Sense of Auto Layout](http://autolayout.fluffy.es?ref=scroll) , if you feel like you have no idea what you are doing when adding / removing / editing constraints,  give the sample chapter a try!
+
+
+
+
 
 
 

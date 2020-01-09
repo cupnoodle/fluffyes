@@ -134,6 +134,112 @@ How can we check if a textfield will get covered by the keyboard? First we get t
 
 
 
+As there are multiple textfields on the screen, how do we get the bottomY of the **current selected textfield** by the user? 
+
+
+
+We can declare a variable to keep track of the current active textfield, say **activeTextField**, and assign the selected textfield to this variable when user select a textfield.
+
+
+
+We set the textfield delegate to self (to the view controller), and we listen to when user select a textfield in the UITextFieldDelegate function, **textFieldDidBeginEditing**.
+
+```swift
+// ViewController.swift
+class ViewController: UIViewController {
+
+  @IBOutlet weak var usernameTextField: UITextField!
+
+  @IBOutlet weak var passwordTextField: UITextField!
+
+  // ... other text field
+
+  // to store the current active textfield
+  var activeTextField : UITextField? = nil
+  
+  override func viewDidLoad() {
+    super.viewDidLoad()
+    
+    // ....
+    
+    // add delegate to all textfields to self (this view controller)
+    usernameTextField.delegate = self
+    passwordTextField.delegate = self
+    emailTextField.delegate = self
+  }
+}
+
+extension ViewController : UITextFieldDelegate {
+  // when user select a textfield, this method will be called
+  func textFieldDidBeginEditing(_ textField: UITextField) {
+    // set the activeTextField to the selected textfield
+    self.activeTextField = textField
+  }
+	
+  // when user click 'done' or dismiss the keyboard
+  func textFieldDidEndEditing(_ textField: UITextField) {
+    self.activeTextField = nil
+  }
+}
+
+```
+
+<br>
+
+
+
+And then we compare the activeTextField's maxY (bottomY) value to the visibleRange in the **keyboardWillShow** function : 
+
+```swift
+@objc func keyboardWillShow(notification: NSNotification) {
+
+  guard let keyboardSize = (notification.userInfo?[UIResponder.keyboardFrameEndUserInfoKey] as? NSValue)?.cgRectValue else {
+
+    // if keyboard size is not available for some reason, dont do anything
+    return
+  }
+
+  var shouldMoveViewUp = false
+
+  // if active text field is not nil
+  if let activeTextField = activeTextField {
+
+    let bottomOfTextField = activeTextField.convert(activeTextField.bounds, to: self.view).maxY;
+    
+    let topOfKeyboard = self.view.frame.height - keyboardSize.height
+
+    // if the bottom of Textfield is below the top of keyboard, move up
+    if bottomOfTextField > topOfKeyboard {
+      shouldMoveViewUp = true
+    }
+  }
+
+  if(shouldMoveViewUp) {
+    self.view.frame.origin.y = 0 - keyboardSize.height
+  }
+}
+```
+
+<br>
+
+
+
+Build and run your app, you should see the view only move up if the text field selected is located near the keyboard : 
+
+![move up if needed](https://iosimage.s3.amazonaws.com/2019/69-move-view-when-keyboard-shown/moveifneeded.gif)
+
+
+
+
+
+If your view have more than 3 textfields, I recommend putting them inside a scrollview ([You can check out how to place UI inside scrollview in Storyboard here](https://fluffy.es/scrollview-storyboard-xcode-11/)) and use some code to scroll up the scrollview when a keyboard is shown, we will explain more about this in the next section.
+
+
+
+## Scrolling up scrollview when keyboard is shown
+
+
+
 
 
 

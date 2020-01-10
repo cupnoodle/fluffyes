@@ -238,7 +238,90 @@ If your view have more than 3 textfields, I recommend putting them inside a scro
 
 ## Scrolling up scrollview when keyboard is shown
 
+Assuming you have set up a scrollview with textfields inside it like this : 
 
+![scrollview](https://iosimage.s3.amazonaws.com/2019/69-move-view-when-keyboard-shown/scrollView.png)
+
+
+
+We can add bottom padding into the scrollview using its **contentInset** property, so the content inside will be moved up when a keyboard is shown.
+
+
+
+You can think of contentInset as an additional padding extending from the content area edges.
+
+
+
+Here's an illustration on how contentInset works, and how to use it to adapt for the keyboard.
+
+
+
+![content Insets](https://iosimage.s3.amazonaws.com/2019/69-move-view-when-keyboard-shown/contentInset.png)
+
+
+
+
+
+When the keyboard will show / will hide notification is observed, we can modify the contentInsets of the scrollview : 
+
+
+
+```swift
+// ViewController.swift
+class ScrollViewController: UIViewController {
+
+  @IBOutlet weak var scrollView: UIScrollView!
+    
+  override func viewDidLoad() {
+    super.viewDidLoad()
+
+      // Do any additional setup after loading the view.
+    NotificationCenter.default.addObserver(self, selector: #selector(ViewController.keyboardWillShow), name: UIResponder.keyboardWillShowNotification, object: nil)
+    
+    NotificationCenter.default.addObserver(self, selector: #selector(ViewController.keyboardWillHide), name: UIResponder.keyboardWillHideNotification, object: nil)
+  }
+  
+  @objc func keyboardWillShow(notification: NSNotification) {
+    guard let keyboardSize = (notification.userInfo?[UIResponder.keyboardFrameEndUserInfoKey] as? NSValue)?.cgRectValue
+    else {
+      // if keyboard size is not available for some reason, dont do anything
+      return
+    }
+
+    let contentInsets = UIEdgeInsets(top: 0.0, left: 0.0, bottom: keyboardSize.height , right: 0.0)
+    scrollView.contentInset = contentInsets
+    scrollView.scrollIndicatorInsets = contentInsets
+  }
+
+  @objc func keyboardWillHide(notification: NSNotification) {
+    let contentInsets = UIEdgeInsets(top: 0.0, left: 0.0, bottom: 0.0, right: 0.0)
+		
+    
+    // reset back the content inset to zero after keyboard is gone
+    scrollView.contentInset = contentInsets
+    scrollView.scrollIndicatorInsets = contentInsets
+  }
+}
+```
+
+<br>
+
+
+
+The result will look like this :
+
+![scrollUp](https://iosimage.s3.amazonaws.com/2019/69-move-view-when-keyboard-shown/scrollUp.gif)
+
+
+
+Pretty nifty!
+
+
+
+
+## Further Reading
+
+[Apple official documentation on Keyboard management]([https://developer.apple.com/library/archive/documentation/StringsTextFonts/Conceptual/TextAndWebiPhoneOS/KeyboardManagement/KeyboardManagement.html])
 
 
 

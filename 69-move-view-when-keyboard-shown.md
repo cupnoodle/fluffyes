@@ -322,10 +322,9 @@ Pretty nifty!
 
 
 
-
 ## Further Reading
 
-[Apple official documentation on Keyboard management]([https://developer.apple.com/library/archive/documentation/StringsTextFonts/Conceptual/TextAndWebiPhoneOS/KeyboardManagement/KeyboardManagement.html])
+[Apple official documentation on Keyboard management](https://developer.apple.com/library/archive/documentation/StringsTextFonts/Conceptual/TextAndWebiPhoneOS/KeyboardManagement/KeyboardManagement.html)
 
 
 

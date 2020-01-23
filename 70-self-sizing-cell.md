@@ -109,4 +109,5 @@ This article is an excerpt from the book [Making Sense of Auto Layout](http://au
 
 
 
-CTA of sample dynamic height project
+<script async data-uid="f801706ec7" src="https://fluffy-es.ck.page/f801706ec7/index.js"></script>
+

@@ -101,5 +101,107 @@ By using IndexSet, we won't need to worry about the size for the dataSource, we 
 
 
 
+We can define an IndexSet to keep track of the index of cell expanded in the view controller like this :
+
+```swift
+class ViewController: UIViewController {
+    
+    @IBOutlet weak var tableView: UITableView!
+    
+    // this will contain the index of the row (integer) that is expanded
+    var expandedIndexSet : IndexSet = []
+  
+    // ...
+}
+```
+
+<br>
+
+
+
+## Animating the cell to expand and contract
+
+Now that we have an IndexSet to keep track of which cell has been expanded, we can layout the cell expanded / contracted state in **cellForRowAt** like this : 
+
+
+
+```swift
+extension VariableViewController : UITableViewDataSource {
+  // ...
+
+  func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+    guard let cell = tableView.dequeueReusableCell(withIdentifier: "cell", for: indexPath) as? VariableTableViewCell else {
+      print("failed to get cell")
+      return UITableViewCell()
+    }
+
+    cell.avatarImageView.image = UIImage(named: avatars[indexPath.row])
+    cell.messageLabel.text = messages[indexPath.row]
+
+    // if the cell is expanded
+    if expandedIndexSet.contains(indexPath.row) {
+      // the label can take as many lines it need to display all text
+      cell.messageLabel.numberOfLines = 0
+    } else {
+      // if the cell is contracted
+      // only show first 3 lines
+      cell.messageLabel.numberOfLines = 3
+    }
+
+    return cell
+  }
+}
+```
+
+<br>
+
+
+
+As we want the cell to be expanded / contracted on tap, we then implement the didSelectAtRow delegate function :
+
+```swift
+extension ViewController : UITableViewDelegate {
+    
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        tableView.deselectRow(at: indexPath, animated: true)
+        
+        // if the cell is already expanded, remove it from the indexset to contract it
+        if(expandedIndexSet.contains(indexPath.row)){
+            expandedIndexSet.remove(indexPath.row)
+        } else {
+            // if the cell is not expanded, add it to the indexset to expand it
+            expandedIndexSet.insert(indexPath.row)
+        }
+        
+        // the animation magic happens here
+        // this will call cellForRow for the indexPath you supplied, and animate the changes
+        tableView.reloadRows(at: [indexPath], with: .automatic)
+    }
+}
+
+```
+
+<br>
+
+
+
+The key for the animation is calling **tableView.reloadRows(at:, with:)** . You supply an array of rows (indexpath) that needs to be reloaded, then the tableview will reload them by calling **cellForRowAt:** on these cell to layout them again, and animate the transition with the RowAnimation you passed into the **with:** parameter.
+
+
+
+![cellForRowAt](https://iosimage.s3.amazonaws.com/2020/71-expanding-cell/cellForRowAt.gif)
+
+
+
+Here's a list of available [RowAnimation](https://developer.apple.com/documentation/uikit/uitableview/rowanimation) we can use to animate the cell row changes, but mostly we will use the .automatic or .fade effect as it looks better.
+
+
+
+Implementing the cell animation was easier than I originally thought! Thanks **reloadRows** for the heavy lifting.
+
+
+
+If you want to check if an UILabel is truncated (with "..." at the end of text because of clipping), I have written a [short extension here](https://gist.github.com/cupnoodle/75fd46d4fd8af309027a3b67dbdd5b74), this might be useful if you are checking whether to show a "read more" button on the tableview cell depending if the label is being truncated. eg. If the the label text is short and didn't get truncated, don't show the "read more" button. 
+
 
 

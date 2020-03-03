@@ -114,6 +114,10 @@ After checking the additional language, you can expand the "Localizable.strings"
 
 
 
+When localizing a file, Xcode will create separate language folder for that file. Eg: "**es.lproj**" for spanish ("es"), and "**en.lproj**" for english, etc. The localized file is then put into these folders.
+
+
+
 ![folder structure](https://iosimage.s3.amazonaws.com/2020/72-localization/folderStructure.png)
 
 
@@ -122,8 +126,75 @@ After checking the additional language, you can expand the "Localizable.strings"
 
 
 
+## Adding and using translated text
+
+To add translation text, we need to input key value pair of each translation in this format:
+
+**"key" = "value";**
+
+
+
+For example, the english Localizable.strings file looks like this
+
+![english localizable strings](https://iosimage.s3.amazonaws.com/2020/72-localization/englishText.png)
+
+
+
+Then in the spanish Localizable.strings file : 
+
+![spanish localizable string](https://iosimage.s3.amazonaws.com/2020/72-localization/spanishText.png)
+
+
+
+Notice that we uses the same key for the same text translation in both file, and each translation is separated by a semicolon (**;**).
+
+
+
+To use the translation text, we can call **Bundle.main.localizedString(forKey:, value: , table: ) **:
+
+```swift
+class ViewController: UIViewController {
+    
+    @IBOutlet weak var helloLabel: UILabel!
+    @IBOutlet weak var goodMorningLabel: UILabel!
+    
+    override func viewDidLoad() {
+        super.viewDidLoad()
+        // Do any additional setup after loading the view.
+        
+        // return 'Hello' for english, 'Hola' for spanish
+        helloLabel.text = Bundle.main.localizedString(forKey: "Hello", value: "Hello", table: "Localizable")
+        
+        // return 'Good Morning' for english, 'Buenos días' for spanish
+        goodMorningLabel.text = Bundle.main.localizedString(forKey: "Good Morning", value: "Good Morning", table: "Localizable")
+    }
+}
+```
+
+<br>
+
+
+
+The **Bundle.main.localizedString** function will search for the value of the specified key in **forKey** parameter, and return it if it exist. If no such key exist in the strings file, the function will return the value passed into the **value** parameter. The **table** parameter specifies the filename of the strings file to search, in the example above, it will search the key/value pair in "Localizable.strings" file.
+
+
+
 
 
 // scheme > language
 
 // preferred language
+
+
+
+// app name
+
+// NSLocationUsage
+
+
+
+
+
+// change app language using settings app
+
+// change app language inside app, without settings

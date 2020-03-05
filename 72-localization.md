@@ -336,7 +336,7 @@ To localize app name and other text that are defined in the Info.plist file (eg:
 
 
 
-Remember to localize it by clicking the 'Localize' button, 
+Localize it by clicking the 'Localize' button, 
 
 ![localize](https://iosimage.s3.amazonaws.com/2020/72-localization/localizeFile2.png)
 
@@ -346,19 +346,56 @@ Then check all the language you want to localize in the "**Localization**" secti
 
 
 
-For app name, the key is "**CFBundleDisplayName**"
+For app name, the key is "**CFBundleDisplayName**". 
+
+![localize info plist](https://iosimage.s3.amazonaws.com/2020/72-localization/localizeinfoplist.png)
+
+
+
+For the other system permission messages like camera usage description, you can get the key of it from **Info.plist**.
+
+
+
+
+Normally when you open Info.plist, Xcode will show it as a list like this : 
+
+![info plist list](https://iosimage.s3.amazonaws.com/2020/72-localization/infoplistcamera.png)
+
+
+
+To view the raw key value, we can right click "Info.plist", select "Open As" > "Source Code" : 
+
+![view plist as source code](https://iosimage.s3.amazonaws.com/2020/72-localization/infoplistsourcecode.png)
+
+
+
+Then you can find the key for the Camera Usage Description, which is enclosed between `<key>` and `</key>` tag : 
+
+![camera usage key](https://iosimage.s3.amazonaws.com/2020/72-localization/camerakey.png)
+
+
+
+Then you can use this key for the translation text in **InfoPlist.strings** file.
+
+
+
+Note that for app name and Info.plist related text localization, **it will use the device preferred language**, instead of the app's preferred langauge.
+
+
+
+![localized app name](https://iosimage.s3.amazonaws.com/2020/72-localization/localizedAppName.png)
+
+
+
+![camera dialogue](https://iosimage.s3.amazonaws.com/2020/72-localization/cameraDialogue.jpg)
 
 
 
 
 
+## Direct user to change language
 
 
-
-
-// app name
-
-// NSLocationUsage
 
 
 

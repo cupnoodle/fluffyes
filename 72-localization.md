@@ -289,6 +289,67 @@ And now every time you build and run your app from Xcode, it will use that langu
 
 ## Detecting the current app language
 
+Say you want to show / hide some UI based on the current app language (not the device language), you can get the current selected app language with **Bundle.main.preferredLocalizations.first** .
+
+
+
+```swift
+// if the app language is japanese
+if(Bundle.main.preferredLocalizations.first == "ja"){
+    print("the app is using japanese language")
+}
+```
+
+<br>
+
+
+
+From [Apple's documentation](https://developer.apple.com/documentation/foundation/bundle/1413220-preferredlocalizations), preferredLocalizations will return an array of strings,  containing language IDs for localizations in the bundle. The strings are ordered according to the user's language preferences and **available localizations**. We use the **.first** to get the most preferred language of the app (which the app is using).
+
+
+
+You might see some StackOverflow answer suggesting to use **Locale.preferredLanguage.first** for getting the current language, keep in mind that **this will get the first preferred language of the device, not the app**. 
+
+
+
+![difference](https://iosimage.s3.amazonaws.com/2020/72-localization/difference.png)
+
+
+
+
+
+## Localizing App Name and system's message
+
+To localize app name and other text that are defined in the Info.plist file (eg: Camera usage description), we will need to create a **InfoPlist.strings** file. Right click your project folder, select 'New File...' > 'Strings File' , and name it as **InfoPlist.strings**.
+
+
+
+![new file](https://iosimage.s3.amazonaws.com/2020/72-localization/newFile.png)
+
+
+
+![new strings file](https://iosimage.s3.amazonaws.com/2020/72-localization/newStringsFile.png)
+
+
+
+![Localizable.strings](https://iosimage.s3.amazonaws.com/2020/72-localization/infopliststrings.png)
+
+
+
+Remember to localize it by clicking the 'Localize' button, 
+
+![localize](https://iosimage.s3.amazonaws.com/2020/72-localization/localizeFile2.png)
+
+
+
+Then check all the language you want to localize in the "**Localization**" section.
+
+
+
+For app name, the key is "**CFBundleDisplayName**"
+
+
+
 
 
 

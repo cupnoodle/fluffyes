@@ -219,6 +219,24 @@ We can then replace the Bundle.main.localizedString with the shorter NSLocalized
 
 
 
+## Localizing word with parameters
+
+Sometimes we might want to localize text with some parameter, eg: "Hello (username)" , which the username is an input from the user.  To interpolate the parameter, we can use the String format function **String(format: , args)**. According to [Apple's string programming guide](https://developer.apple.com/library/archive/documentation/Cocoa/Conceptual/Strings/Articles/formatSpecifiers.html), we can use "%@" to interpolate string, "%d" for integer etc.
+
+
+
+We can use "%@" inside the translated text as placeholder, then replace it with the actual username using String(format:, args). Here's an illustration on how it works : 
+
+
+
+![parameters replacement](https://iosimage.s3.amazonaws.com/2020/72-localization/parameters.png)
+
+
+
+You can use as many parameters as you like,  like this : String(format: NSLocalizedString("Hello first middle last name", comment: ""), "First name", "Middle name", "Last name"). As the String(format:, args:) accepts multiple parameters for args.
+
+
+
 ## Preferred language and how to change them
 
 When user launch your app for the first time, iOS will decide which language to use based on their **preferred language order**, not the iPhone language.
@@ -395,12 +413,18 @@ Note that for app name and Info.plist related text localization, **it will use t
 
 ## Direct user to change language
 
+Since iOS 13, Apple recommend us to **direct user to the Settings app to change language**, instead of changing the language manually in the app (eg: using Hackish way like changing the AppleLanguages UserDefault key, or use some method swizzling to change the bundle), as there is a lot of work under the hood done by the OS.
 
 
 
+![best practice to change language](https://iosimage.s3.amazonaws.com/2020/72-localization/bestPractice.png)
 
 
 
-// change app language using settings app
+Source: [Creating Great Localized Experience with Xcode 11 WWDC video](https://developer.apple.com/videos/play/wwdc2019/403/), timestamp: 3:01 .
 
-// change app language inside app, without settings
+
+
+You can have a change language button in your app, and when tapped, open the Settings app > your app, by using **UIApplication.shared.open(URL(string: UIApplication.openSettingsURLString)!)** .
+
+

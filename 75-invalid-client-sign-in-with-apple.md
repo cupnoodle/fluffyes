@@ -14,20 +14,20 @@ One of the major roadblock on implementing Sign in with Apple is generating the 
 
 
 
-Invalid client error usually happens when one of these occur : 
+Here's the usual suspect when invalid client error happens : 
 
-1. Using non matching app bundle identifier in the HTTP request
-2. JWT header doesn't contain all required parameters
-3. JWT payload doesn't contain all required parameters
-4. JWT signature is incorrect
-
-
-
-We will walk through each of these below. If you are confident that your JWT payloads and HTTP request are correct, you can jump to section 4 directly.
+1. Are you using the correct client_id in your HTTP request?
+2. Does your JWT header contains all the required parameters?
+3. Does your JWT payload contains all the required parameters?
+4. Is your JWT signature correct?
 
 
 
-## Using non matching app bundle identifier in the HTTP request
+We will walk through each of these below and how to fix them. If you are confident that your JWT payloads and HTTP request are correct, you can jump to section 4 directly.
+
+
+
+## Are you using the correct client_id in your HTTP request?
 
 
 

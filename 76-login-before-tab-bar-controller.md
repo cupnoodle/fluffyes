@@ -1,6 +1,6 @@
 # How to implement login screen with main tab bar controller
 
-This article assumes your app will only have one scene all of the time. (ie. no two scenes at the same time in iPad).
+This article assumes your app will only have one scene all of the time. (ie. no multiple [scenes](https://fluffy.es/open-app-in-specific-view-when-push-notification-is-tapped-ios-13/#scene-and-window) at the same time in iPad).
 
 
 
@@ -106,15 +106,112 @@ We are going to switch the bottom-most view controller (root view controller) fr
 
 
 
+## Step 1: Show the correct view controller on app launch
+
+If the user is logged in, we want to show the Main tab bar controller as the root view controller. 
+
+
+
+If the user is not logged in, we want to show the Navigation controller that contains the login and register view controller.
+
+
+
+Assuming you have a storyboard with a flow similar to this, with navigation controller for the login/ register VC, and a tab bar controller once user has logged in  : 
+
+![storyboard](https://iosimage.s3.amazonaws.com/2020/76-login-before-tab-bar-controller/storyboard.png)
+
+
+
+In order to access the view controllers in code, we need to assign them a storyboard identifier. Go ahead and **assign storyboard ID for the navigation controller and tab bar controller** : 
+
+
+
+![login nav view controller](https://iosimage.s3.amazonaws.com/2020/76-login-before-tab-bar-controller/loginNavID.png)
+
+
+
+(Storyboard Identifier: "LoginNavigationController" for the navigation controller)
+
+
+
+![main tab identifier](https://iosimage.s3.amazonaws.com/2020/76-login-before-tab-bar-controller/mainTabID.png)
+
+(Storyboard Identifier: "MainTabBarController" for the tab bar controller)
+
+
+
+After setting the storyboard identifier, head over to SceneDelegate.swift, and inside the **willConnectTo session:** function, add these lines :
+
+```swift
+// SceneDelegate.swift
+
+func scene(_ scene: UIScene, willConnectTo session: UISceneSession, options connectionOptions: UIScene.ConnectionOptions) {
+    // Use this method to optionally configure and attach the UIWindow `window` to the provided UIWindowScene `scene`.
+    // If using a storyboard, the `window` property will automatically be initialized and attached to the scene.
+    // This delegate does not imply the connecting scene or session are new (see `application:configurationForConnectingSceneSession` instead).
+    guard let _ = (scene as? UIWindowScene) else { return }
+    
+    // add these lines
+    let storyboard = UIStoryboard(name: "Main", bundle: nil)
+    
+    // if user is logged in before
+    if let loggedUsername = UserDefaults.standard.string(forKey: "username") {
+        // instantiate the main tab bar controller and set it as root view controller
+        // using the storyboard identifier we set earlier
+        let mainTabBarController = storyboard.instantiateViewController(identifier: "MainTabBarController")
+        window?.rootViewController = mainTabBarController
+    } else {
+        // if user isn't logged in
+        // instantiate the navigation controller and set it as root view controller
+        // using the storyboard identifier we set earlier
+        let loginNavController = storyboard.instantiateViewController(identifier: "LoginNavigationController")
+        window?.rootViewController = loginNavController
+    }
+}
+```
+
+<br>
+
+
+
+Don't have a SceneDelegate.swift file in your project? Your project might be created using Xcode 10 or earlier, no worries, in this case, you can put the code in AppDelegate.swift, inside the **didFinishLaunchingWithOptions** method.
+
+
+
+```swift
+// AppDelegate.swift
+
+func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
+    // Override point for customization after application launch.
+    // add these lines
+    let storyboard = UIStoryboard(name: "Main", bundle: nil)
+    
+    // if user is logged in before
+    if let loggedUsername = UserDefaults.standard.string(forKey: "username") {
+        // instantiate the main tab bar controller and set it as root view controller
+        // using the storyboard identifier we set earlier
+        let mainTabBarController = storyboard.instantiateViewController(identifier: "MainTabBarController")
+        window?.rootViewController = mainTabBarController
+    } else {
+        // if user isn't logged in
+        // instantiate the navigation controller and set it as root view controller
+        // using the storyboard identifier we set earlier
+        let loginNavController = storyboard.instantiateViewController(identifier: "LoginNavigationController")
+        window?.rootViewController = loginNavController
+    }
+  
+    return true
+}
+
+```
+
+<br>
 
 
 
 
 
-
-
-
-
+step 2
 
 
 

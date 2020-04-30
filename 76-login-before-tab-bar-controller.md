@@ -209,6 +209,42 @@ func application(_ application: UIApplication, didFinishLaunchingWithOptions lau
 
 
 
+## Step 2 : Change the root view controller to main tab bar controller after login
+
+So now instead of presenting the main tab bar controller, we will change the root view controller of the app directly after login.
+
+
+
+Let's add a function to switch root view controller in the SceneDelegate.swift file, then we can use this function in all view controllers.
+
+```swift
+// SceneDelegate.swift
+
+func changeRootViewController(_ vc: UIViewController, animated: Bool = true) {
+    guard let window = self.window else {
+        return
+    }
+    
+    // change the root view controller to your specific view controller
+    window.rootViewController = vc
+}
+```
+
+<br>
+
+
+
+Then in your login view controller, you can call this function after user successfully logs in : 
+
+```swift
+// LoginViewController.swift
+
+```
+
+
+
+
+
 
 
 step 2

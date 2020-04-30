@@ -238,50 +238,118 @@ Then in your login view controller, you can call this function after user succes
 
 ```swift
 // LoginViewController.swift
+@IBAction func loginTapped(_ sender: UIButton) {
+    // ...
+    // after login is done, maybe put this in the login web service completion block
 
+    let storyboard = UIStoryboard(name: "Main", bundle: nil)
+    let mainTabBarController = storyboard.instantiateViewController(identifier: "MainTabBarController")
+    
+    // This is to get the SceneDelegate object from your view controller
+    // then call the change root view controller function to change to main tab bar
+    (UIApplication.shared.connectedScenes.first?.delegate as? SceneDelegate)?.changeRootViewController(mainTabBarController)
+}
 ```
 
+<br>
 
 
 
+**UIApplication.shared.connectedScenes.first** is used to get the first scene connected to your app, this article assumes your app has only one scene (ie. user cannot open more than one scene of your app in iPad multitasking mode). As your app has only one scene, the **.first** will get the one and only scene of your app.
 
 
 
-step 2
+Then the **delegate** is an object (which usually is the SceneDelegate) conforming to the UISceneDelegate protocol, we can cast it back to SceneDelegate object using **as? SceneDelegate** , then we can access the **changeRootViewController** method
 
 
 
-// Pain
+If your **changeRootViewController()** function is located in **AppDelegate.swift**, you can call it using :
 
-// if check user login status on tab bar controller, and push
+```swift
+(UIApplication.shared.delegate as? AppDelegate)?.changeRootViewController(mainTabBarController)
+```
 
-// tab bar controller shows briefly before showing login screen
-
-
-
-// and if user keep login/logout (unlikely but still), the views keep stacking on top each other, adding memory usage
+<br>
 
 
 
-// root controller explanation (graphic of layers)
+Now when user logs in, the root view controller will switch like this : 
+
+![switch to login](https://iosimage.s3.amazonaws.com/2020/76-login-before-tab-bar-controller/switchlogin.gif)
 
 
 
+This transition feels abrupt, we can add some animation in the **changeRootViewController** to make the transition looks smoother : 
+
+```swift
+// SceneDelegate.swift or AppDelegate.swift
+
+func changeRootViewController(_ vc: UIViewController, animated: Bool = true) {
+    guard let window = self.window else {
+        return
+    }
+
+    window.rootViewController = vc
+
+    // add animation
+    UIView.transition(with: window,
+                      duration: 0.5,
+                      options: [.transitionFlipFromLeft],
+                      animations: nil,
+                      completion: nil)
+
+}
+```
+
+<br>
 
 
-// here's how the storyboard looks like
+
+You can choose from a list of preset transition : 
+
+![transition list](https://iosimage.s3.amazonaws.com/2020/76-login-before-tab-bar-controller/transition.png)
 
 
 
-// use userdefaults to check if user is logged in
+For the code above, we will have a flip animation.
 
 
 
+## Step 3 :  Change the root view controller to login navigation controller after logout
+
+Similar to previous step, we change the root view controller to the login navigation controller after user logs out.
 
 
-// instead of using push, we switch the root view controller directly
+
+```swift
+// ProfileViewController.swift
+@IBAction func logoutTapped(_ sender: UIButton) {
+    // ...
+		// after user has successfully logged out
+  
+    let storyboard = UIStoryboard(name: "Main", bundle: nil)
+    let loginNavController = storyboard.instantiateViewController(identifier: "LoginNavigationController")
+
+    (UIApplication.shared.connectedScenes.first?.delegate as? SceneDelegate)?.changeRootViewController(loginNavController)
+}
+```
+
+<br>
 
 
 
-// on app launch, we check if user is logged in, and show the correct view controller
+If your **changeRootViewController()** function is located in **AppDelegate.swift**, you can call it using :
 
+```swift
+(UIApplication.shared.delegate as? AppDelegate)?.changeRootViewController(mainTabBarController)
+```
+
+<br>
+
+
+
+And now we have implemented the login / logout transition flow by changing root view controller! 🙌
+
+
+
+![demo achievement](https://iosimage.s3.amazonaws.com/2020/76-login-before-tab-bar-controller/demo.gif)

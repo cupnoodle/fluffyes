@@ -353,3 +353,8 @@ And now we have implemented the login / logout transition flow by changing root 
 
 
 ![demo achievement](https://iosimage.s3.amazonaws.com/2020/76-login-before-tab-bar-controller/demo.gif)
+
+
+
+
+

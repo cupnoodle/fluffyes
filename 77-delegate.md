@@ -181,7 +181,7 @@ Next, we will look into how to implement the dataSource part of table view into 
 
 ## Implementing dataSource
 
-Tableview's dataSource is also using the same delegate concept, just different naming.
+Tableview's dataSource is also using the same delegate concept, just different naming on the variable name.
 
 
 
@@ -330,4 +330,60 @@ class CustomStackView : UIStackView {
 
 
 
-Now build and run the app, type in some value in the textfield, and select a number from the segmented control, and tap "Update Stack View".
+Now build and run the app, type in some value in the textfield, and select a number from the segmented control, and tap "Update Stack View". You will see buttons will be added into the stack view : 
+
+![data source demo](https://iosimage.s3.amazonaws.com/2020/77-delegate/datasourcedemo.gif)
+
+
+
+### How does this work?
+
+How does the data source and protocol thingy work? You might ask.
+
+
+
+When you set the stack view's dataSource variable to **self** in the view controller, it means that the **stack view's dataSource variable is the view controller**.
+
+
+
+![data source is view controller](https://iosimage.s3.amazonaws.com/2020/77-delegate/ds_1.png)
+
+
+
+Thus the **dataSource** of the stack view refers to **ViewController**.
+
+![data source is view controller](https://iosimage.s3.amazonaws.com/2020/77-delegate/ds_2.png)
+
+
+
+When calling the dataSource.numberOfRows()  inside the reloadData method, it is now referrring to **ViewController.numberOfRows()**, as dataSource is equal to ViewController.
+
+![data source](https://iosimage.s3.amazonaws.com/2020/77-delegate/ds_3.png)
+
+
+
+Here's the flow of execution : 
+
+![execution flow](https://iosimage.s3.amazonaws.com/2020/77-delegate/ds_flow.png)
+
+
+
+This is why the ViewController has to conform to CustomStackViewDataSource protocol, and implement the numberOfRows() method, as the **numberOfRows()** method will be called on it.
+
+
+
+Similarly, **textForRowAt()** method has the same flow too.
+
+![textForRowAt](https://iosimage.s3.amazonaws.com/2020/77-delegate/ds_flow_2.png)
+
+
+
+
+
+Table view datasource works similarly, when you call tableView.reloadData(),  table view will call the data source (usually the view controller) 's **numberOfRowsInSection** and **cellForRowAt** method to retrieve how many rows the table view should have and the cell content for the row.
+
+
+
+## Implementing delegate
+
+Next, we are going to implement delegate to detect action when the button in the stack view is tapped.

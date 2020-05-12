@@ -58,7 +58,7 @@ protocol Animal {
 }
 ```
 
-
+<br>
 
 **Protocol** specifies what methods (and/or variables) must be implemented, in the **Animal** protocol, there's **makeNoise()** method. We can conform a class to a protocol like this :
 
@@ -74,7 +74,7 @@ class Cat : Animal {
 }
 ```
 
-
+<br>
 
 Here we have declared a class **Cat**, and make it conform to the **Animal** protocol (by putting ": Animal" after the class name). When a class conforms to a protocol, it must implement all the methods mentioned in the protocol, else we will get an error like this :
 
@@ -108,6 +108,8 @@ protocol UITableViewDataSource {
 }
 ```
 
+<br>
+
 Now you know that the basics of protocol, you might ask "whats the purpose of using protocol?" , "why do we have to force a class to implement some specified methods?" .
 
 
@@ -138,7 +140,7 @@ class Fox : Animal {
 }
 ```
 
-
+<br>
 
 We can then safely call **makeNoise()** for all of them :
 
@@ -167,7 +169,7 @@ for animal in animals {
 // "wa pow pow pow"
 ```
 
-
+<br>
 
 
 
@@ -204,7 +206,7 @@ class ViewController: UIViewController {
 }
 ```
 
-
+<br>
 
 We have also set the function **textForRowAt** and **numberOfRows** for the data source protocol, these function are used by the stack view to check how many rows to create and what text to use for different rows.
 
@@ -225,7 +227,7 @@ class CustomStackView : UIStackView {
 }
 ```
 
-
+<br>
 
 This variable must conform to the CustomStackViewDataSource protocol, which means it must implement the two functions we defined in the protocol.
 
@@ -254,7 +256,7 @@ class ViewController: UIViewController {
 }
 ```
 
-
+<br>
 
 Xcode will show you an error "**Cannot assign value of type 'ViewController' to type 'CustomStackViewDataSource?**'", because we have set the stack view dataSource to the view controller, but the view controller haven't conform to the **CustomStackViewDataSource** protocol yet.
 
@@ -291,7 +293,7 @@ class ViewController: UIViewController, CustomStackViewDataSource {
 }
 ```
 
-
+<br>
 
 We also set the value for textForRowAt and numberOfRows using the value from the TextField and selected index from the segmented control.
 
@@ -387,3 +389,34 @@ Table view datasource works similarly, when you call tableView.reloadData(),  ta
 ## Implementing delegate
 
 Next, we are going to implement delegate to detect action when the button in the stack view is tapped.
+
+
+
+Similar to CustomStackViewDataSource, we will create another protocol for the delegate like this : 
+
+```swift
+// ViewController.swift
+
+protocol CustomStackViewDataSource : AnyObject {
+    func textForRowAt(index: Int) -> String
+    func numberOfRows() -> Int
+}
+
+// add this new delegate protocol
+protocol CustomStackViewDelegate : AnyObject {
+    func buttonTappedAt(index: Int)
+}
+
+class CustomStackView : UIStackView {
+  // ...
+}
+
+class ViewController: UIViewController {
+  // ...
+}
+```
+
+<br>
+
+The **buttonTappedAt(index:)** function will be called when we tap on one of the buttons in the stack view, with the **index** parameter indicating which row of the button we have tapped.
+

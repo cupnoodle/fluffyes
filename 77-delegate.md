@@ -246,8 +246,6 @@ class ViewController: UIViewController {
   // ...
   override func viewDidLoad() {
       super.viewDidLoad()
-      // Do any additional setup after loading the view.
-        
       stackView.spacing = 20.0
     
       // set the dataSource to self, which is ViewController
@@ -419,4 +417,149 @@ class ViewController: UIViewController {
 <br>
 
 The **buttonTappedAt(index:)** function will be called when we tap on one of the buttons in the stack view, with the **index** parameter indicating which row of the button we have tapped.
+
+
+
+Next, in the CustomStackView class, we add another variable to be the CustomStackViewDelegate : 
+
+```swift
+class CustomStackView : UIStackView {
+    
+    weak var dataSource : CustomStackViewDataSource?
+    weak var delegate : CustomStackViewDelegate?
+  
+   // ....
+}
+```
+
+<br>
+
+
+
+Then inside the reloadData() function of the CustomStackView, we want to add action for the button we insert into the stack view. So that when they are tapped, the **buttonTapped()** function will be executed.
+
+```swift
+// inside class CustomStackView
+func reloadData() {
+    guard let dataSource = dataSource else {
+      return
+    }
+
+    // remove all the child view inside the stackview
+    for subview in self.subviews {
+      subview.removeFromSuperview()
+    }
+
+    // add buttons into the stack view, using the numberOfRows
+    for i in 0...(dataSource.numberOfRows() - 1) {
+
+      let button = UIButton()
+
+      button.setTitle(dataSource.textForRowAt(index: i), for: .normal)
+
+      button.setTitleColor(.systemBlue, for: .normal)
+      button.setTitleColor(.systemPurple, for: .highlighted)
+      
+      // execute the "buttonTapped" function declared below when the button is tapped.
+      button.addTarget(self, action: #selector(buttonTapped(sender:)), for: .touchUpInside)
+
+      self.addArrangedSubview(button)
+    }
+}
+
+@objc func buttonTapped(sender: Any){
+
+}
+```
+
+<br>
+
+
+
+![button tapped](https://iosimage.s3.amazonaws.com/2020/77-delegate/buttontapped.png)
+
+
+
+The current buttonTapped function doesn't do anything, we will come back to implement it later. Now,  we will set the stack view delegate to view controller, and implement the **buttonTappedAt(index:)** function.
+
+
+
+```swift
+class ViewController: UIViewController {
+  // ...
+  override func viewDidLoad() {
+      super.viewDidLoad()
+        
+      stackView.spacing = 20.0
+      stackView.dataSource = self
+    
+      // set the delegate to self, which is ViewController
+      stackView.delegate = self
+  }
+}
+```
+
+
+
+At this point, Xcode will show you an error because your view controller haven't conform to the CustomStackViewDelegate protocol yet. To solve this, we will conform the view controller to the protocol and implement the delegate function : 
+
+
+
+```swift
+class ViewController: UIViewController, CustomStackViewDataSource, CustomStackViewDelegate {
+	// ...
+  override func viewDidLoad() {
+    //...
+  }
+  // MARK: CustomStackViewDataSource
+  // ...
+
+  // MARK: CustomStackViewDelegate
+  func buttonTappedAt(index: Int) {
+      print("tapped at \(index)")
+  }
+}
+```
+
+<br>
+
+
+
+Now that we have implemented the buttonTappedAt protocol method in ViewController, let's move back to the buttonTapped() function the of CustomStackView, and implement the **buttonTapped(sender:)** function.
+
+
+
+```swift
+class CustomStackView : UIStackView {
+  // ....
+  @objc func buttonTapped(sender: Any){
+        // ensure the sender (the UI that was tapped) is a button
+        guard let button = sender as? UIButton else {
+            return
+        }
+        
+        // get the index of the button tapped from the stack view
+        // buttons are subviews of the stack view, from top to bottom
+        // we get the index of the button here
+        if let index = self.subviews.firstIndex(of: button) {
+            // and then call the buttonTappedAt with the index retrieved
+            delegate?.buttonTappedAt(index: index)
+        }
+    }
+}
+```
+
+<br>
+
+
+
+And here is how the flow works, when a button inside the stack view is tapped : 
+
+![delegate flow](https://iosimage.s3.amazonaws.com/2020/77-delegate/delegateflow.png)
+
+
+
+
+
+
 

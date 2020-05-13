@@ -18,6 +18,14 @@ Before moving on, I recommend you to [download the starter project](https://gith
 
 
 
+Table of contents : 
+
+
+
+
+
+
+
 ## Introduction
 
 If you haven't grasp the concept of Optionals (eg: ?, !) yet, I recommend you to read the [Optionals article](https://fluffy.es/eli-5-optional/) first before reading this article. You will need to understand what does "?" mean for the paragraphs below.
@@ -380,7 +388,7 @@ Similarly, **textForRowAt()** method has the same flow too.
 
 
 
-Table view datasource works similarly, when you call tableView.reloadData(),  table view will call the data source (usually the view controller) 's **numberOfRowsInSection** and **cellForRowAt** method to retrieve how many rows the table view should have and the cell content for the row.
+Table view datasource works similarly, when you call tableView.reloadData(),  table view will call the data source (usually the view controller) 's **numberOfRowsInSection** and **cellForRowAt** function to retrieve how many rows the table view should have and the cell content for the row.
 
 
 
@@ -559,7 +567,27 @@ And here is how the flow works, when a button inside the stack view is tapped :
 
 
 
+Table view delegate works similarly, when you tap a cell in table view,  table view will call the delegate (usually the view controller) 's **didSelectRowAt** function.
 
+
+
+I hope you have a clearer picture on how delegate / dataSource works after reading this tutorial. Delegate isn't some magical pattern, it is just a variable referencing a ViewController or other object, then you just call the method on that variable.
+
+
+
+You can download the [completed sample delegate project here](https://github.com/fluffyes/delegate/archive/master.zip) for double checking. 
+
+
+
+
+
+## Optional Delegate method
+
+You probably have used **UITableViewDelegate** protocol before (to perform action when a row is tapped etc). You might notice that after conforming to the protocol, even if you didn't implement the methods specified (eg: didSelectRowAt indexPath ), there's no error shown, how could this be? 🤔
+
+
+
+To keep this article from going too long, I have condensed the explanation of how Optional delegate method works into an email. If you are interested, submit the form below and I will send you the explanation straight to your inbox.
 
 
 

@@ -10,7 +10,7 @@ We will implement custom functions like numOfRows, textAtRow and buttonTappedAtR
 
 
 
-By the end of this tutorial, you will learn how delegate works, and have some understanding on how tableview delegate works.
+By the end of this tutorial, you will learn how delegate works, and have some understanding on how tableview datasource and delegate works.
 
 
 

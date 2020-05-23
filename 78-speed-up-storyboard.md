@@ -1,6 +1,6 @@
 # 3 steps to speed up storyboard
 
-When you are working on storyboard with many view controllers, especially with [IBDesignable](https://nshipster.com/ibinspectable-ibdesignable/) UI, it can take quite a long while to open storyboard, and then you hear your Mac fan spins like it is about to take off 🚀 😂, and you kinda dread whenever you need to open the storyboard.
+When you are working on storyboard with many view controllers, especially with [IBDesignable](https://nshipster.com/ibinspectable-ibdesignable/) UI, it can take quite a long while to open storyboard, and then you hear your Mac fan spins like it is about to take off 🚀 😂.
 
 
 

@@ -333,6 +333,8 @@ Xcode Previews only loads the initial UI by default. If you want to interact wit
 
 
 
+
+
 ## Objective-C
 
 Xcode Previews works with Objective-C too! For simplicity, I prefer creating a new Swift file to generate the preview for the Objective-C view controller. 
@@ -380,6 +382,10 @@ Update bridging header file and import the view controller :
 
 #import "DerpViewController.h"
 ```
+
+
+
+Open the Preview swift file you just created, a canvas should show up (press option + command + enter if it doesn't show), you can then open another tab for the Objective-C view controller to edit it.
 
 
 

@@ -66,7 +66,7 @@ We can create a struct which conform to **UIViewControllerRepresentable**, and r
 
 
 
-We can leave the updateUIViewController function empty, as we don't have SwiftUI state that will update the view controller in this case.
+We can leave the updateUIViewController function empty, as we don't have SwiftUI state or binding that will update the view controller in this case.
 
 
 
@@ -176,7 +176,7 @@ extension UIViewController {
 
 
 
-With this extension, we just need to add the PreviewProvider confirming struct below each of the view controller, and use **ViewController.toPreview()** for the preview view.
+With this extension, we just need to add the PreviewProvider confirming struct below each view controllers, and use **ViewController.toPreview()** for the preview view.
 
 
 
@@ -236,14 +236,156 @@ struct ProfileVCPreview: PreviewProvider {
 
 ## Previewing multiple devices
 
-It would be handy if we can preview how our UI looks like in multiple devices at once. We can specify an array of devices and create preview of our UI in each of the device like this : 
+It would be handy if we can preview how our UI looks like in multiple devices at once. We can specify an array of devices and create preview in each of the device like this : 
 
 ```swift
+#if DEBUG
+import SwiftUI
 
+@available(iOS 13, *)
+struct InfoVCPreview: PreviewProvider {
+    static var devices = ["iPhone SE", "iPhone 11 Pro Max"]
+    
+    static var previews: some View {
+        ForEach(devices, id: \.self) { deviceName in
+            InfoViewController().toPreview().previewDevice(PreviewDevice(rawValue: deviceName))
+            .previewDisplayName(deviceName)
+        }
+    }
+}
+#endif
 ```
 
 
 
+![two devices](https://iosimage.s3.amazonaws.com/2020/79-xcode-previews-uikit/two_devices.png)
+
+
+
+
+
+The **ForEach** loop will loop through each of the device specified in the **devices** array, **deviceName** is the value of the element used in the loop (eg: iPhone SE).
+
+
+
+**.previewDevice()** will show the UI in the Preview Device specified, which is created in the PreviewDevice(rawValue: ) function.
+
+
+
+**.previewDisplayName()** is the text that will be displayed below the device in the preview, we'll use the device name for this.
+
+
+
+I usually use the smallest device (iPhone SE) and largest device (iPhone 11 Pro Max) for previewing UI. If the UI works on both smallest and largest devices, it most likely will look ok across all devices.
+
+
+
+You can specify different devices like "iPhone 8", "iPhone 8 Plus", "iPad Pro (11-inch)" etc. Here is the list of supported device in Preview currently : 
+
+```swift
+// The following values are supported:
+//
+//     "iPhone 8"
+//     "iPhone 8 Plus"
+//     "iPhone SE"
+//     "iPhone 11"
+//     "iPhone 11 Pro"
+//     "iPhone 11 Pro Max"
+//     "iPad mini 4"
+//     "iPad Air 2"
+//     "iPad Pro (9.7-inch)"
+//     "iPad Pro (12.9-inch)"
+//     "iPad (5th generation)"
+//     "iPad Pro (12.9-inch) (2nd generation)"
+//     "iPad Pro (10.5-inch)"
+//     "iPad (6th generation)"
+//     "iPad Pro (11-inch)"
+//     "iPad Pro (12.9-inch) (3rd generation)"
+//     "iPad mini (5th generation)"
+//     "iPad Air (3rd generation)"
+//     "Apple TV"
+//     "Apple TV 4K"
+//     "Apple TV 4K (at 1080p)"
+//     "Apple Watch Series 2 - 38mm"
+//     "Apple Watch Series 2 - 42mm"
+//     "Apple Watch Series 3 - 38mm"
+//     "Apple Watch Series 3 - 42mm"
+//     "Apple Watch Series 4 - 40mm"
+//     "Apple Watch Series 4 - 44mm"
+```
+
+
+
+
+
+## Live Preview
+
+Xcode Previews only loads the initial UI by default. If you want to interact with the view controller , execute code and update the UI like in simulator, you can utilize the Live Preview button : 
+
+![live preview button](https://iosimage.s3.amazonaws.com/2020/79-xcode-previews-uikit/live_preview_button.png)
+
+
+
+
+![live preview gif](https://iosimage.s3.amazonaws.com/2020/79-xcode-previews-uikit/live_preview.gif)
+
+
+
+
+
+## Objective-C
+
+Xcode Previews works with Objective-C too! For simplicity, I prefer creating a new Swift file to generate the preview for the Objective-C view controller. 
+
+
+
+This section assumes you have created an extension for the ViewController UIViewControllerRepresentable as shown above (**UIViewController+Preview.swift**).
+
+
+
+Create a new Swift file, I prefer to name it as "(ViewControllerName)Preview.swift", then fill in the PreviewProvider struct details : 
+
+```swift
+//DerpViewControllerPreview.swift
+
+// DerpViewController is an Objective-C View Controller
+
+#if DEBUG
+import SwiftUI
+
+@available(iOS 13, *)
+struct DerpVCPreview: PreviewProvider {
+    static var devices = ["iPhone SE", "iPhone 11 Pro Max"]
+    
+    static var previews: some View {
+        ForEach(devices, id: \.self) { deviceName in
+            DerpViewController().toPreview().previewDevice(PreviewDevice(rawValue: deviceName))
+            .previewDisplayName(deviceName)
+        }
+    }
+}
+#endif
+```
+
+
+
+
+Update bridging header file and import the view controller : 
+
+```swift
+// ProjectName-Bridging-Header.h
+
+//  Use this file to import your target's public headers that you would like to expose to Swift.
+//
+
+#import "DerpViewController.h"
+```
+
+
+
+And now you can make change on your Objective-C view controller and preview it!
+
+![objc preview](https://iosimage.s3.amazonaws.com/2020/79-xcode-previews-uikit/objc.gif)
 
 
 

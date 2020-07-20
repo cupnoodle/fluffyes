@@ -16,7 +16,7 @@ Table of contents:
 
 ## Disclaimer and Caveats
 
-This tutorial is aimed to get you on feet to validate and read the in-app purchase receipt data as easy as possible using a library, this might make your app easier for jailbreaker to retrieve your app's premium content for free. 
+This tutorial is aimed to get you on feet to validate and read the in-app purchase receipt data as easy as possible using a library, using library might make it easier for jailbreaker to retrieve your app's premium content for free. 
 
 
 

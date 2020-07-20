@@ -2,6 +2,18 @@
 
 
 
+Table of contents:
+
+1. Disclaimer and Caveats
+2. Prerequisite
+3. Installation
+4. Getting the receipt data
+5. Check if user has purchased products or has active subscription
+6. Check receipt original app version
+7. Validate receipt
+
+
+
 ## Disclaimer and Caveats
 
 This tutorial is aimed to get you on feet to validate and read the in-app purchase receipt data as easy as possible using a library, this might make your app easier for jailbreaker to retrieve your app's premium content for free. 

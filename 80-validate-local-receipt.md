@@ -28,11 +28,15 @@ Most Stack Overflow answers and tutorials also advocate for rolling your own val
 
 
 
-My belief is that people who decide to pirate your app won't buy it anyway, and there's no stopping a determined hacker to disassemble your app and get your premium content for free, you can only make it harder for them to do so, but usually it is not worth the effort as the percentage of people who decide to hack your app is very small.
+My belief is that **people who decide to pirate your app won't buy it anyway**, and there's no stopping a determined hacker to disassemble your app and get your premium content for free, you can only make it harder for them to do so, but usually it is not worth the effort as the percentage of people who decide to hack your app is very small.
 
 
 
-If you don't care about the potential piracy issue and just want a straightforward way to check if the user has purchased your in-app purchase and show the premium content to them, this tutorial is for you.
+If you don't care about the potential piracy issue and just want a straightforward way to check if the user has purchased your in-app purchase and show the premium content to them, this tutorial is for you. 
+
+
+
+I practice what I preach, I am using TPInAppReceipt library on my own app [AuthCat](https://apps.apple.com/us/app/id1523508294) (Simple 2FA OTP app with iCloud sync) for reading and validation receipt.
 
 
 

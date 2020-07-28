@@ -178,6 +178,69 @@ Then when user toggle the iCloud sync switch, you can reinitialize the AppDelega
 
 ## Delete existing data from iCloud when iCloud sync is turned off
 
+When user turn off  iCloud sync, they might expect that the data on iCloud server is deleted, for privacy reasons. I think we should respect user's decision to remove existing data from Apple's server.
+
+
+When we use NSPersistentCloudKitContainer, Apple will create a special zone in iCloud named "**com.apple.coredata.cloudkit.zone**" to store the user's private data.
+
+![special zone name](https://iosimage.s3.amazonaws.com/2020/81-toggle-icloud-sync/zone.png)
+
+
+
+To delete the existing data synced on iCloud, we can simply delete the whole zone like this :
+
+```swift
+// replace the identifier with your container identifier
+let container = CKContainer(identifier: "iCloud.es.fluffy.AuthCat")
+
+let database = container.privateCloudDatabase
+
+// instruct iCloud to delete the whole zone (and all of its records)
+database.delete(withRecordZoneID: .init(zoneName: "com.apple.coredata.cloudkit.zone"), completionHandler: { (zoneID, error) in
+    if let error = error {
+        print("deleting zone error \(error.localizedDescription)")
+    }
+})
+```
+
+
+
+Remember to replace the **CKContainer identifier** with your container identifier string.
+
+![containers name](https://iosimage.s3.amazonaws.com/2020/81-toggle-icloud-sync/containers.png)
+
+
+
+In the iCloud sync switch IBAction : 
+
+```swift
+@IBAction func iCloudToggled(_ sender: UISwitch) {
+    // set the icloud_sync key to be true/false depending on the UISwitch state
+    NSUbiquitousKeyValueStore.default.set(sender.isOn, forKey: "icloud_sync")
+
+    // reinitialize the persistentContainer and re-load persistentStores
+    let appDelegate = UIApplication.shared.delegate as! AppDelegate
+    appDelegate.persistentContainer = setupContainer(withSync: sender.isOn)
+  
+    // delete the zone in iCloud if user switch off iCloud sync
+    if(!sender.isOn){
+        // replace the identifier with your container identifier
+        let container = CKContainer(identifier: "iCloud.es.fluffy.AuthCat")
+
+        let database = container.privateCloudDatabase
+
+        // instruct iCloud to delete the whole zone (and all of its records)
+        database.delete(withRecordZoneID: .init(zoneName: "com.apple.coredata.cloudkit.zone"), completionHandler: { (zoneID, error) in
+            if let error = error {
+                print("deleting zone error \(error.localizedDescription)")
+            }
+        })
+    }
+}
+```
+
+
+
 
 
 

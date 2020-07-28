@@ -124,7 +124,55 @@ We have set "true" for the NSPersistentHistoryTrackingKey, so that when the user
 
 ## Reinitialize the persistent container when iCloud sync is toggled
 
+When user toggle the iCloud sync switch, we need to update the **cloudKitContainerOptions** value and load the persistent store again to toggle iCloud sync. I find it easier to just reinitialize the whole persistent container variable.
 
+
+I have extracted the previous NSPersistentCloudKitContainer code into a function  like this :
+
+```swift
+func setupContainer(withSync iCloudSync: Bool) -> NSPersistentCloudKitContainer{
+    let container = NSPersistentCloudKitContainer(name: "AppName")
+    
+    guard let description = container.persistentStoreDescriptions.first else {
+        fatalError("###\(#function): Failed to retrieve a persistent store description.")
+    }
+    
+    description.setOption(true as NSNumber, forKey: NSPersistentHistoryTrackingKey)
+    
+    description.setOption(true as NSNumber,
+                          forKey: NSPersistentStoreRemoteChangeNotificationPostOptionKey)
+    
+    
+    // if "cloud_sync" boolean key isn't set or isn't set to true, don't sync to iCloud
+    if(!iCloudSync){
+        description.cloudKitContainerOptions = nil
+    }
+    
+    container.loadPersistentStores(completionHandler: { (storeDescription, error) in
+        // ...
+    })
+
+    // ...
+    
+    container.viewContext.automaticallyMergesChangesFromParent = true
+    return container
+}
+```
+
+
+
+Then when user toggle the iCloud sync switch, you can reinitialize the AppDelegate's **persistentContainer** variable like this : 
+
+```swift
+@IBAction func iCloudToggled(_ sender: UISwitch) {
+    // set the icloud_sync key to be true/false depending on the UISwitch state
+    NSUbiquitousKeyValueStore.default.set(sender.isOn, forKey: "icloud_sync")
+
+    // reinitialize the persistentContainer and re-load persistentStores
+    let appDelegate = UIApplication.shared.delegate as! AppDelegate
+    appDelegate.persistentContainer = setupContainer(withSync: sender.isOn)
+}
+```
 
 
 
